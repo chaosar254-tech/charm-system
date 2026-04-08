@@ -1,0 +1,40 @@
+{
+  ".kıyafetler.": [
+    {
+      "id": "outfit1",
+      "name": "Silent Huntress",
+      "glb": {
+        "idle": "https://raw.githubusercontent.com/chaosar254-tech/charm-models/main/model.glb",
+        "animation": "https://raw.githubusercontent.com/chaosar254-tech/charm-models/main/model-animation.glb"
+      },
+      "usdz": {
+        "idle": "https://raw.githubusercontent.com/chaosar254-tech/charm-models/main/model.usdz",
+        "animation": "https://raw.githubusercontent.com/chaosar254-tech/charm-models/main/model-animation.usdz"
+      }
+    },
+    {
+      "id": "outfit2",
+      "name": "Blue Bubblegum",
+      "glb": {
+        "idle": "https://raw.githubusercontent.com/chaosar254-tech/charm-models/main/model1.glb",
+        "animation": "https://raw.githubusercontent.com/chaosar254-tech/charm-models/main/model1-animation.glb"
+      },
+      "usdz": {
+        "idle": "https://raw.githubusercontent.com/chaosar254-tech/charm-models/main/model1.usdz",
+        "animation": "https://raw.githubusercontent.com/chaosar254-tech/charm-models/main/modelanimation.usdz"
+      }
+    },
+    {
+      "id": "outfit3",
+      "name": "White Dress",
+      "glb": {
+        "idle": "https://raw.githubusercontent.com/chaosar254-tech/charm-models/main/model1/model-83.glb",
+        "animation": "https://raw.githubusercontent.com/chaosar254-tech/charm-models/main/model1/model-84.glb"
+      },
+      "usdz": {
+        "idle": "https://raw.githubusercontent.com/chaosar254-tech/charm-models/main/modelmodel1/model-83.usdz",
+        "animation": "https://raw.githubusercontent.com/chaosar254-tech/charm-models/main/modelmodel1/model-84.usdz"
+      }
+    }
+  ]
+}

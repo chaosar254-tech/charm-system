@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Menü — AR Görünüm</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+  <!-- Model Viewer -->
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+
+  <style>
+    :root {
+      --cream: #F5F0EB;
+      --brown: #6B1520;
+      --gold:  #c8832a;
+      --card-bg: #fffdf9;
+      --shadow: 0 8px 32px rgba(59,31,14,.10);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--brown);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--brown);
+      padding: 2rem 1rem 1.5rem;
+      text-align: center;
+    }
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      color: #fff;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      letter-spacing: .02em;
+    }
+    header p {
+      color: #d4b48a;
+      font-size: .95rem;
+      margin-top: .35rem;
+    }
+    .gold-line {
+      width: 60px;
+      height: 3px;
+      background: var(--gold);
+      margin: .9rem auto 0;
+      border-radius: 2px;
+    }
+
+    /* ── GRID ── */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.6rem;
+      max-width: 1200px;
+      margin: 2.5rem auto;
+      padding: 0 1.25rem 3rem;
+    }
+
+    /* ── CARD ── */
+    .food-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform .25s, box-shadow .25s;
+    }
+    .food-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 48px rgba(59,31,14,.18);
+    }
+
+    /* inline model-viewer on card */
+    .food-thumb {
+      width: 100%;
+      aspect-ratio: 4/3;
+      background: #f0e6d6;
+      display: block;
+      position: relative;
+    }
+    .food-thumb model-viewer {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      --poster-color: #f0e6d6;
+    }
+
+    .food-body {
+      padding: 1.1rem 1.25rem 1.4rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .food-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+    .food-desc {
+      font-size: .83rem;
+      color: #7a5c3e;
+      margin-top: .4rem;
+      flex: 1;
+    }
+    .food-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 1rem;
+    }
+    .food-price {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--gold);
+    }
+
+    /* AR Button */
+    .btn-ar {
+      background: var(--brown);
+      color: #fff;
+      border:none;
+      border-radius: 20px;
+      padding: .48rem 1.1rem;
+      font-size: .8rem;
+      font-weight: 500;
+      letter-spacing: .04em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      transition: background .2s, transform .15s;
+    }
+    .btn-ar:hover { background: var(--gold); transform: scale(1.04); }
+    .btn-ar svg { width: 16px; height: 16px; fill: currentColor; }
+
+    /* ── MODAL ── */
+    .modal-content {
+      border-radius: 20px;
+      border: none;
+      overflow: hidden;
+      background: var(--brown);
+    }
+    .modal-header {
+      background: var(--brown);
+      border-bottom: 1px solid rgba(255,255,255,.1);
+      padding: 1rem 1.4rem;
+    }
+    .modal-title {
+      font-family: 'Playfair Display', serif;
+      color: #fff;
+      font-size: 1.15rem;
+    }
+    .btn-close { filter: invert(1) brightness(2); }
+
+    .modal-body {
+      padding: 0;
+      background: #1e1008;
+    }
+
+    /* Model Viewer */
+    model-viewer {
+      width: 100%;
+      height: 420px;
+      background: transparent;
+      --poster-color: transparent;
+    }
+
+    .ar-hint {
+      text-align: center;
+      color: #d4b48a;
+      font-size: .8rem;
+      padding: .8rem 1rem 1rem;
+      background: #1e1008;
+    }
+    .ar-hint span {
+      display: inline-block;
+      background: rgba(200,131,42,.25);
+      border: 1px solid var(--gold);
+      border-radius: 20px;
+      padding: .3rem .85rem;
+      font-size: .78rem;
+    }
+
+    /* ── ADD BUTTON (demo) ── */
+    .add-btn {
+      border: 2px dashed #c8a87c;
+      background: transparent;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      min-height: 240px;
+      color: #c8a87c;
+      font-size: .9rem;
+      cursor: pointer;
+      transition: border-color .2s, color .2s;
+    }
+    .add-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .add-btn .plus { font-size: 2.2rem; line-height: 1; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <h1>Muma Burger</h1></h1>
+  <p>Yemeği masanızda görmek için <strong style="color:#fff">Masada Gör</strong> butonuna basın</p>
+  <div class="gold-line"></div>
+</header>
+
+<!-- CARDS -->
+<div class="menu-grid" id="menuGrid">
+
+  <!-- ═══ YEMEK KARTI 1 ═══
+       GLB  → models/yemek1.glb
+       USDZ → models/yemek1.usdz
+       Görseli değiştirmek istersen thumb içine <img> ekle veya emoji bırak -->
+  <div class="food-card">
+    <div class="food-thumb">
+      <model-viewer src="Burger6.glb" ios-src="Burger6.usdz"
+        camera-controls auto-rotate shadow-intensity="1"
+        environment-image="neutral" loading="lazy">
+      </model-viewer>
+    </div>
+    <div class="food-body">
+      
+      
+        <button class="btn-ar"
+          onclick="openAR('Burger','Burger6.glb','Burger6.usdz')">
+          <svg viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg>
+          Masada Gör
+        </button>
+    </div>
+  </div>
+
+
+</div><!-- /menu-grid -->
+
+
+<!-- ══════ AR MODAL ══════ -->
+<div class="modal fade" id="arModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="arModalTitle">—</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <model-viewer
+          id="mv"
+          camera-controls
+          auto-rotate
+          ar
+          ar-modes="webxr scene-viewer quick-look"
+          shadow-intensity="1"
+          environment-image="neutral"
+          loading="eager">
+
+          <!-- AR butonu (model-viewer built-in) -->
+          <button slot="ar-button"
+            style="
+              position:absolute;
+              bottom:16px;
+              right:16px;
+              background:var(--gold);
+              color:#fff;
+              border:none;
+              border-radius:50px;
+              padding:.55rem 1.2rem;
+              font-size:.85rem;
+              font-family:'DM Sans',sans-serif;
+              font-weight:600;
+              cursor:pointer;
+              display:flex;
+              align-items:center;
+              gap:.4rem;
+            ">
+            📱 AR ile Masaya Koy
+          </button>
+        </model-viewer>
+
+        <div class="ar-hint">
+          <span>📱 Mobil cihazda AR ile gerçek masanıza yerleştirin</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const mv    = document.getElementById('mv');
+  const title = document.getElementById('arModalTitle');
+  const modal = new bootstrap.Modal(document.getElementById('arModal'));
+
+  function openAR(name, glb, usdz) {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    if (isIOS) {
+      // ── iPhone / iPad ──
+      // Modal açmadan direkt Quick Look tetikle
+      const a = document.createElement('a');
+      a.setAttribute('rel', 'ar');
+      a.href = usdz;
+
+      // Quick Look için içine boş img zorunlu
+      const img = document.createElement('img');
+      a.appendChild(img);
+
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+    } else {
+      // ── Android / Masaüstü ──
+      title.textContent = name;
+      mv.setAttribute('src', glb);
+      mv.setAttribute('ios-src', usdz);
+      modal.show();
+    }
+  }
+
+  document.getElementById('arModal').addEventListener('hidden.bs.modal', () => {
+    mv.setAttribute('src', '');
+    mv.setAttribute('ios-src', '');
+  });
+</script>
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-wave">
+    <svg viewBox="0 0 1200 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,30 C300,60 900,0 1200,30 L1200,60 L0,60 Z" fill="#6B1520"/>
+    </svg>
+  </div>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">Chaosarmenu</div>
+      <p class="footer-slogan">Menunuzu 3 boyuta tasiyoruz.</p>
+      <p class="footer-sub">Restoraniniz icin AR menu cozumleri</p>
+    </div>
+    <div class="footer-cta-box">
+      <div class="cta-badge">Sizin için de yapalım</div>
+      <p class="cta-text">Müşterileriniz yemeği masada görsün,<br>siparişler artsın.</p>
+      <a href="https://chaosarmenu.com" class="cta-btn" target="_blank">AR Menu İstiyorum &rarr;</a>
+    </div>
+    <div class="footer-contact">
+      <p class="contact-label">İletişim</p>
+      <a href="https://chaosarmenu.com" class="contact-link">chaosarmenu.com</a>
+      <a href="https://instagram.com/chaosarmenu" class="contact-link">@chaosarmenu</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 ChaosAR &middot; Tüm hakları saklıdır</span>
+    <span class="footer-dot">&middot;</span>
+    <span>AR Menu Teknolojisi</span>
+  </div>
+</footer>
+<style>
+.site-footer{background:#6B1520;color:#d4b48a;position:relative;margin-top:0}
+.footer-wave{width:100%;height:50px;overflow:hidden;line-height:0;background:var(--cream)}
+.footer-wave svg{width:100%;height:100%}
+.footer-inner{max-width:1100px;margin:0 auto;padding:2.5rem 1.5rem 1.5rem;display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:2rem;align-items:start}
+@media(max-width:700px){.footer-inner{grid-template-columns:1fr;text-align:center}.footer-contact{display:flex;flex-direction:column;align-items:center}}
+.footer-logo{font-family:"Playfair Display",serif;font-size:1.6rem;color:#fff;letter-spacing:.04em;margin-bottom:.4rem}
+.footer-slogan{font-size:.95rem;color:#fff;font-weight:500}
+.footer-sub{font-size:.78rem;color:#a07850;margin-top:.25rem}
+.footer-cta-box{background:linear-gradient(135deg,#4A0D10 0%,#5C1215 100%);border:1px solid rgba(200,131,42,.35);border-radius:18px;padding:1.4rem 1.6rem;text-align:center}
+.cta-badge{display:inline-block;background:rgba(200,131,42,.2);color:#c8832a;border:1px solid rgba(200,131,42,.4);border-radius:20px;font-size:.72rem;font-weight:600;letter-spacing:.06em;padding:.25rem .8rem;margin-bottom:.7rem;text-transform:uppercase}
+.cta-text{font-size:.88rem;color:#e8d0b0;line-height:1.6;margin-bottom:1rem}
+.cta-btn{display:inline-block;background:#F5F0EB;color:#8B1A2F;text-decoration:none;border-radius:50px;padding:.6rem 1.4rem;font-size:.85rem;font-weight:700;letter-spacing:.03em;transition:background .2s,transform .15s}
+.cta-btn:hover{background:#e09530;transform:scale(1.04);color:#fff}
+.contact-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:#7a5c3e;margin-bottom:.6rem;font-weight:600}
+.contact-link{display:block;color:#d4b48a;text-decoration:none;font-size:.85rem;margin-bottom:.4rem;transition:color .2s}
+.contact-link:hover{color:#c8832a}
+.footer-bottom{text-align:center;padding:1rem;border-top:1px solid rgba(255,255,255,.07);font-size:.75rem;color:#5a3e28}
+.footer-dot{margin:0 .5rem}
+</style>
+</body>
+</html>

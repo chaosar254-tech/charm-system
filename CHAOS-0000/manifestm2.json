@@ -1,0 +1,16 @@
+{
+  ".kıyafetler.": [
+    {
+      "id": "outfit1",
+      "name": "Love",
+      "glb": {
+        "idle": "model-m2/kızılay.glb",
+        "animation": "model-m2/kızılay.glb"
+      },
+      "usdz": {
+        "idle": "model-m2/kızılay.usdz",
+        "animation": "model-m2/kızılay.usdz"
+      } 
+    } 
+  ] 
+} 

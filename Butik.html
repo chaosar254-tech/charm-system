@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>ChaosAR | AI Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* Spinner animasyonu CSS'i (Siyah temaya özel ayarlandı) */
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1); 
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border-left-color: #ffffff; /* Parlayan beyaz kısım */
+            animation: spin 1s ease infinite;
+            margin: 0 auto 10px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-black text-white min-h-screen flex items-center justify-center p-6">
+
+    <div class="max-w-md w-full bg-zinc-900 p-8 rounded-[2rem] border border-zinc-800 shadow-2xl">
+        <h1 class="text-2xl font-bold mb-8 text-center italic">ChaosAR <span class="text-zinc-500 font-light text-sm not-italic">Engine v1</span></h1>
+
+        <div class="space-y-5">
+            <div class="bg-black p-4 rounded-2xl border border-zinc-800">
+                <label class="block text-xs text-zinc-500 mb-2 uppercase font-bold">1. Model Görseli</label>
+                <input type="file" id="modelInp" accept="image/*" class="text-sm">
+            </div>
+
+            <div class="bg-black p-4 rounded-2xl border border-zinc-800">
+                <label class="block text-xs text-zinc-500 mb-2 uppercase font-bold">2. Ürün Görseli</label>
+                <input type="file" id="garmentInp" accept="image/*" class="text-sm">
+            </div>
+
+            <button onclick="calistir()" id="btn" class="w-full py-4 bg-white text-black font-black rounded-2xl hover:scale-95 transition-all">
+                SİHRİ BAŞLAT
+            </button>
+        </div>
+
+        <div id="loading-spinner" style="display: none; text-align: center; margin-top: 30px;">
+            <div class="spinner"></div>
+            <p class="text-xs text-zinc-400 font-bold uppercase tracking-widest mt-4 animate-pulse">✨ Yapay Zeka Kıyafeti Dikiyor... ✨</p>
+        </div>
+
+        <div id="sonucAlani" class="mt-8 hidden">
+            <p class="text-center text-xs text-green-500 mb-3 animate-pulse font-bold uppercase">Üretim Tamamlandı!</p>
+            <img id="sonucResim" src="" class="w-full rounded-2xl border border-zinc-700 shadow-xl">
+        </div>
+    </div>
+
+    <script>
+        // 1. AYARLAR - Supabase bağlantısı
+        const PROJE_URL = 'https://ilgjqqdblhbfiuojvjkc.supabase.co'; 
+        const ANON_KEY = 'sb_publishable_Ou4qf7AJiul1gEuLn3bAxA_H-7ozo2A'; 
+        const sb = supabase.createClient(PROJE_URL, ANON_KEY);
+
+        async function calistir() {
+            const btn = document.getElementById('btn');
+            const modelFile = document.getElementById('modelInp').files[0];
+            const garmentFile = document.getElementById('garmentInp').files[0];
+            const spinner = document.getElementById('loading-spinner');
+            const sonucAlani = document.getElementById('sonucAlani');
+
+            if (!modelFile || !garmentFile) return alert("Kanka iki dosyayı da seçmen lazım!");
+
+            // Motor çalışıyor, arayüzü hazırla
+            btn.innerText = "YAPAY ZEKA İŞLİYOR...";
+            btn.disabled = true;
+            sonucAlani.classList.add('hidden'); // Yeni istekte eski resmi gizle
+            spinner.style.display = 'block';    // Spinner'ı göster
+
+            try {
+                // A. MODEL YÜKLE
+                const mAd = `m_${Date.now()}.png`;
+                const { data: mData, error: mErr } = await sb.storage.from('vto-images').upload(mAd, modelFile);
+                if (mErr) throw new Error("Model yükleme hatası: " + mErr.message);
+                const mUrl = sb.storage.from('vto-images').getPublicUrl(mAd).data.publicUrl;
+
+                // B. ÜRÜN YÜKLE
+                const gAd = `g_${Date.now()}.png`;
+                const { data: gData, error: gErr } = await sb.storage.from('vto-images').upload(gAd, garmentFile);
+                if (gErr) throw new Error("Ürün yükleme hatası: " + gErr.message);
+                const gUrl = sb.storage.from('vto-images').getPublicUrl(gAd).data.publicUrl;
+                
+                // C. n8n TETİKLE (Tamamen Güvenli HTTPS Bağlantısı)
+                const response = await fetch('https://api.cha0sar.shop/webhook/zara-vto', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ model_url: mUrl, garment_url: gUrl })
+                });               
+                const sonuc = await response.json();
+
+                // D. GÖSTER
+                document.getElementById('sonucResim').src = sonuc.images[0].url;
+                sonucAlani.classList.remove('hidden');
+                btn.innerText = "YENİDEN DENEYİN";
+
+            } catch (err) {
+                console.error(err);
+                alert("Hata çıktı: " + err.message);
+                btn.innerText = "HATA OLUŞTU!";
+            } finally {
+                // E. İŞLEM BİTTİ (Başarılı ya da başarısız her durumda çalışır ve spinner'ı gizler)
+                btn.disabled = false;
+                spinner.style.display = 'none'; 
+            }
+        }
+    </script>
+</body>
+</html>

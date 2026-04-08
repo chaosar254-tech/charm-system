@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>ChaosAR</title>
+
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+
+  <style>
+    /* ==== CHAOSAR OFFICIAL COLOR SYSTEM ==== */
+    :root {
+      --chaos-bg-deep:       #0D0B1A;
+      --chaos-bg-base:       #100E20;
+      --chaos-bg-surface:    #16132E;
+      --chaos-bg-elevated:   #1E1A3A;
+
+      --chaos-purple-dim:    #26215C;
+      --chaos-purple-dark:   #3C3489;
+      --chaos-purple-mid:    #534AB7;
+      --chaos-purple-main:   #7F77DD;
+      --chaos-purple-soft:   #AFA9EC;
+      --chaos-purple-light:  #CECBF6;
+      --chaos-purple-pale:   #EEEDFE;
+
+      --chaos-text-primary:  #F0EEFF;
+      --chaos-text-secondary:#AFA9EC;
+      --chaos-text-muted:    rgba(175, 169, 236, 0.45);
+      --chaos-text-disabled: rgba(175, 169, 236, 0.25);
+
+      --chaos-border-subtle: rgba(127, 119, 221, 0.12);
+      --chaos-border-soft:   rgba(127, 119, 221, 0.25);
+      --chaos-border-mid:    rgba(127, 119, 221, 0.45);
+      --chaos-border-strong: rgba(175, 169, 236, 0.7);
+
+      --chaos-glow-sm:  0 0 8px  rgba(127, 119, 221, 0.4);
+      --chaos-glow-md:  0 0 20px rgba(127, 119, 221, 0.35);
+      --chaos-glow-lg:  0 0 40px rgba(127, 119, 221, 0.25);
+
+      --chaos-gradient-primary: linear-gradient(135deg, #534AB7, #AFA9EC);
+      --chaos-gradient-subtle:  linear-gradient(135deg, #1E1A3A, #16132E);
+      --chaos-gradient-glow:    linear-gradient(90deg, #534AB7, #7F77DD, #AFA9EC);
+    }
+
+    /* ==== URBAN / STREET THEME ==== */
+    html, body { height: 100%; }
+
+    body {
+      margin: 0;
+      background: var(--chaos-bg-base);
+      overflow: hidden;
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--chaos-text-primary);
+      min-height: 100svh;
+      position: relative;
+    }
+
+    #bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+    }
+    #bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    #bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.2) 100%);
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.15;
+      background:
+        radial-gradient(ellipse 300px 120px at 15% 25%, rgba(127,119,221,0.07) 0%, transparent 100%),
+        radial-gradient(ellipse 200px 80px at 85% 60%, rgba(175,169,236,0.05) 0%, transparent 100%),
+        radial-gradient(ellipse 400px 60px at 50% 80%, rgba(127,119,221,0.04) 0%, transparent 100%);
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      height: 350px;
+      background: radial-gradient(ellipse 70% 100%, rgba(127,119,221,0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    #side-lights::before, #side-lights::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      width: 1px;
+      height: 100%;
+      z-index: 2;
+      pointer-events: none;
+    }
+    #side-lights::before {
+      left: 0;
+      background: linear-gradient(to bottom, transparent 0%, rgba(127,119,221,0.4) 30%, rgba(127,119,221,0.2) 70%, transparent 100%);
+      box-shadow: 0 0 15px rgba(127,119,221,0.3);
+    }
+    #side-lights::after {
+      right: 0;
+      background: linear-gradient(to bottom, transparent 0%, rgba(175,169,236,0.3) 40%, rgba(175,169,236,0.15) 70%, transparent 100%);
+      box-shadow: 0 0 15px rgba(175,169,236,0.2);
+    }
+
+    /* MODEL VIEWER */
+    model-viewer {
+      width: 100vw;
+      height: 100svh;
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      background-color: transparent !important;
+      --poster-color: transparent !important;
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      touch-action: pan-y pinch-zoom;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    @media (max-width: 768px) {
+      model-viewer { -webkit-overflow-scrolling: touch; }
+    }
+
+    model-viewer::part(default-ar-button),
+    model-viewer button[slot="ar-button"],
+    model-viewer .default-ar-button,
+    model-viewer button[data-ar-button] {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+    }
+
+    model-viewer[ar-status="presenting"],
+    model-viewer[ar-status="session-started"] {
+      will-change: transform, opacity;
+      transform: translateZ(0) scale3d(1,1,1);
+      -webkit-transform: translateZ(0) scale3d(1,1,1);
+    }
+
+    /* BRAND LOGO */
+    .brand-logo {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 60;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      pointer-events: none;
+    }
+    .brand-logo span.primary  { color: var(--chaos-purple-main); text-shadow: 0 0 20px rgba(127,119,221,0.8); }
+    .brand-logo span.secondary{ color: var(--chaos-purple-soft); text-shadow: 0 0 20px rgba(175,169,236,0.8); }
+
+    /* ===== GARDİROP BUTONU - OYUN UI STİLİ ===== */
+    #marketBtn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+      background: var(--chaos-gradient-subtle);
+      border: 1px solid var(--chaos-border-mid);
+      border-radius: 6px;
+      color: var(--chaos-purple-soft);
+      padding: 10px 20px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      position: fixed;
+      overflow: hidden;
+      box-shadow:
+        var(--chaos-glow-md),
+        inset 0 0 20px rgba(127,119,221,0.05),
+        inset 0 1px 0 rgba(127,119,221,0.2);
+      text-shadow: 0 0 10px rgba(127,119,221,0.8);
+      transition: all 0.3s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Köşe süslemeleri */
+    #marketBtn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 8px; height: 8px;
+      border-top: 2px solid var(--chaos-purple-soft);
+      border-left: 2px solid var(--chaos-purple-soft);
+      pointer-events: none;
+    }
+    #marketBtn::after {
+      content: '';
+      position: absolute;
+      bottom: 0; right: 0;
+      width: 8px; height: 8px;
+      border-bottom: 2px solid var(--chaos-purple-soft);
+      border-right: 2px solid var(--chaos-purple-soft);
+      pointer-events: none;
+    }
+
+    #marketBtn:hover {
+      background: linear-gradient(135deg, var(--chaos-bg-elevated) 0%, var(--chaos-purple-dim) 100%);
+      box-shadow: 0 0 30px rgba(127,119,221,0.4), inset 0 0 30px rgba(127,119,221,0.1);
+      color: var(--chaos-text-primary);
+      border-color: var(--chaos-border-strong);
+    }
+
+    /* ===== AR BUTONU - GLASSMORPHISM SOFT ===== */
+    #arButton {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateZ(0);
+      -webkit-transform: translateX(-50%) translateZ(0);
+      z-index: 9999;
+
+      background: rgba(127, 119, 221, 0.15);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--chaos-border-soft);
+      border-radius: 50px;
+      padding: 16px 44px;
+      color: var(--chaos-text-primary);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      cursor: pointer;
+      white-space: nowrap;
+
+      box-shadow:
+        0 8px 32px rgba(13,11,26,0.4),
+        var(--chaos-glow-sm),
+        inset 0 1px 0 rgba(175,169,236,0.2),
+        inset 0 -1px 0 rgba(13,11,26,0.1);
+
+      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      will-change: transform, opacity;
+    }
+
+    #arButton:hover {
+      background: rgba(127, 119, 221, 0.25);
+      border-color: var(--chaos-border-mid);
+      box-shadow:
+        0 12px 40px rgba(13,11,26,0.5),
+        var(--chaos-glow-md),
+        inset 0 1px 0 rgba(175,169,236,0.3);
+      transform: translateX(-50%) translateY(-3px) translateZ(0);
+      -webkit-transform: translateX(-50%) translateY(-3px) translateZ(0);
+    }
+
+    #arButton:active {
+      transform: translateX(-50%) translateY(0) translateZ(0);
+      -webkit-transform: translateX(-50%) translateY(0) translateZ(0);
+      background: rgba(127,119,221,0.2);
+    }
+
+    @media (max-width: 768px) {
+      #arButton { bottom: 24px; padding: 14px 36px; font-size: 13px; }
+    }
+
+    /* ELECTRIC WIRE */
+    .wire-lights {
+      position: fixed;
+      top: 80px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      z-index: 30;
+      pointer-events: none;
+      background: linear-gradient(90deg, transparent 0%, rgba(127,119,221,0.4) 20%, rgba(127,119,221,0.6) 50%, rgba(127,119,221,0.4) 80%, transparent 100%);
+      box-shadow: 0 0 10px rgba(127,119,221,0.3);
+    }
+    .wire-lights span {
+      position: absolute;
+      bottom: -14px;
+      width: 8px;
+      height: 12px;
+      border-radius: 2px 2px 4px 4px;
+      background: #FFE566;
+      box-shadow: 0 0 8px #FFE566, 0 0 14px rgba(255,229,102,0.5);
+      transform: translateX(-50%);
+      animation: bulbFlicker 4s ease-in-out infinite;
+    }
+    .wire-lights span:nth-child(1) { left: 8%;  animation-delay: 0s;   }
+    .wire-lights span:nth-child(2) { left: 18%; animation-delay: 0.4s; }
+    .wire-lights span:nth-child(3) { left: 28%; animation-delay: 0.8s; }
+    .wire-lights span:nth-child(4) { left: 38%; animation-delay: 1.2s; }
+    .wire-lights span:nth-child(5) { left: 48%; animation-delay: 1.6s; }
+    .wire-lights span:nth-child(6) { left: 58%; animation-delay: 2.0s; }
+    .wire-lights span:nth-child(7) { left: 68%; animation-delay: 2.4s; }
+    .wire-lights span:nth-child(8) { left: 78%; animation-delay: 2.8s; }
+    .wire-lights span:nth-child(9) { left: 88%; animation-delay: 3.2s; }
+    @keyframes bulbFlicker {
+      0%,88%,100% { opacity:1; box-shadow:0 0 8px #FFE566,0 0 14px rgba(255,229,102,0.5); }
+      90%  { opacity:0.2; box-shadow:none; }
+      92%  { opacity:1;   box-shadow:0 0 8px #FFE566,0 0 14px rgba(255,229,102,0.5); }
+      95%  { opacity:0.5; }
+      97%  { opacity:1; }
+    }
+
+    /* RAIN CANVAS */
+    #snow-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 10;
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+      will-change: transform;
+      opacity: 0.8;
+    }
+    @media (max-width: 768px) { #snow-canvas { opacity: 0.5; } }
+
+    #sky-effects {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 3;
+      overflow: hidden;
+    }
+
+    /* SIDEBAR OVERLAY */
+    .sidebar-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(13,11,26,0.85);
+      z-index: 190;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .sidebar-overlay.active { display: block; opacity: 1; }
+
+    /* BOTTOM SHEET */
+    #marketSidebar {
+      position: fixed;
+      bottom: 0; left: 0;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      max-height: 75svh;
+      background: var(--chaos-bg-surface);
+      border-top: 1px solid var(--chaos-border-soft);
+      border-radius: 20px 20px 0 0;
+      z-index: 200;
+      transform: translateY(100%);
+      transition: transform 0.4s cubic-bezier(0.2,0.8,0.2,1);
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 -20px 60px rgba(13,11,26,0.8), 0 -4px 20px rgba(127,119,221,0.1);
+    }
+    #marketSidebar.active { transform: translateY(0); }
+
+    .sheet-handle {
+      width: 40px; height: 4px;
+      background: rgba(175,169,236,0.2);
+      border-radius: 2px;
+      margin: 12px auto 0;
+      flex-shrink: 0;
+    }
+
+    .sidebar-header {
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--chaos-border-subtle);
+    }
+    .sidebar-title {
+      font-size: 13px;
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--chaos-purple-main);
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--chaos-text-muted);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 4px;
+      line-height: 1;
+    }
+
+    .sidebar-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .sidebar-content .section { margin: 0; }
+
+    h3 {
+      margin: 0 0 10px 0;
+      font-size: 10px;
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--chaos-purple-soft);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .section { margin-bottom: 20px; width: 100%; }
+
+    .shop-link-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      gap: 12px;
+      padding: 15px 20px;
+      box-sizing: border-box;
+      background: rgba(127,119,221,0.08);
+      border: 1px solid var(--chaos-border-soft);
+      border-radius: 4px;
+      color: var(--chaos-purple-soft);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .shop-link-btn:hover {
+      background: rgba(127,119,221,0.15);
+      border-color: var(--chaos-purple-soft);
+      box-shadow: var(--chaos-glow-md);
+      transform: translateY(-1px);
+    }
+    .shop-link-btn:active { transform: translateY(0); }
+
+    .btn-icon {
+      width: 20px; height: 20px;
+      flex-shrink: 0;
+      stroke: currentColor;
+      transition: transform 0.3s ease;
+    }
+    .shop-link-btn:hover .btn-icon { transform: scale(1.1); }
+
+    .clothes-grid {
+      display: grid;
+      grid-template-columns: repeat(2,1fr);
+      gap: 10px;
+    }
+
+    .item-card {
+      background: var(--chaos-border-subtle);
+      border: 1px solid var(--chaos-border-subtle);
+      border-radius: 8px;
+      padding: 16px 8px;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      min-height: 90px;
+      position: relative;
+      overflow: hidden;
+    }
+    .item-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(127,119,221,0.08) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .item-card:hover::before { opacity: 1; }
+    .item-card:hover {
+      border-color: var(--chaos-border-mid);
+      transform: translateY(-2px);
+    }
+    .item-card.is-active,
+    .item-card.selected {
+      border-color: var(--chaos-purple-main);
+      background: rgba(127,119,221,0.1);
+      box-shadow: var(--chaos-glow-md), inset 0 0 20px rgba(127,119,221,0.05);
+    }
+    .item-card.is-active::after {
+      content: '●';
+      position: absolute;
+      top: 6px; right: 8px;
+      font-size: 6px;
+      color: var(--chaos-purple-main);
+    }
+
+    .item-name {
+      font-size: 10px;
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--chaos-text-secondary);
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .item-icon {
+      font-size: 28px;
+      margin-bottom: 8px;
+      color: rgba(175,169,236,0.5);
+      line-height: 1;
+    }
+
+    #idleBtn.is-active {
+      border-color: var(--chaos-purple-soft) !important;
+      background: rgba(127,119,221,0.08) !important;
+      box-shadow: var(--chaos-glow-md), inset 0 0 20px rgba(127,119,221,0.05) !important;
+    }
+    #idleBtn.is-active::after { color: var(--chaos-purple-soft) !important; }
+    #actionBtn.is-active { border-color: var(--chaos-purple-main) !important; }
+
+    /* LOADING SCREEN */
+    #loading-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 9000;
+      background: var(--chaos-bg-deep);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      transition: opacity 0.5s ease;
+    }
+    #loading-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #loading-screen .loading-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+    }
+    #loading-screen .loading-logo .primary  { color: var(--chaos-purple-main); text-shadow: 0 0 30px rgba(127,119,221,0.9); }
+    #loading-screen .loading-logo .secondary{ color: var(--chaos-purple-soft); text-shadow: 0 0 30px rgba(175,169,236,0.9); }
+    #loading-screen .loading-bar-wrap {
+      width: 160px;
+      height: 2px;
+      background: rgba(127,119,221,0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    #loading-screen .loading-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--chaos-gradient-glow);
+      border-radius: 2px;
+      box-shadow: 0 0 10px rgba(127,119,221,0.6);
+      animation: loadingProgress 2.5s ease-in-out forwards;
+    }
+    @keyframes loadingProgress {
+      0%   { width: 0%; }
+      60%  { width: 75%; }
+      90%  { width: 90%; }
+      100% { width: 90%; }
+    }
+    #loading-screen .loading-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 11px;
+      color: rgba(175,169,236,0.55);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="loading-screen">
+    <div class="loading-logo"><span class="primary">CHAOS</span><span class="secondary">AR</span></div>
+    <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
+    <div class="loading-text">Yükleniyor...</div>
+  </div>
+
+  <div id="bg"><img src="bg.jpg" alt="" /></div>
+  <div id="side-lights"></div>
+  <div class="brand-logo"><span class="primary">CHAOS</span><span class="secondary">AR</span></div>
+
+  <button id="marketBtn" onclick="toggleMarket(true)">[ GARDİROP ]</button>
+
+  <div id="sky-effects"></div>
+  <div class="christmas-lights" id="christmasLights"></div>
+  <canvas id="snow-canvas"></canvas>
+
+  <div class="wire-lights">
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span>
+  </div>
+
+  <model-viewer
+    id="main-viewer"
+    src=""
+    ios-src=""
+    alt="ChaosAR Ana Model"
+    ar
+    ar-modes="scene-viewer webxr quick-look"
+    camera-controls
+    touch-action="pan-y"
+    shadow-intensity="0.8"
+    exposure="1"
+    loading="eager"
+    preload="auto"
+    ar-scale="auto"
+    ar-placement="floor"
+    xr-environment
+    minimum-render-scale="0.5"
+    style="background-color: transparent; will-change: transform; -webkit-touch-callout: none;">
+  </model-viewer>
+
+  <button id="arButton" onclick="activateAR()">◉ AR'DE GÖR</button>
+
+  <div class="sidebar-overlay" id="overlay" onclick="toggleMarket(false)"></div>
+
+  <div id="marketSidebar">
+    <div class="sheet-handle"></div>
+    <div class="sidebar-header">
+      <div class="sidebar-title">GARDİROP</div>
+      <button class="close-btn" onclick="toggleMarket(false)">✕</button>
+    </div>
+
+    <div class="sidebar-content">
+      <div class="section">
+        <a href="https://cha0sar.com" class="shop-link-btn">
+          <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M7 9L4.5 6.5a1 1 0 0 1 1.4-1.4L8.6 7.8M17 9l2.5-2.5a1 1 0 0 0-1.4-1.4L15.4 7.8"
+                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M6 9h12l-1.2 11H7.2L6 9Z"
+                  fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M9 13v5M12 13v5M15 13v5"
+                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          MAĞAZAYA GİT ➜
+        </a>
+      </div>
+
+      <div class="section">
+        <h3>KIYAFET SEÇ</h3>
+        <div class="clothes-grid" id="outfitGrid"></div>
+      </div>
+
+      <div class="section">
+        <h3>KONTROL</h3>
+        <div style="display:flex;flex-direction:row;gap:12px;justify-content:space-between;">
+          <button id="idleBtn" class="item-card" style="width:calc(50% - 6px);margin:0;aspect-ratio:1;min-height:auto;height:auto;">
+            <div class="item-name">Normal Duruş</div>
+          </button>
+          <button id="actionBtn" class="item-card" style="width:calc(50% - 6px);margin:0;aspect-ratio:1;min-height:auto;height:auto;">
+            <div class="item-name">Animasyon Oynat</div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==== ELEMENTLER ====
+    const viewer        = document.getElementById('main-viewer');
+    const sidebar       = document.getElementById('marketSidebar');
+    const overlay       = document.getElementById('overlay');
+    const outfitGrid    = document.getElementById('outfitGrid');
+    const animationGrid = document.getElementById('animationGrid');
+    const arButton      = document.getElementById('arButton');
+
+    // ==== DEĞİŞKENLER ====
+    let kıyafetlerData = [];
+    let animasyonlarData = [];
+
+    let currentProduct = null;
+    let currentAnimName = null;
+    let currentUsdzKey = null;
+    let currentAnimation = null;
+    let idleAnim = null;
+    let actionAnim = null;
+
+    let urlParams = {};
+
+    // ==== PERF AYARLARI ====
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    const isAndroid = /android/i.test(userAgent);
+    const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent) || window.innerWidth <= 768;
+
+    const SNOW_MAX_COUNT = isMobile ? 80 : 120;
+    const STAR_EVERY_MS = isMobile ? 30000 : 15000;
+    const LIGHT_COUNT = isMobile ? 12 : 26;
+    const TWINKLE_MS = isMobile ? 600 : 360;
+
+    // ==== URL PARAMETRELERİNİ OKU ====
+    function getURLParams() {
+        const params = new URLSearchParams(window.location.search);
+        urlParams = {
+            user: params.get('user') || params.get('u'),
+            outfit: params.get('outfit') || params.get('o'),
+            anim: params.get('anim') || params.get('a'),
+            token: params.get('token') || params.get('t'),
+            qr: params.get('qr') || params.get('access') || params.get('key')
+        };
+        console.log("🔗 URL Parametreleri:", urlParams);
+        return urlParams;
+    }
+
+    // ==== INIT ====
+    document.addEventListener('DOMContentLoaded', () => {
+      getURLParams();
+
+      loadmanifest();
+
+      initSnowCanvas();
+      if (!isMobile) {
+        setTimeout(spawnShootingStar, 1200);
+        setInterval(spawnShootingStar, STAR_EVERY_MS);
+      }
+      initForestLights();
+      initChristmasLights();
+      placeRug();
+      viewer.addEventListener('load', placeRug);
+      viewer.addEventListener('camera-change', throttle(placeRug, isMobile ? 200 : 120));
+      window.addEventListener('resize', throttle(placeRug, isMobile ? 200 : 120));
+
+      const hideDefaultARButton = () => {
+        const defaultARButton = viewer.shadowRoot?.querySelector('button[slot="ar-button"]') ||
+                                 viewer.shadowRoot?.querySelector('.default-ar-button') ||
+                                 viewer.querySelector('button[slot="ar-button"]');
+        if (defaultARButton) {
+          defaultARButton.style.display = 'none';
+          defaultARButton.style.visibility = 'hidden';
+          defaultARButton.style.opacity = '0';
+        }
+      };
+
+      viewer.addEventListener('load', hideDefaultARButton, { once: true });
+      setTimeout(hideDefaultARButton, 100);
+      setTimeout(hideDefaultARButton, 500);
+      setTimeout(hideDefaultARButton, 1000);
+
+      checkARSupport();
+
+      if (isMobile) {
+        viewer.addEventListener('load', () => {
+          viewer.shadowIntensity = 0.5;
+          if (viewer.renderer) viewer.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+        });
+      }
+
+      if (isAndroid) {
+        console.log("🤖 Android cihaz tespit edildi");
+        let isInARMode = false;
+
+        viewer.addEventListener('load', () => {
+          console.log("✅ Android'de model yüklendi");
+          optimizeForAndroidAR();
+        });
+
+        // WebXR için ar-status event (scene-viewer'da tetiklenmez)
+        viewer.addEventListener('ar-status', (event) => {
+          const status = event.detail?.status || event.detail;
+          if (status === 'presenting' || status === 'session-started') {
+            isInARMode = true;
+            optimizeForARMode();
+          } else if (status === 'not-presenting' || status === 'failed') {
+            isInARMode = false;
+            restoreFromARMode();
+          }
+        });
+
+        // Scene Viewer ayrı bir uygulama olarak açılır — geri dönüşü
+        // ar-status tetiklemez, visibilitychange ile yakalarız
+        document.addEventListener('visibilitychange', () => {
+          if (!document.hidden && (isInARMode || window._arModeActive)) {
+            isInARMode = false;
+            window._arModeActive = false;
+            restoreFromARMode();
+          }
+        });
+
+        function optimizeForARMode() {
+          isInARMode = true;
+          viewer.shadowIntensity = 0;
+          viewer.exposure = 0.8;
+          if (viewer.renderer) {
+            viewer.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.0));
+            if (viewer.renderer.shadowMap) viewer.renderer.shadowMap.enabled = false;
+          }
+          const snowCanvas = document.getElementById('snow-canvas');
+          if (snowCanvas) {
+            snowCanvas.style.display = 'none';
+            if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; }
+          }
+          document.body.style.background = '#0D0B1A';
+        }
+
+        function restoreFromARMode() {
+          viewer.shadowIntensity = 0.3;
+          viewer.exposure = 1;
+          if (viewer.renderer) {
+            viewer.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+            if (viewer.renderer.shadowMap) viewer.renderer.shadowMap.enabled = true;
+          }
+          const snowCanvas = document.getElementById('snow-canvas');
+          if (snowCanvas) {
+            snowCanvas.style.display = '';
+            if (!animationFrameId) animateSnow();
+          }
+          document.body.style.background = '';
+        }
+
+        function optimizeForAndroidAR() {
+          if (viewer.renderer) viewer.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+          viewer.shadowIntensity = 0.3;
+        }
+      }
+    });
+
+    // ==== manifest ====
+    async function loadmanifest() {
+        try {
+            let manifestUrl = `manifest.json?cb=${Date.now()}`;
+            if (urlParams.user) manifestUrl = `manifest.json?user=${urlParams.user}&cb=${Date.now()}`;
+
+            const response = await fetch(manifestUrl, { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
+
+            if (!response.ok) {
+                try {
+                    const fallbackResponse = await fetch(`manifest.json?cb=${Date.now()}`, { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
+                    if (!fallbackResponse.ok) return;
+                    processmanifestData(await fallbackResponse.json());
+                } catch (e) { console.error("❌ Fallback manifest yükleme hatası:", e); }
+                return;
+            }
+            processmanifestData(await response.json());
+        } catch (error) {
+            try {
+                const fallbackResponse = await fetch(`manifest.json?cb=${Date.now()}`, { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
+                if (fallbackResponse.ok) processmanifestData(await fallbackResponse.json());
+            } catch (e) { console.error("❌ Manifest yüklenemedi:", e); }
+        }
+    }
+
+    // ==== manifest VERİLERİNİ İŞLE ====
+    function processmanifestData(data) {
+        let kıyafetlerKey = data['.kıyafetler.'] ? '.kıyafetler.' : Object.keys(data).find(k => k.toLowerCase().includes('kıyafet') || k.toLowerCase().includes('outfit') || k.toLowerCase().includes('product'));
+        if (kıyafetlerKey && data[kıyafetlerKey]) kıyafetlerData = Array.isArray(data[kıyafetlerKey]) ? data[kıyafetlerKey] : [];
+        else if (data.products) kıyafetlerData = Array.isArray(data.products) ? data.products : [];
+
+        let animasyonlarKey = data['.animasyonlar.'] ? '.animasyonlar.' : Object.keys(data).find(k => k.toLowerCase().includes('animasyon') || k.toLowerCase().includes('animation'));
+        if (animasyonlarKey && data[animasyonlarKey]) animasyonlarData = Array.isArray(data[animasyonlarKey]) ? data[animasyonlarKey] : [];
+        else if (data.animations) animasyonlarData = Array.isArray(data.animations) ? data.animations : [];
+
+        if (kıyafetlerData.length > 0) {
+            renderOutfits(kıyafetlerData);
+            let selectedProductId = null;
+            if (data.defaultModel) {
+                const dp = kıyafetlerData.find(p => p.id === data.defaultModel);
+                selectedProductId = dp ? dp.id : kıyafetlerData[0]?.id;
+            } else if (urlParams.outfit) {
+                const tp = kıyafetlerData.find(p => p.id === urlParams.outfit);
+                selectedProductId = tp ? urlParams.outfit : kıyafetlerData[0]?.id;
+            } else {
+                selectedProductId = kıyafetlerData[0]?.id;
+            }
+            if (selectedProductId) selectOutfit(selectedProductId);
+        }
+        setupAnimationButtons();
+    }
+
+    function renderOutfits(products) {
+        if(!outfitGrid) return;
+        outfitGrid.innerHTML = "";
+        const icon = `<svg viewBox="0 0 64 64" width="38" height="38" fill="none" stroke="currentColor" stroke-width="3"><path d="M22 10l10 6 10-6 10 10-8 6v28H20V26l-8-6 10-10z"/><path d="M32 16v38"/></svg>`;
+        products.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'item-card';
+            card.setAttribute('data-id', p.id);
+            card.onclick = () => selectOutfit(p.id);
+            card.innerHTML = `<div class="item-icon">${icon}</div><div class="item-name">${p.name}</div>`;
+            outfitGrid.appendChild(card);
+        });
+    }
+
+    function setupAnimationButtons() {
+        const idleBtn = document.getElementById('idleBtn');
+        const actionBtn = document.getElementById('actionBtn');
+        if (idleBtn) idleBtn.onclick = () => playIdleAnimation();
+        if (actionBtn) actionBtn.onclick = () => playActionAnimation();
+        updateAnimationButtons();
+    }
+
+    function updateAnimationButtons() {
+        const idleBtn = document.getElementById('idleBtn');
+        const actionBtn = document.getElementById('actionBtn');
+        if (!viewer || !viewer.loaded) {
+            if (idleBtn) idleBtn.disabled = true;
+            if (actionBtn) actionBtn.disabled = true;
+            return;
+        }
+        if (idleBtn) {
+            idleBtn.disabled = !idleAnim;
+            idleBtn.classList.toggle('is-active', !!(idleAnim && viewer.animationName === idleAnim));
+        }
+        if (actionBtn) {
+            const hasActionAnim = actionAnim || (viewer.availableAnimations && viewer.availableAnimations.length > 0);
+            actionBtn.disabled = !hasActionAnim;
+            actionBtn.classList.toggle('is-active', !!(actionAnim && viewer.animationName === actionAnim));
+        }
+    }
+
+    function playIdleAnimation() {
+        if (!viewer || !currentProduct) return;
+        let idleGlbPath = null;
+        if (currentProduct.glb) {
+            idleGlbPath = getPersonalizedPath(typeof currentProduct.glb === 'object' ? currentProduct.glb.idle : currentProduct.glb);
+        }
+        if (idleGlbPath) viewer.src = idleGlbPath;
+        if (currentProduct.usdz?.idle) viewer.setAttribute('ios-src', getPersonalizedPath(currentProduct.usdz.idle));
+
+        viewer.addEventListener('load', () => {
+            const avail = viewer.availableAnimations || [];
+            idleAnim = findIdleAnimation(avail) || (avail.length > 0 ? avail[0] : null);
+            if (idleAnim) { viewer.animationName = idleAnim; viewer.loop = true; viewer.play(); }
+            updateAnimationButtons();
+        }, { once: true });
+    }
+
+    function playActionAnimation() {
+        if (!viewer || !currentProduct) return;
+        let animGlbPath = null;
+        if (currentProduct.glb) {
+            animGlbPath = getPersonalizedPath(typeof currentProduct.glb === 'object' ? currentProduct.glb.animation : currentProduct.glb);
+        }
+        if (animGlbPath) viewer.src = animGlbPath;
+        if (currentProduct.usdz?.animation) viewer.setAttribute('ios-src', getPersonalizedPath(currentProduct.usdz.animation));
+
+        viewer.addEventListener('load', () => {
+            const avail = viewer.availableAnimations || [];
+            actionAnim = findActionAnimation(avail) || (avail.length > 0 ? avail[0] : null);
+            if (actionAnim) {
+                viewer.animationName = actionAnim;
+                viewer.loop = false;
+                viewer.play();
+            }
+            updateAnimationButtons();
+            viewer.addEventListener('animation-finished', () => playIdleAnimation(), { once: true });
+        }, { once: true });
+    }
+
+    function getPersonalizedPath(originalPath) {
+        if (!originalPath || typeof originalPath !== 'string') return originalPath || '';
+        if (!urlParams.user) return originalPath;
+        if (originalPath.startsWith('http://') || originalPath.startsWith('https://')) return originalPath;
+        return `users/${urlParams.user}/${originalPath}`;
+    }
+
+    function showLoadingScreen() {
+      const ls = document.getElementById('loading-screen');
+      if (!ls) return;
+      ls.classList.remove('hidden');
+      const bar = ls.querySelector('.loading-bar');
+      if (bar) { bar.style.animation = 'none'; bar.offsetHeight; bar.style.animation = ''; }
+    }
+
+    function hideLoadingScreen() {
+      const ls = document.getElementById('loading-screen');
+      if (!ls) return;
+      const bar = ls.querySelector('.loading-bar');
+      if (bar) bar.style.width = '100%';
+      setTimeout(() => ls.classList.add('hidden'), 300);
+    }
+
+    function selectOutfit(productId){
+      const product = kıyafetlerData.find(p => p.id === productId);
+      if(!product) return;
+      currentProduct = product;
+
+      document.querySelectorAll('#outfitGrid .item-card').forEach(c => c.classList.remove('selected', 'is-active'));
+      document.querySelector(`#outfitGrid .item-card[data-id="${productId}"]`)?.classList.add('is-active', 'selected');
+
+      if(viewer){
+        let glbPath = null;
+        if (product.glb) {
+          glbPath = getPersonalizedPath(typeof product.glb === 'object' ? (product.glb.idle || product.glb.animation || Object.values(product.glb)[0]) : product.glb);
+        }
+        if (glbPath) {
+          showLoadingScreen();
+          viewer.src = glbPath;
+          viewer.addEventListener('error', (e) => {
+            console.error("❌ Model yükleme hatası:", e);
+            hideLoadingScreen();
+            alert(`Model yüklenemedi: ${glbPath}`);
+          }, { once: true });
+        }
+
+        let usdzPath = null;
+        if (product.usdz) {
+          usdzPath = getPersonalizedPath(typeof product.usdz === 'object' ? (product.usdz.idle || product.usdz.animation || Object.values(product.usdz)[0]) : product.usdz);
+        } else if (glbPath) {
+          usdzPath = getPersonalizedPath(glbPath.replace(/\.glb$/i, '.usdz'));
+        }
+        if (usdzPath) viewer.setAttribute('ios-src', usdzPath);
+
+        viewer.addEventListener('load', () => {
+            hideLoadingScreen();
+            try {
+                const avail = viewer.availableAnimations || [];
+                if (viewer.pause) viewer.pause();
+                viewer.autoplay = false;
+                idleAnim = findIdleAnimation(avail);
+                actionAnim = null;
+                if (idleAnim) {
+                    viewer.animationName = idleAnim;
+                    viewer.loop = true;
+                    viewer.autoplay = true;
+                    if (viewer.play) viewer.play();
+                } else if (avail.length > 0) {
+                    idleAnim = avail[0];
+                    viewer.animationName = idleAnim;
+                    viewer.loop = true;
+                    viewer.autoplay = true;
+                    if (viewer.play) viewer.play();
+                }
+                updateAnimationButtons();
+                if (arButton && viewer.canActivateAR) arButton.style.display = 'block';
+            } catch (error) { console.error("❌ Model yükleme sonrası hata:", error); }
+        }, { once:true });
+      }
+    }
+
+    function findIdleAnimation(avail) {
+        if (!avail || !avail.length) return null;
+        const keys = ['idle', 'Idle', 'IDLE', 'durus', 'dur', 'stand', 'rest', 'default'];
+        for (const k of keys) { const m = avail.find(a => a.toLowerCase() === k.toLowerCase()); if (m) return m; }
+        for (const k of keys) { const m = avail.find(a => a.toLowerCase().includes(k.toLowerCase())); if (m) return m; }
+        return null;
+    }
+
+    function findActionAnimation(avail) {
+        if (!avail || !avail.length) return null;
+        const keys = ['action', 'run', 'dance', 'walk', 'animation'];
+        for (const k of keys) { const m = avail.find(a => a.toLowerCase() === k.toLowerCase() && !a.toLowerCase().includes('idle')); if (m) return m; }
+        for (const k of keys) { const m = avail.find(a => a.toLowerCase().includes(k) && !a.toLowerCase().includes('idle')); if (m) return m; }
+        return avail.find(a => !a.toLowerCase().includes('idle') && !a.toLowerCase().includes('stand')) || null;
+    }
+
+    function findMatchingAnimation(targetName, avail) {
+        if (!targetName || !avail || !avail.length) return null;
+        if (avail.includes(targetName)) return targetName;
+        const lower = targetName.toLowerCase();
+        return avail.find(a => a.toLowerCase() === lower) ||
+               avail.find(a => a.toLowerCase().includes(lower) || lower.includes(a.toLowerCase())) || null;
+    }
+
+    function changeAnimation(animObj) {
+        if (!animObj) return;
+        currentAnimation = animObj;
+        currentAnimName = animObj.animationName || animObj.name || null;
+        currentUsdzKey = animObj.usdzKey || currentAnimName;
+        if(viewer) {
+            const run = () => {
+                const avail = viewer.availableAnimations || [];
+                const matched = findMatchingAnimation(currentAnimName, avail);
+                if (matched) { viewer.animationName = matched; viewer.play(); }
+                else if (avail.length > 0) { viewer.animationName = avail[0]; viewer.play(); }
+            };
+            if (viewer.loaded) run();
+            else viewer.addEventListener('load', run, { once: true });
+        }
+    }
+
+    function updateUSDZ() {
+        if (!currentProduct || !viewer) return;
+        const keyToUse = currentUsdzKey || currentAnimName;
+        if (!keyToUse) return;
+        let newUSDZ;
+        if (currentProduct.usdz && currentProduct.usdz[keyToUse]) {
+            newUSDZ = getPersonalizedPath(currentProduct.usdz[keyToUse]);
+        } else {
+            const basePath = currentProduct.glb.replace(/\.glb$/i, '');
+            newUSDZ = getPersonalizedPath(`${basePath}_${keyToUse}.usdz`);
+        }
+        viewer.setAttribute('ios-src', newUSDZ);
+    }
+
+    async function activateAR() {
+        if (!viewer) return;
+        if (!viewer.loaded) { alert("Model henüz yükleniyor. Lütfen birkaç saniye bekleyip tekrar deneyin."); return; }
+        if (!viewer.canActivateAR) { alert("Bu cihazda AR modu desteklenmiyor. ARCore yüklü bir Android cihaz veya ARKit destekli bir iPhone/iPad gerekiyor."); return; }
+
+        // Scene Viewer açılmadan önce AR moduna geçiş işaret et
+        if (isAndroid) {
+          const androidBlock = document.querySelector('#main-viewer');
+          if (androidBlock) {
+            // isInARMode'u true yap ki visibilitychange geri dönüşü yakalasın
+            // Bu değişkeni dışarıdan erişilebilir kılmak için window'a atıyoruz
+            window._arModeActive = true;
+          }
+        }
+
+        try {
+            await viewer.activateAR();
+        } catch (error) {
+            window._arModeActive = false;
+            const msg = error.message?.includes('not supported') ? "Bu cihazda AR modu desteklenmiyor." :
+                        error.message?.includes('permission')    ? "AR modu için kamera izni gerekiyor. Tarayıcı ayarlarından izin verin." :
+                        error.message?.includes('session')       ? "AR oturumu başlatılamadı. Tarayıcıyı yenileyip tekrar deneyin." :
+                        "AR başlatılamadı. Google Play'den ARCore'u güncelleyin ve tekrar deneyin.";
+            alert(msg);
+        }
+    }
+
+    function checkARSupport() {
+        if (!viewer || !arButton) return;
+        arButton.style.display = 'none';
+        const update = () => {
+            if (!viewer || !arButton) return;
+            arButton.style.display = viewer.canActivateAR ? 'block' : 'none';
+        };
+        viewer.addEventListener('load', update);
+        if (viewer.loaded) update();
+        const t = setInterval(() => { if (viewer.loaded) { update(); clearInterval(t); } }, 500);
+        setTimeout(() => clearInterval(t), 10000);
+    }
+
+    function toggleMarket(show){
+      if(show){ sidebar.classList.add('active'); overlay.classList.add('active'); arButton.style.display = 'none'; }
+      else { sidebar.classList.remove('active'); overlay.classList.remove('active'); if(viewer && viewer.canActivateAR) arButton.style.display = 'block'; }
+    }
+    function placeRug(){}
+    function throttle(fn, ms){
+      let t = 0; return function(){ const now=performance.now(); if(now-t>ms){t=now;fn();} }
+    }
+
+    // ==== CANVAS TABANLI YAĞMUR EFEKTİ ====
+    let snowCanvas, snowCtx;
+    let snowflakes = [];
+    let animationFrameId = null;
+
+    function initSnowCanvas() {
+        snowCanvas = document.getElementById('snow-canvas');
+        if (!snowCanvas) return;
+        snowCtx = snowCanvas.getContext('2d', { alpha: true });
+        if (!snowCtx) return;
+
+        function resizeCanvas() {
+            snowCanvas.width = window.innerWidth;
+            snowCanvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', throttle(resizeCanvas, 200));
+        for (let i = 0; i < SNOW_MAX_COUNT; i++) createSnowflake(true);
+        animateSnow();
+    }
+
+    function createSnowflake(initial = false) {
+        if (!snowCanvas) return;
+        const w = snowCanvas.width || window.innerWidth;
+        const h = snowCanvas.height || window.innerHeight;
+        snowflakes.push({
+            x: Math.random() * w,
+            y: initial ? Math.random() * h : -20,
+            radius: isMobile ? (Math.random() * 6 + 6) : (Math.random() * 8 + 8),
+            speed: isMobile ? (Math.random() * 5 + 6) : (Math.random() * 7 + 8),
+            wind: -(Math.random() * 0.4 + 0.2),
+            opacity: Math.random() * 0.15 + 0.1,
+            rotation: 0, rotationSpeed: 0
+        });
+    }
+
+    function animateSnow() {
+        if (!snowCanvas || !snowCtx) return;
+        const w = snowCanvas.width || window.innerWidth;
+        const h = snowCanvas.height || window.innerHeight;
+        snowCtx.clearRect(0, 0, w, h);
+
+        for (let i = snowflakes.length - 1; i >= 0; i--) {
+            const f = snowflakes[i];
+            f.y += f.speed;
+            f.x += f.wind;
+            if (f.y > h + 20) { f.y = -20; f.x = Math.random() * w; }
+            if (f.x < -10) f.x = w + 10;
+            if (f.x > w + 10) f.x = -10;
+
+            snowCtx.save();
+            snowCtx.globalAlpha = f.opacity;
+            snowCtx.strokeStyle = 'rgba(175, 169, 236, 0.8)';
+            snowCtx.lineWidth = 1;
+            snowCtx.lineCap = 'round';
+            snowCtx.beginPath();
+            snowCtx.moveTo(f.x, f.y);
+            snowCtx.lineTo(f.x - f.wind * (f.radius / f.speed), f.y - f.radius);
+            snowCtx.stroke();
+            snowCtx.restore();
+        }
+
+        while (snowflakes.length < SNOW_MAX_COUNT) createSnowflake();
+        if (snowflakes.length > SNOW_MAX_COUNT) snowflakes = snowflakes.slice(0, SNOW_MAX_COUNT);
+        animationFrameId = requestAnimationFrame(animateSnow);
+    }
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; }
+        } else {
+            if (!animationFrameId && snowCanvas) animateSnow();
+        }
+    });
+
+    function spawnShootingStar(){
+        if (isMobile) return;
+        const s = document.getElementById('sky-effects'); if(!s) return;
+        const glow = document.createElement('div');
+        glow.style.cssText = `position:absolute;width:1px;height:${20+Math.random()*30}px;background:rgba(127,119,221,0.7);box-shadow:0 0 6px rgba(127,119,221,0.9);left:${(5+Math.random()*90).toFixed(1)}%;top:${(5+Math.random()*50).toFixed(1)}%;border-radius:1px;opacity:1;transition:opacity 0.4s ease-out;`;
+        s.appendChild(glow);
+        setTimeout(()=>{ glow.style.opacity='0'; }, 100);
+        setTimeout(()=>glow.remove(), 600);
+    }
+
+    function initForestLights(){ return; }
+    function initChristmasLights(){ return; }
+  </script>
+
+</body>
+</html>

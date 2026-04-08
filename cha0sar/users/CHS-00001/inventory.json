@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Klasik Hal",
+    "icon": "🕺",
+    "glb": "somlar.glb",
+    "usdz": "somlar.usdz"
+  },
+  {
+    "name": "Yeni Tarz",
+    "icon": "🕴️",
+    "glb": "model-2.glb",
+    "usdz": "mm2.usdz"
+  }
+]

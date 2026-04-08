@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>ChaosAR - Christmas Store</title>
+
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    /* ==== GÖRSEL TASARIM: ORMAN & NOEL TEMASI ==== */
+    html, body { height: 100%; }
+
+    body{
+      margin:0;
+      /* Daha sıcak ve renkli Noel gradyanı */
+      background: 
+        radial-gradient(ellipse at top, rgba(139, 0, 0, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 30% 20%, rgba(0, 100, 0, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 30%, rgba(255, 215, 0, 0.08) 0%, transparent 50%),
+        linear-gradient(to bottom, 
+          #0a0a1a 0%, 
+          #1a0a1a 15%,
+          #0d1a2a 30%,
+          #001133 50%,
+          #000511 80%, 
+          #000000 100%
+        );
+      overflow:hidden;
+      font-family:'Orbitron', sans-serif;
+      color:#fff;
+      min-height: 100svh;
+      position: relative;
+    }
+    
+    /* Arka plan yıldızları */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: 
+        radial-gradient(2px 2px at 20% 30%, #fff, transparent),
+        radial-gradient(2px 2px at 60% 70%, #fff, transparent),
+        radial-gradient(1px 1px at 50% 50%, #fff, transparent),
+        radial-gradient(1px 1px at 80% 10%, #fff, transparent),
+        radial-gradient(2px 2px at 90% 50%, #fff, transparent),
+        radial-gradient(1px 1px at 33% 80%, #fff, transparent),
+        radial-gradient(1px 1px at 15% 60%, #fff, transparent),
+        radial-gradient(2px 2px at 75% 25%, #fff, transparent);
+      background-repeat: repeat;
+      background-size: 200% 200%;
+      opacity: 0.6;
+      animation: twinkle 4s ease-in-out infinite alternate;
+      z-index: 1;
+      pointer-events: none;
+    }
+    
+    @keyframes twinkle {
+      0% { opacity: 0.4; }
+      100% { opacity: 0.8; }
+    }
+
+    /* MODEL VIEWER */
+    model-viewer{
+      width:100vw;
+      height:100svh;
+      position:fixed;
+      inset:0;
+      z-index:20;
+      background-color:transparent !important;
+      --poster-color: transparent !important;
+      /* Performans optimizasyonları (model görünürlüğünü bozmayacak şekilde) */
+      will-change: auto;
+    }
+
+    /* UI ELEMENTS */
+    .brand-logo{
+      position:fixed; top:20px; left:20px; z-index:60;
+      font-weight:bold; font-size:16px; letter-spacing:2px;
+      text-shadow:0 0 10px rgba(0,0,0,0.8);
+      pointer-events:none;
+    }
+    .brand-logo span.primary{ color:#00C6FF; }
+    .brand-logo span.secondary{ color:#ff00cc; }
+
+    #marketBtn{
+      position:fixed; top:20px; right:20px; z-index:100;
+      background: rgba(0,0,0,0.6); color:#fff; border:2px solid #00C6FF;
+      padding:10px 20px; border-radius:30px; font-weight:bold; cursor:pointer;
+      backdrop-filter: blur(10px); box-shadow:0 0 20px rgba(0,198,255,0.3);
+      transition: all 0.3s ease; font-family:'Orbitron';
+    }
+    #marketBtn:hover{ background:#00C6FF; color:#000; }
+    
+    /* Butonu kapsayan bölüm (Gerekirse boşluk ayarı) */
+.section {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+/* --- MAĞAZAYA GİT BUTONU --- */
+.shop-link-btn {
+  /* Düzen (Flexbox ile ortalama) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 12px; /* İkon ve yazı arasındaki boşluk */
+  
+  /* Boyutlar */
+  padding: 15px 20px;
+  box-sizing: border-box; /* Padding dahil genişlik */
+  
+  /* Renkler ve Stil (Neon Cyan Teması) */
+  background: rgba(0, 198, 255, 0.1); /* %10 Şeffaf Mavi */
+  border: 1px solid rgba(0, 198, 255, 0.5); /* Yarı saydam kenarlık */
+  border-radius: 12px; /* Yuvarlatılmış köşeler */
+  color: #ffffff;
+  
+  /* Font Ayarları */
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  font-weight: 700; /* Kalın yazı */
+  letter-spacing: 1px; /* Harf aralığı */
+  
+  /* Efektler */
+  cursor: pointer;
+  backdrop-filter: blur(5px); /* Arkası buzlu cam gibi görünür */
+  box-shadow: 0 0 10px rgba(0, 198, 255, 0.1); /* Hafif dış parlama */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Yumuşak geçiş */
+}
+
+/* Hover (Üzerine Gelince) */
+.shop-link-btn:hover {
+  background: rgba(0, 198, 255, 0.25); /* Arka plan belirginleşir */
+  border-color: #00C6FF; /* Kenarlık tam neon olur */
+  box-shadow: 0 0 20px rgba(0, 198, 255, 0.4); /* Parlama artar */
+  transform: translateY(-2px); /* Buton hafif yukarı kalkar */
+  text-shadow: 0 0 8px rgba(0, 198, 255, 0.8); /* Yazı parlar */
+}
+
+/* Active (Tıklanma Anı) */
+.shop-link-btn:active {
+  transform: translateY(1px); /* Hafif içe göçme hissi */
+  background: rgba(0, 198, 255, 0.4);
+}
+
+/* İkon Ayarları */
+.btn-icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0; /* İkonun sıkışmasını engeller */
+  stroke: currentColor; /* Butonun yazı rengini alır */
+  transition: transform 0.3s ease;
+  filter: drop-shadow(0 0 2px rgba(0, 198, 255, 0.6)); /* İkonun parlaması */
+}
+
+/* Hover durumunda ikon hareketi */
+.shop-link-btn:hover .btn-icon {
+  transform: scale(1.1) rotate(-5deg); /* İkon hafif büyür ve döner */
+}
+
+#marketSidebar{
+  display:flex;
+  flex-direction:column;
+}
+
+.sidebar-content{
+  flex: 1;              /* içerik alanı kalsın */
+  overflow-y: auto;     /* taşarsa scroll */
+  display:flex;
+  flex-direction:column;
+  gap: 18px;            /* kontrollü aralık */
+}
+
+/* Eğer section'larda saçma margin varsa */
+.sidebar-content .section{ margin:0; }
+.sidebar-content h3{ margin:0 0 10px 0; }
+   
+
+
+    /* ATMOSFER */
+    .moon{
+      position:fixed; top:8vh; right:10vw;
+      width:140px; height:140px;
+      background: radial-gradient(circle at 30% 30%, #ffffff 0%, #fff8e1 40%, #ffe082 70%, #ffcc80 100%);
+      border-radius:50%;
+      box-shadow: 
+        0 0 60px rgba(255, 255, 255, 0.6),
+        0 0 100px rgba(255, 215, 0, 0.3),
+        0 0 150px rgba(255, 200, 100, 0.2);
+      z-index:2;
+      opacity:0.95;
+      pointer-events:none;
+      animation: moonGlow 3s ease-in-out infinite alternate;
+    }
+    
+    @keyframes moonGlow {
+      0% { 
+        box-shadow: 
+          0 0 60px rgba(255, 255, 255, 0.6),
+          0 0 100px rgba(255, 215, 0, 0.3),
+          0 0 150px rgba(255, 200, 100, 0.2);
+      }
+      100% { 
+        box-shadow: 
+          0 0 80px rgba(255, 255, 255, 0.8),
+          0 0 120px rgba(255, 215, 0, 0.5),
+          0 0 180px rgba(255, 200, 100, 0.3);
+      }
+    }
+
+    .santa-container{
+      position:fixed;
+      top:13vh;
+      left:-320px;
+      width:260px;
+      height:auto;
+      z-index:6;
+      opacity:0.95;
+      pointer-events:none;
+      animation: santaFly 14s linear infinite;
+      will-change: transform;
+    }
+    .santa-container svg {
+      transform: perspective(800px) rotateY(-35deg) rotateX(2deg); /* 3D yan döndürme */
+      transform-style: preserve-3d;
+    }
+    @keyframes santaFly{
+      0%   { transform: translate3d(0,0,0) rotate(3deg); }
+      100% { transform: translate3d(125vw,-6vh,0) rotate(-3deg); }
+    }
+
+    #sky-effects{
+      position:fixed; inset:0; pointer-events:none; z-index:3; overflow:hidden;
+    }
+    .shooting-star{
+      position:absolute; left:-30vw; width:220px; height:2px; opacity:0;
+      transform: rotate(var(--rot, -28deg)); transform-origin:left center;
+      background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.95), rgba(255,255,255,0));
+      animation: shoot 1.4s ease-out forwards;
+    }
+    .shooting-star::after{
+      content:""; position:absolute; left:55px; top:-2px; width:5px; height:5px; border-radius:50%; background: rgba(255,255,255,0.95);
+    }
+    @keyframes shoot{
+      0%   { opacity:0; transform: translate3d(0,0,0) rotate(var(--rot, -28deg)); }
+      12%  { opacity:1; }
+      100% { opacity:0; transform: translate3d(160vw, 90vh, 0) rotate(var(--rot, -28deg)); }
+    }
+
+    /* ORMAN */
+    .forest{
+      position:fixed; left:0; right:0; bottom:0; width:100%; height:34vh; z-index:5; pointer-events:none; overflow:hidden;
+    }
+    @media (max-width: 768px){ .forest{ height:22vh; } }
+    
+    .trees-scene{
+      position:absolute; left:50%; bottom:0; transform: translateX(-50%);
+      transform-origin: bottom center; width:120%; height:100%;
+      filter: drop-shadow(0 -12px 22px rgba(0,0,0,0.55));
+    }
+    @media (max-width: 768px){ .trees-scene{ width:140%; transform: translateX(-50%) scale(0.85); } }
+
+    .forest-snow{
+      position:absolute; inset:0; z-index:6; pointer-events:none; opacity:0.85;
+      background: linear-gradient(to top, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.0) 55%);
+      mix-blend-mode: screen; filter: blur(0.6px);
+    }
+    .forest-lights .light{
+      position:absolute; 
+      width:6px; 
+      height:6px; 
+      border-radius:50%; 
+      opacity:0.25;
+      filter: drop-shadow(0 0 4px currentColor); 
+      transform: translate(-50%,-50%);
+      transition: opacity 220ms ease, transform 220ms ease;
+      animation: lightTwinkle 2s ease-in-out infinite;
+    }
+    
+    @keyframes lightTwinkle {
+      0%, 100% { 
+        opacity: 0.2; 
+        transform: translate(-50%,-50%) scale(1);
+      }
+      50% { 
+        opacity: 0.4; 
+        transform: translate(-50%,-50%) scale(1.1);
+      }
+    }
+    
+    /* Noel ışıkları - ekstra dekoratif ışıklar */
+    .christmas-lights {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 4;
+      overflow: hidden;
+    }
+    
+    .christmas-light {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      filter: blur(1.5px);
+      animation: christmasLight 3s ease-in-out infinite;
+      box-shadow: 0 0 5px currentColor;
+    }
+    
+    @keyframes christmasLight {
+      0%, 100% { 
+        opacity: 0.15; 
+        transform: scale(0.8);
+      }
+      50% { 
+        opacity: 0.35; 
+        transform: scale(1.1);
+      }
+    }
+
+    /* HALI */
+    #rug{
+      position: fixed; left: 50%; top: 0; 
+      transform: translate3d(-50%, 0, 0) scaleY(0.55);
+      width: min(380px, 82vw); aspect-ratio: 1 / 1; border-radius: 50%;
+      z-index: 19; pointer-events: none;
+      background: radial-gradient(circle at center, #ffffff 0 10%, #c1121f 10% 40%, #ffffff 40% 46%, #c1121f 46% 70%, #ffffff 70% 76%, #c1121f 76% 100%);
+      box-shadow: 0 18px 34px rgba(0,0,0,0.55); opacity: 0.95;
+      overflow: visible; /* Saçakların görünmesi için */
+    }
+    
+    /* Halı kenar saçakları - küçük çizgiler (üst, alt, sol, sağ) */
+    #rug::before {
+      content: '';
+      position: absolute;
+      inset: -10px;
+      border-radius: 50%;
+      background-image: 
+        /* Üst kenar - küçük çizgiler */
+        repeating-linear-gradient(
+          to right,
+          transparent 0px,
+          transparent 3px,
+          #8B0000 3px,
+          #8B0000 4px,
+          transparent 4px,
+          transparent 7px
+        ),
+        /* Alt kenar - küçük çizgiler */
+        repeating-linear-gradient(
+          to right,
+          transparent 0px,
+          transparent 3px,
+          #8B0000 3px,
+          #8B0000 4px,
+          transparent 4px,
+          transparent 7px
+        ),
+        /* Sol kenar - küçük çizgiler */
+        repeating-linear-gradient(
+          to bottom,
+          transparent 0px,
+          transparent 3px,
+          #8B0000 3px,
+          #8B0000 4px,
+          transparent 4px,
+          transparent 7px
+        ),
+        /* Sağ kenar - küçük çizgiler */
+        repeating-linear-gradient(
+          to bottom,
+          transparent 0px,
+          transparent 3px,
+          #8B0000 3px,
+          #8B0000 4px,
+          transparent 4px,
+          transparent 7px
+        );
+      background-size: 
+        100% 8px,  /* Üst */
+        100% 8px,  /* Alt */
+        8px 100%,  /* Sol */
+        8px 100%;  /* Sağ */
+      background-position:
+        top center,    /* Üst */
+        bottom center, /* Alt */
+        left center,   /* Sol */
+        right center;  /* Sağ */
+      background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+      pointer-events: none;
+      z-index: -1;
+      opacity: 0.8;
+    }
+    
+    /* Halı ipleri (yan süslemeler) */
+    #rug::before,
+    #rug::after {
+      content: '';
+      position: absolute;
+      width: 5px;
+      height: 65%;
+      background: linear-gradient(to bottom, 
+        #8B0000 0%,
+        #A52A2A 15%,
+        #8B0000 30%,
+        #A52A2A 45%,
+        #8B0000 60%,
+        #A52A2A 75%,
+        #8B0000 90%,
+        #A52A2A 100%
+      );
+      border-radius: 3px;
+      box-shadow: 0 0 10px rgba(139, 0, 0, 0.6), inset 0 0 5px rgba(0,0,0,0.3);
+      top: 18%;
+      z-index: 18;
+    }
+    
+    #rug::before {
+      left: -15px;
+      transform: rotate(-5deg);
+    }
+    
+    #rug::after {
+      right: -15px;
+      transform: rotate(5deg);
+    }
+    
+    /* Halı kenar süslemeleri (saçak) */
+    .rug-fringe {
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      height: 12px;
+      background: repeating-linear-gradient(
+        90deg,
+        #8B0000 0px,
+        #8B0000 3px,
+        #A52A2A 3px,
+        #A52A2A 6px
+      );
+      border-radius: 0 0 50% 50%;
+      opacity: 0.8;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+
+    /* KAR - Geliştirilmiş (Performans Optimize) */
+    #snow-container{ 
+      position:fixed; 
+      inset:0; 
+      pointer-events:none; 
+      z-index:10; 
+      overflow:hidden;
+      background: radial-gradient(ellipse at center, transparent 0%, rgba(255,255,255,0.03) 100%);
+      will-change: contents; /* GPU hızlandırma */
+      transform: translateZ(0); /* GPU katmanı oluştur */
+    }
+    .snowflake{
+      position:absolute; 
+      top:-12px; 
+      opacity: 0.9; 
+      pointer-events:none;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.98), rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.0) 100%);
+      border-radius: 50%;
+      filter: blur(0.5px);
+      animation: fall var(--dur, 14s) linear forwards;
+      box-shadow: 0 0 3px rgba(255,255,255,0.5);
+      /* GPU hızlandırma */
+      will-change: transform, opacity;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+    }
+    @keyframes fall{ 
+      to{ 
+        transform: translate3d(var(--dx, 0vw), 110vh, 0) rotate(360deg); 
+        opacity: 0.3;
+      } 
+    }
+    
+    /* Ek kar efekti - büyük kar taneleri */
+    .snowflake-large {
+      width: 8px !important;
+      height: 8px !important;
+      opacity: 0.7 !important;
+      filter: blur(1px) !important;
+    }
+    
+    .snowflake-small {
+      width: 2px !important;
+      height: 2px !important;
+      opacity: 0.6 !important;
+    }
+
+    /* SIDEBAR */
+    .sidebar-overlay{
+      position:fixed; top:0; left:0; width:100vw; height:100vh; background: rgba(0,0,0,0.8); z-index:190; display:none; opacity:0; transition: opacity 0.3s;
+    }
+    .sidebar-overlay.active{ display:block; opacity:1; }
+
+    #marketSidebar{
+      position:fixed; top:0; right:0; width:90%; max-width:400px; height:100svh;
+      background: rgba(10,20,40,0.98); border-left:2px solid #00C6FF; z-index:200;
+      transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.2,0.8,0.2,1);
+      display:flex; flex-direction:column; box-shadow:-10px 0 50px rgba(0,0,0,1);
+    }
+    #marketSidebar.active{ transform: translateX(0); }
+
+    .sidebar-header{ padding:20px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); }
+    .sidebar-title{ font-size:18px; color:#00C6FF; font-weight:bold; letter-spacing:1px; }
+    .close-btn{ background:none; border:none; color:#fff; font-size:24px; cursor:pointer; }
+    .sidebar-content{ flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:22px; }
+
+    h3{ margin:0 0 10px 0; font-size:12px; color:#ff00cc; text-transform:uppercase; letter-spacing:1px; }
+
+    .clothes-grid{ display:grid; grid-template-columns: repeat(2,1fr); gap:12px; }
+    .item-card{
+      background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:15px 8px;
+      text-align:center; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center;
+      transition: all 0.2s; min-height:90px;
+    }
+    .item-card.selected{ border-color:#ff00cc; background: rgba(255,0,204,0.15); box-shadow:0 0 15px rgba(255,0,204,0.3); }
+    .item-icon{ font-size:28px; margin-bottom:8px; color: rgba(255,255,255,0.92); line-height: 1; }
+    .item-name{ font-size:11px; color:#fff; font-weight:bold; }
+  </style>
+</head>
+
+<body>
+  <div class="brand-logo"><span class="primary">CHAOS</span><span class="secondary">AR</span></div>
+  
+  <button id="marketBtn" onclick="toggleMarket(true)">GARDIROP 🛍️</button>
+
+  <div class="moon"></div>
+  <div id="sky-effects"></div>
+  <div class="christmas-lights" id="christmasLights"></div>
+  <div id="snow-container"></div>
+
+  <div class="santa-container">
+    <svg viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="reindeerBody" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#8B4513;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#654321;stop-opacity:1" />
+        </linearGradient>
+        <linearGradient id="reindeerAntler" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#D2691E;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#8B4513;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      
+      <!-- Ren Geyiği 1 (Önde) -->
+      <g transform="translate(50, 100)">
+        <!-- Gövde -->
+        <ellipse cx="0" cy="20" rx="35" ry="45" fill="url(#reindeerBody)" stroke="#654321" stroke-width="2"/>
+        <!-- Baş -->
+        <ellipse cx="0" cy="-15" rx="28" ry="32" fill="url(#reindeerBody)" stroke="#654321" stroke-width="2"/>
+        <!-- Burun -->
+        <ellipse cx="0" cy="5" rx="8" ry="10" fill="#8B0000"/>
+        <!-- Gözler -->
+        <circle cx="-10" cy="-5" r="4" fill="#000"/>
+        <circle cx="10" cy="-5" r="4" fill="#000"/>
+        <circle cx="-9" cy="-6" r="1.5" fill="#fff"/>
+        <circle cx="11" cy="-6" r="1.5" fill="#fff"/>
+        <!-- Boynuzlar (Sol) -->
+        <path d="M-25 -25 L-35 -45 L-30 -50 L-20 -40 L-25 -35 Z" fill="url(#reindeerAntler)" stroke="#654321" stroke-width="1.5"/>
+        <path d="M-20 -30 L-25 -50 L-20 -55 L-15 -40 Z" fill="url(#reindeerAntler)" stroke="#654321" stroke-width="1.5"/>
+        <!-- Boynuzlar (Sağ) -->
+        <path d="M25 -25 L35 -45 L30 -50 L20 -40 L25 -35 Z" fill="url(#reindeerAntler)" stroke="#654321" stroke-width="1.5"/>
+        <path d="M20 -30 L25 -50 L20 -55 L15 -40 Z" fill="url(#reindeerAntler)" stroke="#654321" stroke-width="1.5"/>
+        <!-- Bacaklar -->
+        <ellipse cx="-20" cy="55" rx="8" ry="25" fill="url(#reindeerBody)" stroke="#654321" stroke-width="1.5"/>
+        <ellipse cx="20" cy="55" rx="8" ry="25" fill="url(#reindeerBody)" stroke="#654321" stroke-width="1.5"/>
+        <!-- Kuyruk -->
+        <ellipse cx="25" cy="15" rx="12" ry="18" fill="url(#reindeerBody)" stroke="#654321" stroke-width="1.5"/>
+      </g>
+      
+      <!-- Ren Geyiği 2 (Ortada) -->
+      <g transform="translate(200, 105)">
+        <ellipse cx="0" cy="20" rx="32" ry="42" fill="url(#reindeerBody)" stroke="#654321" stroke-width="2"/>
+        <ellipse cx="0" cy="-12" rx="26" ry="30" fill="url(#reindeerBody)" stroke="#654321" stroke-width="2"/>
+        <ellipse cx="0" cy="8" rx="7" ry="9" fill="#8B0000"/>
+        <circle cx="-9" cy="-2" r="3.5" fill="#000"/>
+        <circle cx="9" cy="-2" r="3.5" fill="#000"/>
+        <circle cx="-8" cy="-3" r="1.2" fill="#fff"/>
+        <circle cx="10" cy="-3" r="1.2" fill="#fff"/>
+        <path d="M-23 -22 L-32 -40 L-28 -44 L-18 -35 L-22 -32 Z" fill="url(#reindeerAntler)" stroke="#654321" stroke-width="1.5"/>
+        <path d="M-18 -27 L-22 -45 L-18 -49 L-13 -37 Z" fill="url(#reindeerAntler)" stroke="#654321" stroke-width="1.5"/>
+        <path d="M23 -22 L32 -40 L28 -44 L18 -35 L22 -32 Z" fill="url(#reindeerAntler)" stroke="#654321" stroke-width="1.5"/>
+        <path d="M18 -27 L22 -45 L18 -49 L13 -37 Z" fill="url(#reindeerAntler)" stroke="#654321" stroke-width="1.5"/>
+        <ellipse cx="-18" cy="52" rx="7" ry="23" fill="url(#reindeerBody)" stroke="#654321" stroke-width="1.5"/>
+        <ellipse cx="18" cy="52" rx="7" ry="23" fill="url(#reindeerBody)" stroke="#654321" stroke-width="1.5"/>
+        <ellipse cx="23" cy="12" rx="11" ry="16" fill="url(#reindeerBody)" stroke="#654321" stroke-width="1.5"/>
+      </g>
+      
+      <!-- Ren Geyiği 3 (Arkada) -->
+      <g transform="translate(350, 110)">
+        <ellipse cx="0" cy="18" rx="30" ry="40" fill="url(#reindeerBody)" stroke="#654321" stroke-width="2"/>
+        <ellipse cx="0" cy="-10" rx="24" ry="28" fill="url(#reindeerBody)" stroke="#654321" stroke-width="2"/>
+        <ellipse cx="0" cy="10" rx="6" ry="8" fill="#8B0000"/>
+        <circle cx="-8" cy="0" r="3" fill="#000"/>
+        <circle cx="8" cy="0" r="3" fill="#000"/>
+        <circle cx="-7" cy="-1" r="1" fill="#fff"/>
+        <circle cx="9" cy="-1" r="1" fill="#fff"/>
+        <path d="M-21 -20 L-29 -37 L-25 -40 L-16 -32 L-20 -30 Z" fill="url(#reindeerAntler)" stroke="#654321" stroke-width="1.5"/>
+        <path d="M-16 -25 L-20 -42 L-16 -45 L-12 -35 Z" fill="url(#reindeerAntler)" stroke="#654321" stroke-width="1.5"/>
+        <path d="M21 -20 L29 -37 L25 -40 L16 -32 L20 -30 Z" fill="url(#reindeerAntler)" stroke="#654321" stroke-width="1.5"/>
+        <path d="M16 -25 L20 -42 L16 -45 L12 -35 Z" fill="url(#reindeerAntler)" stroke="#654321" stroke-width="1.5"/>
+        <ellipse cx="-16" cy="50" rx="6" ry="21" fill="url(#reindeerBody)" stroke="#654321" stroke-width="1.5"/>
+        <ellipse cx="16" cy="50" rx="6" ry="21" fill="url(#reindeerBody)" stroke="#654321" stroke-width="1.5"/>
+        <ellipse cx="21" cy="10" rx="10" ry="14" fill="url(#reindeerBody)" stroke="#654321" stroke-width="1.5"/>
+      </g>
+      
+      <!-- Kızak -->
+      <g transform="translate(480, 120)">
+        <!-- Kızak gövdesi -->
+        <path d="M0 0 L120 0 L115 25 L5 25 Z" fill="#c1121f" stroke="#8B0000" stroke-width="2"/>
+        <!-- Kızak kenarları -->
+        <path d="M0 0 L5 25 M120 0 L115 25" stroke="#8B0000" stroke-width="3"/>
+        <!-- Kızak altı (kayaklar) -->
+        <ellipse cx="30" cy="30" rx="25" ry="8" fill="#2b2b2b" opacity="0.8"/>
+        <ellipse cx="90" cy="30" rx="25" ry="8" fill="#2b2b2b" opacity="0.8"/>
+        <!-- Kızak süslemeleri -->
+        <rect x="20" y="5" width="80" height="3" rx="1" fill="#d4af37"/>
+        <rect x="25" y="12" width="70" height="2" rx="1" fill="#d4af37"/>
+      </g>
+      
+      <!-- Noel Baba -->
+      <g transform="translate(520, 80)">
+        <!-- Vücut -->
+        <ellipse cx="0" cy="30" rx="25" ry="35" fill="#c1121f" stroke="#8B0000" stroke-width="2"/>
+        <!-- Baş -->
+        <circle cx="0" cy="-5" r="22" fill="#f2c7a5" stroke="#d9a98c" stroke-width="2"/>
+        <!-- Sakal -->
+        <path d="M-20 -5 Q0 15 20 -5 Q15 25 -15 25 Q-20 10 -20 -5" fill="#ffffff" stroke="#e8e8e8" stroke-width="1.5"/>
+        <!-- Şapka -->
+        <path d="M-18 -25 L-15 -35 L0 -40 L15 -35 L18 -25 L-18 -25" fill="#c1121f" stroke="#8B0000" stroke-width="2"/>
+        <circle cx="0" cy="-40" r="8" fill="#ffffff" stroke="#e8e8e8" stroke-width="1"/>
+        <!-- Gözler -->
+        <circle cx="-6" cy="-8" r="2" fill="#1a1a1a"/>
+        <circle cx="6" cy="-8" r="2" fill="#1a1a1a"/>
+        <!-- Burun -->
+        <ellipse cx="0" cy="-2" rx="3" ry="4" fill="#e7a88b"/>
+        <!-- Gülümseme -->
+        <path d="M-8 2 Q0 6 8 2" fill="none" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round"/>
+      </g>
+      
+      <!-- Bağlantı ipleri (Ren geyiklerinden kızağa) -->
+      <g stroke="#2a2a2a" stroke-width="2" opacity="0.7">
+        <line x1="100" y1="120" x2="480" y2="130"/>
+        <line x1="250" y1="125" x2="490" y2="135"/>
+        <line x1="380" y1="130" x2="500" y2="140"/>
+      </g>
+    </svg>
+  </div>
+
+  <div id="rug">
+    <div class="rug-fringe"></div>
+  </div>
+
+  <div class="forest">
+    <svg class="trees-scene" viewBox="0 0 1400 320" preserveAspectRatio="xMidYMax meet">
+      <defs>
+        <linearGradient id="pine" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#27ff9b"/>
+          <stop offset="0.55" stop-color="#0f8d4f"/>
+          <stop offset="1" stop-color="#06331d"/>
+        </linearGradient>
+        <linearGradient id="snowTop" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#ffffff"/>
+          <stop offset="1" stop-color="#e2f2ff"/>
+        </linearGradient>
+      </defs>
+      <path d="M0 270 C200 250 360 295 560 270 C780 245 960 300 1200 272 C1300 258 1360 262 1400 265 L1400 320 L0 320 Z" fill="url(#snowTop)" opacity="0.95"/>
+      <g transform="translate(150,120) scale(0.72)">
+        <rect x="240" y="230" width="26" height="62" rx="6" fill="#3b2412"/>
+        <path d="M253 40 L190 120 L220 120 L175 180 L210 180 L155 245 L350 245 L300 180 L335 180 L290 120 L320 120 Z" fill="url(#pine)"/>
+        <path d="M205 122 L230 110 L255 116 L285 110 L306 120 L292 132 L265 138 L235 136 L214 130 Z" fill="white" opacity="0.88"/>
+        <path d="M190 182 L220 170 L250 174 L290 168 L320 178 L308 192 L270 202 L230 200 L202 192 Z" fill="white" opacity="0.82"/>
+      </g>
+      <g transform="translate(360,80) scale(0.88)">
+        <rect x="240" y="230" width="30" height="72" rx="7" fill="#3b2412"/>
+        <path d="M255 15 L170 115 L205 115 L145 185 L190 185 L110 270 L395 270 L320 185 L365 185 L305 115 L340 115 Z" fill="url(#pine)"/>
+        <path d="M190 118 L225 100 L265 106 L310 98 L342 112 L326 130 L285 142 L238 140 L204 132 Z" fill="white" opacity="0.92"/>
+        <path d="M160 188 L210 166 L260 170 L325 160 L372 180 L352 205 L290 222 L220 218 L178 204 Z" fill="white" opacity="0.88"/>
+        <path d="M135 268 L195 244 L265 246 L350 236 L405 258 L378 292 L295 312 L205 306 L155 290 Z" fill="white" opacity="0.84"/>
+      </g>
+      <g transform="translate(820,120) scale(0.72)">
+        <rect x="240" y="230" width="26" height="62" rx="6" fill="#3b2412"/>
+        <path d="M253 40 L190 120 L220 120 L175 180 L210 180 L155 245 L350 245 L300 180 L335 180 L290 120 L320 120 Z" fill="url(#pine)"/>
+        <path d="M205 122 L230 110 L255 116 L285 110 L306 120 L292 132 L265 138 L235 136 L214 130 Z" fill="white" opacity="0.88"/>
+        <path d="M190 182 L220 170 L250 174 L290 168 L320 178 L308 192 L270 202 L230 200 L202 192 Z" fill="white" opacity="0.82"/>
+      </g>
+      <g transform="translate(1030,80) scale(0.88)">
+        <rect x="240" y="230" width="30" height="72" rx="7" fill="#3b2412"/>
+        <path d="M255 15 L170 115 L205 115 L145 185 L190 185 L110 270 L395 270 L320 185 L365 185 L305 115 L340 115 Z" fill="url(#pine)"/>
+        <path d="M190 118 L225 100 L265 106 L310 98 L342 112 L326 130 L285 142 L238 140 L204 132 Z" fill="white" opacity="0.92"/>
+        <path d="M160 188 L210 166 L260 170 L325 160 L372 180 L352 205 L290 222 L220 218 L178 204 Z" fill="white" opacity="0.88"/>
+        <path d="M135 268 L195 244 L265 246 L350 236 L405 258 L378 292 L295 312 L205 306 L155 290 Z" fill="white" opacity="0.84"/>
+      </g>
+    </svg>
+    <div class="forest-snow"></div>
+    <div class="forest-lights" id="forestLights"></div>
+  </div>
+
+  <model-viewer
+    id="main-viewer"
+    src=""
+    ios-src=""
+    alt="ChaosAR Ana Model"
+    ar
+    ar-modes="scene-viewer webxr quick-look"
+    ar-scale="auto"
+    ar-placement="floor"
+    camera-controls
+    shadow-intensity="1.5"
+    exposure="1"
+    loading="eager"
+    disable-zoom
+    autoplay
+    interaction-policy="allow-when-focused"
+    reveal="auto"
+    style="background-color: transparent;">
+  </model-viewer>
+
+  <div class="sidebar-overlay" id="overlay" onclick="toggleMarket(false)"></div>
+
+<div id="marketSidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-title">GARDIROP</div>
+    <button class="close-btn" onclick="toggleMarket(false)">✕</button>
+  </div>
+
+  <!-- TEK content -->
+  <div class="sidebar-content">
+    <div class="section">
+      <a href="https://cha0sar.com" class="shop-link-btn">
+        <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M7 9L4.5 6.5a1 1 0 0 1 1.4-1.4L8.6 7.8M17 9l2.5-2.5a1 1 0 0 0-1.4-1.4L15.4 7.8"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M6 9h12l-1.2 11H7.2L6 9Z"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M9 13v5M12 13v5M15 13v5"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        MAĞAZAYA GİT ➜
+      </a>
+    </div>
+
+    <div class="section">
+      <h3>KIYAFET SEÇ</h3>
+      <div class="clothes-grid" id="outfitGrid"></div>
+    </div>
+    <div class="section">
+      <h3>ANİMASYON DENE</h3>
+      <div class="clothes-grid" id="animationGrid"></div>
+    </div>
+  </div>
+</div>
+
+ <script>
+    // ==== ELEMENTLER ====
+    const viewer        = document.getElementById('main-viewer');
+    const sidebar       = document.getElementById('marketSidebar');
+    const overlay       = document.getElementById('overlay');
+    const outfitGrid    = document.getElementById('outfitGrid');
+    const animationGrid = document.getElementById('animationGrid');
+
+    // ==== DEĞİŞKENLER ====
+    let productsData = []; 
+    let animationsData = [];
+    
+    // Şu anki durumu hafızada tutuyoruz
+    let currentProduct = null;
+    let currentAnimName = null; // GLB için animasyon ismi (örn: "IdleV4.2(maya_head)")
+    let currentUsdzKey = null; // USDZ için key (örn: "durus")
+    
+    // URL parametreleri
+    let urlParams = {};
+    
+    // Performans optimizasyonu: Cache'ler
+    let urlCache = new Map(); // URL dönüşüm cache'i
+    let currentGlbUrl = null; // Mevcut GLB URL'si (gereksiz yükleme önleme)
+    let loadHandlerAttached = false; // Event listener tekrar eklenmesin
+    
+    // Animasyon performansı için efekt kontrolü
+    let isAnimationPlaying = false;
+    let snowInterval = null;
+    let starInterval = null;
+    let lightInterval = null;
+
+    // ==== PERF AYARLARI ====
+    const SNOW_MAX = 80; // Animasyon performansı için azaltıldı (120 -> 80)
+    const SNOW_SPAWN_MS = 300; // Daha yavaş kar oluştur (200 -> 300)
+    const STAR_EVERY_MS = 20000; // Yıldızları daha az sıklıkla oluştur (15000 -> 20000)
+    const LIGHT_COUNT = 20; // Işık sayısını azalt (26 -> 20)
+    const TWINKLE_MS = 500; // Işık yanıp sönme hızını azalt (360 -> 500)
+
+    // ==== URL PARAMETRELERİNİ OKU ====
+    function getURLParams() {
+        const params = new URLSearchParams(window.location.search);
+        urlParams = {
+            user: params.get('user') || params.get('u'),      // Kullanıcı ID
+            outfit: params.get('outfit') || params.get('o'),  // Kıyafet ID
+            anim: params.get('anim') || params.get('a'),     // Animasyon ID
+            token: params.get('token') || params.get('t')     // Güvenlik token
+        };
+        console.log("🔗 URL Parametreleri:", urlParams);
+        return urlParams;
+    }
+
+    // ==== HTTPS KONTROLÜ ====
+    function checkHTTPS() {
+        if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+            console.warn('⚠️ HTTPS GEREKLİ: Android WebXR ve Scene Viewer güvenli bağlam (HTTPS) gerektirir. Lütfen siteyi HTTPS üzerinden yayınlayın.');
+            console.warn('⚠️ Mevcut protokol:', window.location.protocol);
+            return false;
+        }
+        return true;
+    }
+
+    // ==== ANDROID INTENT LINK OLUŞTURUCU ====
+    function generateAndroidIntentLink(glbUrl) {
+        if (!glbUrl) return null;
+        
+        // URL'yi tam URL'ye çevir (scene-viewer mutlak URL gerektirir)
+        const absoluteUrl = glbUrl.startsWith('http') 
+            ? glbUrl 
+            : `${window.location.origin}/${glbUrl.replace(/^\//, '')}`;
+        
+        // URL encoding
+        const encodedUrl = encodeURIComponent(absoluteUrl);
+        const fallbackUrl = encodeURIComponent(window.location.href);
+        
+        // Google Play Services for AR Intent link formatı
+        // Format: intent://arvr.google.com/scene-viewer/1.0?file=URL#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=FALLBACK;end;
+        const intentLink = `intent://arvr.google.com/scene-viewer/1.0?file=${encodedUrl}#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${fallbackUrl};end;`;
+        
+        return intentLink;
+    }
+
+    // ==== URL CACHE HELPER ====
+    function getAbsoluteUrl(path) {
+        if (!path) return null;
+        if (path.startsWith('http')) return path;
+        
+        // Cache kontrolü
+        if (urlCache.has(path)) {
+            return urlCache.get(path);
+        }
+        
+        const absoluteUrl = `${window.location.origin}/${path.replace(/^\//, '')}`;
+        urlCache.set(path, absoluteUrl);
+        return absoluteUrl;
+    }
+
+    // ==== ANDROID AR YAPILANDIRMASI (OPTİMİZE) ====
+    function configureAndroidAR(glbPath) {
+        if (!viewer || !glbPath) return null;
+        
+        // Mutlak URL'yi al (cache'den)
+        const absoluteGlbUrl = getAbsoluteUrl(glbPath);
+        
+        if (!absoluteGlbUrl) {
+            console.error("❌ Mutlak URL oluşturulamadı:", glbPath);
+            return null;
+        }
+        
+        // Eğer aynı URL zaten yüklenmişse, tekrar yükleme
+        if (currentGlbUrl === absoluteGlbUrl && viewer.getAttribute('src') === absoluteGlbUrl) {
+            return absoluteGlbUrl; // Gereksiz yükleme önle
+        }
+        
+        // currentGlbUrl'i güncelle
+        currentGlbUrl = absoluteGlbUrl;
+        
+        return absoluteGlbUrl;
+    }
+
+    // ==== INIT ====
+    document.addEventListener('DOMContentLoaded', () => {
+      // HTTPS kontrolü
+      checkHTTPS();
+      
+      // URL parametrelerini oku
+      getURLParams();
+      
+      // Manifest'i yükle (URL parametrelerine göre)
+      loadManifest();
+      
+      // Görsel Efektler (optimize edilmiş)
+      snowInterval = setInterval(createSnowflake, SNOW_SPAWN_MS);
+      setTimeout(spawnShootingStar, 1200);
+      starInterval = setInterval(spawnShootingStar, STAR_EVERY_MS);
+      initForestLights();
+      initChristmasLights();
+      
+      // Model-viewer animasyon durumunu izle (performans için)
+      if (viewer) {
+          viewer.addEventListener('play', () => {
+              optimizeEffectsForAnimation(true);
+              // Model-viewer'a performans ipucu ver
+              if (viewer.setAttribute) {
+                  viewer.setAttribute('interaction-policy', 'allow-when-focused');
+              }
+          });
+          viewer.addEventListener('pause', () => {
+              optimizeEffectsForAnimation(false);
+          });
+          viewer.addEventListener('model-loaded', () => {
+              // Model yüklendiğinde performans ayarları
+              if (viewer.loaded) {
+                  // GPU hızlandırmayı aktif et
+                  viewer.style.willChange = 'transform';
+              }
+          });
+      }
+      placeRug();
+      // placeRug event listener'ları optimize et (sadece bir kez ekle)
+      viewer.addEventListener('load', () => requestAnimationFrame(placeRug), { once: true });
+      viewer.addEventListener('camera-change', throttle(placeRug, 200));
+      window.addEventListener('resize', throttle(placeRug, 200));
+    });
+
+    // ==== MANIFEST ====
+    async function loadManifest() {
+        try {
+            // URL parametrelerine göre manifest dosyasını belirle
+            let manifestUrl = 'manifest.json';
+            
+            // Eğer kullanıcı ID varsa, kişiye özel manifest yükle
+            if (urlParams.user) {
+                // Backend'den kullanıcıya özel manifest çek
+                // Örnek: manifest.json?user=USER_ID veya users/USER_ID/manifest.json
+                manifestUrl = `manifest.json?user=${urlParams.user}`;
+                // Alternatif: `users/${urlParams.user}/manifest.json`
+                console.log("👤 Kişiye özel manifest yükleniyor:", manifestUrl);
+            }
+            
+            const response = await fetch(manifestUrl);
+            if (!response.ok) {
+                // Eğer kişiye özel manifest yoksa, varsayılan manifest'i kullan
+                console.warn("⚠️ Kişiye özel manifest bulunamadı, varsayılan yükleniyor");
+                const fallbackResponse = await fetch('manifest.json');
+                const fallbackData = await fallbackResponse.json();
+                processManifestData(fallbackData);
+                return;
+            }
+            
+            const data = await response.json();
+            processManifestData(data);
+            
+        } catch (error) { 
+            console.error("❌ Manifest yükleme hatası:", error);
+            // Hata durumunda varsayılan manifest'i dene
+            try {
+                const fallbackResponse = await fetch('manifest.json');
+                const fallbackData = await fallbackResponse.json();
+                processManifestData(fallbackData);
+            } catch (fallbackError) {
+                console.error("❌ Varsayılan manifest de yüklenemedi:", fallbackError);
+            }
+        }
+    }
+    
+    // ==== MANIFEST VERİLERİNİ İŞLE ====
+    function processManifestData(data) {
+        if (data.products) {
+            productsData = data.products;
+            renderOutfits(productsData);
+            
+            // URL'de outfit parametresi varsa onu seç, yoksa ilk kıyafeti seç
+            if (urlParams.outfit) {
+                const targetOutfit = productsData.find(p => p.id === urlParams.outfit);
+                if (targetOutfit) {
+                    selectOutfit(urlParams.outfit);
+                    console.log("✅ URL'den kıyafet seçildi:", urlParams.outfit);
+                } else {
+                    console.warn("⚠️ URL'deki kıyafet bulunamadı:", urlParams.outfit);
+                    selectOutfit(productsData[0].id);
+                }
+            } else {
+                selectOutfit(productsData[0].id); // İlk kıyafeti seç
+            }
+        }
+        
+        if (data.animations) {
+            animationsData = data.animations;
+            renderAnimations(animationsData);
+            
+            // URL'de anim parametresi varsa onu seç
+            if (urlParams.anim) {
+                const targetAnim = animationsData.find(a => a.id === urlParams.anim);
+                if (targetAnim) {
+                    changeAnimation(targetAnim);
+                    console.log("✅ URL'den animasyon seçildi:", urlParams.anim);
+                } else {
+                    console.warn("⚠️ URL'deki animasyon bulunamadı:", urlParams.anim);
+                    // İlk animasyonu seç
+                    if(animationsData[0]) {
+                        currentAnimName = animationsData[0].animationName;
+                        currentUsdzKey = animationsData[0].usdzKey || animationsData[0].animationName;
+                    }
+                }
+            } else {
+                // İlk animasyonu hafızaya al
+                if(animationsData[0]) {
+                    currentAnimName = animationsData[0].animationName;
+                    currentUsdzKey = animationsData[0].usdzKey || animationsData[0].animationName;
+                }
+            }
+        }
+    }
+
+    // ==== RENDER ====
+    function renderOutfits(products) {
+        if(!outfitGrid) return;
+        outfitGrid.innerHTML = "";
+        const icon = `<svg viewBox="0 0 64 64" width="38" height="38" fill="none" stroke="currentColor" stroke-width="3"><path d="M22 10l10 6 10-6 10 10-8 6v28H20V26l-8-6 10-10z"/><path d="M32 16v38"/></svg>`;
+        products.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'item-card';
+            card.setAttribute('data-id', p.id);
+            card.onclick = () => selectOutfit(p.id);
+            card.innerHTML = `<div class="item-icon">${icon}</div><div class="item-name">${p.name}</div>`;
+            outfitGrid.appendChild(card);
+        });
+    }
+
+    function renderAnimations(anims) {
+        if(!animationGrid) return;
+        animationGrid.innerHTML = "";
+        const icon = `<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l14 9-14 9V3z" stroke-linejoin="round"/></svg>`;
+        anims.forEach(a => {
+            const card = document.createElement('div');
+            card.className = 'item-card';
+            card.setAttribute('data-anim-id', a.id);
+            // Tüm animasyon objesini geç (animationName ve usdzKey için)
+            card.onclick = () => changeAnimation(a);
+            card.innerHTML = `<div class="item-icon">${icon}</div><div class="item-name">${a.name}</div>`;
+            animationGrid.appendChild(card);
+        });
+    }
+
+    // ==== DOSYA YOLUNU KİŞİYE ÖZEL HALE GETİR ====
+    function getPersonalizedPath(originalPath) {
+        if (!urlParams.user || !originalPath) return originalPath;
+        
+        // Eğer kullanıcı ID varsa, dosya yolunu kişiye özel yap
+        // Örnek: "chaosar1/anm2.glb" -> "users/USER_ID/chaosar1/anm2.glb"
+        // Veya: "chaosar1/anm2.glb" -> "chaosar1/USER_ID/anm2.glb"
+        
+        // Seçenek 1: Kullanıcı klasöründe (önerilen)
+        const userFolder = `users/${urlParams.user}`;
+        if (originalPath.startsWith('http://') || originalPath.startsWith('https://')) {
+            // Tam URL ise değiştirme
+            return originalPath;
+        }
+        // Relatif path ise kullanıcı klasörüne ekle
+        return `${userFolder}/${originalPath}`;
+    }
+
+    // ==== 1. KIYAFET SEÇİMİ ====
+    function selectOutfit(productId){
+      const product = productsData.find(p => p.id === productId);
+      if(!product) return;
+
+      currentProduct = product; // Seçili kıyafeti hafızaya al
+
+      // UI Güncelle
+      document.querySelectorAll('#outfitGrid .item-card').forEach(c => c.classList.remove('selected'));
+      document.querySelector(`#outfitGrid .item-card[data-id="${productId}"]`)?.classList.add('selected');
+
+      // WEB: GLB dosyasını yükle (kişiye özel path ile)
+      if(viewer){
+        const glbPath = getPersonalizedPath(product.glb);
+        
+        // Android AR için yapılandır (scene-viewer için mutlak URL gerekli)
+        const absoluteGlbUrl = configureAndroidAR(glbPath);
+        
+        if (!absoluteGlbUrl) {
+            console.error("❌ Model URL'si oluşturulamadı:", glbPath);
+            return;
+        }
+        
+        // Model-viewer'a src'yi ayarla (mutlak URL)
+        if (viewer.getAttribute('src') !== absoluteGlbUrl) {
+            viewer.setAttribute('src', absoluteGlbUrl);
+            console.log("📦 Model yükleniyor:", absoluteGlbUrl);
+        }
+        
+        // Eğer model zaten yüklenmişse, sadece animasyonu güncelle
+        if (viewer.loaded && currentGlbUrl === absoluteGlbUrl) {
+            // Model zaten yüklü, sadece animasyonu değiştir
+            applyAnimation();
+            updateUSDZ();
+            return;
+        }
+        
+        // AR: USDZ dosyasını hemen ayarla (animasyon ile birlikte)
+        updateUSDZ();
+
+        // Model yüklendiğinde animasyonu uygula (sadece bir kez)
+        if (!loadHandlerAttached) {
+            viewer.addEventListener('load', handleModelLoad, { once: false });
+            loadHandlerAttached = true;
+        }
+      }
+    }
+
+    // ==== MODEL YÜKLEME HANDLER (OPTİMİZE) ====
+    function handleModelLoad() {
+        if (!viewer || !currentProduct) return;
+        
+        const availableAnims = viewer.availableAnimations || [];
+        
+        // Model yüklendi (log sadece debug için)
+        // console.log("📦 Model yüklendi:", currentProduct.glb, "| Animasyonlar:", availableAnims.length);
+        
+        // Animasyonu uygula
+        applyAnimation();
+        
+        // AR dosyasını güncelle
+        updateUSDZ();
+        
+        // Halıyı yerleştir (throttle ile)
+        requestAnimationFrame(() => placeRug());
+    }
+
+    // ==== ANİMASYON UYGULAMA (AYRI FONKSİYON) ====
+    function applyAnimation() {
+        if (!viewer || !viewer.loaded || !currentAnimName) return;
+        
+        const availableAnims = viewer.availableAnimations || [];
+        if (availableAnims.length === 0) return;
+        
+        const matchedAnim = findMatchingAnimation(currentAnimName, availableAnims);
+        
+        if (matchedAnim) {
+            // Animasyon başlamadan önce efektleri azalt
+            optimizeEffectsForAnimation(true);
+            
+            // requestAnimationFrame ile animasyonu başlat (daha akıcı)
+            requestAnimationFrame(() => {
+                viewer.animationName = matchedAnim;
+                viewer.play();
+                isAnimationPlaying = true;
+            });
+        } else if (availableAnims.length > 0) {
+            optimizeEffectsForAnimation(true);
+            requestAnimationFrame(() => {
+                viewer.animationName = availableAnims[0];
+                viewer.play();
+                isAnimationPlaying = true;
+            });
+        }
+    }
+
+    // ==== ANİMASYON PERFORMANSI İÇİN EFEKT OPTİMİZASYONU ====
+    function optimizeEffectsForAnimation(playing) {
+        isAnimationPlaying = playing;
+        
+        if (playing) {
+            // Animasyon oynarken efektleri azalt
+            const snowContainer = document.getElementById('snow-container');
+            const skyEffects = document.getElementById('sky-effects');
+            const christmasLights = document.getElementById('christmasLights');
+            
+            if (snowContainer) {
+                snowContainer.style.opacity = '0.3'; // Kar efektini azalt
+                snowContainer.style.pointerEvents = 'none';
+            }
+            
+            if (skyEffects) {
+                skyEffects.style.opacity = '0.2'; // Yıldız efektini azalt
+            }
+            
+            if (christmasLights) {
+                christmasLights.style.opacity = '0.3'; // Işıkları azalt
+            }
+            
+            // Kar oluşturma hızını azalt
+            if (snowInterval) {
+                clearInterval(snowInterval);
+            }
+            // Daha yavaş kar oluştur (performans için) - animasyon oynarken
+            snowInterval = setInterval(createSnowflake, SNOW_SPAWN_MS * 4);
+            
+        } else {
+            // Animasyon durduğunda efektleri normale döndür
+            const snowContainer = document.getElementById('snow-container');
+            const skyEffects = document.getElementById('sky-effects');
+            const christmasLights = document.getElementById('christmasLights');
+            
+            if (snowContainer) {
+                snowContainer.style.opacity = '1';
+            }
+            
+            if (skyEffects) {
+                skyEffects.style.opacity = '1';
+            }
+            
+            if (christmasLights) {
+                christmasLights.style.opacity = '1';
+            }
+            
+            // Normal kar oluşturma hızına dön
+            if (snowInterval) {
+                clearInterval(snowInterval);
+            }
+            snowInterval = setInterval(createSnowflake, SNOW_SPAWN_MS);
+        }
+    }
+
+    // ==== ANİMASYON EŞLEŞTİRME FONKSİYONU ====
+    function findMatchingAnimation(targetName, availableAnims) {
+        if (!targetName || !availableAnims || availableAnims.length === 0) return null;
+        
+        // 1. Tam eşleşme
+        if (availableAnims.includes(targetName)) {
+            return targetName;
+        }
+        
+        // 2. Büyük/küçük harf duyarsız eşleşme
+        const lowerTarget = targetName.toLowerCase();
+        const match = availableAnims.find(anim => anim.toLowerCase() === lowerTarget);
+        if (match) return match;
+        
+        // 3. İçerik eşleşmesi (ör: "yatma" -> "Yatma", "lay_down", "LayDown", "chill" vb.)
+        const keywords = {
+            'durus': ['idle', 'durus', 'dur', 'stand', 'rest'],
+            'karate': ['karate', 'fight', 'punch', 'kick'],
+            'yatma': ['yat', 'yatma', 'lay', 'sleep', 'rest', 'chill', 'chill_down', 'relax'],
+            'dans': ['dans', 'dance', 'move', 'party']
+        };
+        
+        // 4. Direkt "chill" kelimesi için özel kontrol
+        if (lowerTarget.includes('chill') || lowerTarget.includes('yat')) {
+            const chillMatch = availableAnims.find(anim => 
+                anim.toLowerCase().includes('chill') || 
+                anim.toLowerCase().includes('yat') ||
+                anim.toLowerCase().includes('lay') ||
+                anim.toLowerCase().includes('sleep')
+            );
+            if (chillMatch) return chillMatch;
+        }
+        
+        // usdzKey'e göre anahtar kelimeleri bul
+        const key = currentUsdzKey || targetName.toLowerCase();
+        const searchKeywords = keywords[key] || [key];
+        
+        // Her anahtar kelimeyi dene
+        for (const keyword of searchKeywords) {
+            const found = availableAnims.find(anim => 
+                anim.toLowerCase().includes(keyword.toLowerCase()) ||
+                keyword.toLowerCase().includes(anim.toLowerCase())
+            );
+            if (found) {
+                // console.log(`🔍 Eşleşme bulundu: "${targetName}" -> "${found}" (anahtar: "${keyword}")`);
+                return found;
+            }
+        }
+        
+        // 4. Hiçbir eşleşme yoksa null döndür
+        return null;
+    }
+
+    // ==== 2. ANİMASYON SEÇİMİ ====
+    function changeAnimation(animObj) {
+        // Animasyon objesinden bilgileri al
+        currentAnimName = animObj.animationName; // GLB için (örn: "IdleV4.2(maya_head)")
+        currentUsdzKey = animObj.usdzKey || animObj.animationName; // USDZ için (örn: "durus")
+
+        // UI Güncelle
+        document.querySelectorAll('#animationGrid .item-card').forEach(c => c.classList.remove('selected'));
+        document.querySelector(`#animationGrid .item-card[data-anim-id="${animObj.id}"]`)?.classList.add('selected');
+
+        // WEB: Aynı GLB üzerinde animasyonu değiştir (Dosya yükleme yok, çok hızlı)
+        if(viewer) {
+            // Animasyonu hemen uygula (model yüklüyse)
+            applyAnimation();
+            
+            // AR: Animasyon değiştiği için USDZ dosyasını güncelle
+            updateUSDZ();
+        }
+    }
+
+    // ==== AR DOSYASI GÜNCELLEME MANTIĞI ====
+    function updateUSDZ() {
+        if (!currentProduct || !viewer) return;
+
+        // usdzKey yoksa animasyon ismini kullan (geriye dönük uyumluluk)
+        const keyToUse = currentUsdzKey || currentAnimName;
+        if (!keyToUse) return;
+
+        let newUSDZ;
+
+        // ÖNCELİK 1: Manifest'te USDZ dosyaları tanımlı mı kontrol et
+        // usdzKey kullanarak doğru dosyayı bul (örn: "durus" key'i ile)
+        if (currentProduct.usdz && currentProduct.usdz[keyToUse]) {
+            // Manifest'te tanımlı USDZ dosyasını kullan (kişiye özel path ile)
+            const originalUSDZ = currentProduct.usdz[keyToUse];
+            newUSDZ = getPersonalizedPath(originalUSDZ);
+        } else {
+            // ÖNCELİK 2: Otomatik oluştur (GLB yolundan)
+            // Örnek: "chaosar1/anm1.glb" -> "chaosar1/anm1_karate.usdz"
+            let basePath = currentProduct.glb.replace(/\.glb$/i, ''); 
+            const autoUSDZ = `${basePath}_${keyToUse}.usdz`;
+            newUSDZ = getPersonalizedPath(autoUSDZ);
+        }
+
+        // Model-viewer'a AR dosyasını ata (iOS için)
+        const currentIosSrc = viewer.getAttribute('ios-src');
+        if (currentIosSrc !== newUSDZ) {
+            viewer.setAttribute('ios-src', newUSDZ);
+        }
+        
+        // Android için GLB dosyasını mutlak URL'ye çevir (cache kullan)
+        const glbPath = getPersonalizedPath(currentProduct.glb);
+        const absoluteGlbUrl = getAbsoluteUrl(glbPath);
+        
+        // Android scene-viewer için src'yi güncelle (sadece değiştiyse)
+        const currentSrc = viewer.getAttribute('src');
+        if (currentSrc !== absoluteGlbUrl) {
+            viewer.setAttribute('src', absoluteGlbUrl);
+            currentGlbUrl = absoluteGlbUrl;
+        }
+    }
+
+    // ==== DİĞER ====
+    function toggleMarket(show){
+      if(show){ sidebar.classList.add('active'); overlay.classList.add('active'); } 
+      else { sidebar.classList.remove('active'); overlay.classList.remove('active'); }
+    }
+    function placeRug(){
+      const rug = document.getElementById('rug');
+      if(rug && viewer) {
+        const rect = viewer.getBoundingClientRect();
+        rug.style.top = Math.max(0, rect.bottom - 250 - (rug.offsetWidth * 0.28)) + "px";
+      }
+    }
+    function throttle(fn, ms){
+      let t = 0; return function(){ const now=performance.now(); if(now-t>ms){t=now;fn();} }
+    }
+    // Efekt fonksiyonları (Snow, Star, Lights) geliştirilmiş ve optimize edilmiş...
+    function createSnowflake(){
+        // Animasyon oynarken kar oluşturmayı azalt
+        if (isAnimationPlaying && Math.random() > 0.5) return;
+        
+        const c = document.getElementById('snow-container'); 
+        if(!c || c.childElementCount>=SNOW_MAX) return;
+        
+        const s = document.createElement('div'); 
+        s.className='snowflake';
+        
+        // Farklı boyutlarda kar taneleri (daha küçük boyutlar - performans için)
+        const sizeType = Math.random();
+        let size, className;
+        if (sizeType < 0.4) {
+            size = Math.random()*1.5+1; // Küçük: 1-2.5px (daha küçük)
+            className = 'snowflake-small';
+        } else if (sizeType < 0.8) {
+            size = Math.random()*2+2.5; // Orta: 2.5-4.5px (daha küçük)
+            className = 'snowflake';
+        } else {
+            size = Math.random()*3+5; // Büyük: 5-8px (daha küçük)
+            className = 'snowflake-large';
+        }
+        
+        s.className = className;
+        s.style.width = s.style.height = `${size}px`;
+        s.style.left = Math.random()*100+'vw';
+        s.style.setProperty('--dur',(14+Math.random()*8).toFixed(2)+'s'); // Biraz daha yavaş
+        s.style.setProperty('--dx',((Math.random()*20)-10).toFixed(2)+'vw'); // Daha az hareket
+        
+        c.appendChild(s); 
+        setTimeout(()=>s.remove(),25000);
+    }
+    function spawnShootingStar(){
+        /* Eski kodun aynısı */
+        const s = document.getElementById('sky-effects'); if(!s) return;
+        const st = document.createElement('div'); st.className='shooting-star';
+        st.style.top=(6+Math.random()*28).toFixed(1)+'vh'; st.style.width=(150+Math.random()*120).toFixed(0)+'px';
+        st.style.setProperty('--rot',(-18-Math.random()*17).toFixed(1)+'deg');
+        s.appendChild(st); setTimeout(()=>st.remove(),2000);
+    }
+    function initForestLights(){
+        const c=document.getElementById('forestLights'); if(!c) return; c.innerHTML="";
+        // Daha canlı Noel renkleri
+        const COLS=["#ff3b3b","#ffd84a","#59ff9a","#58b4ff","#ff5cf0","#ff6b6b","#4ecdc4","#ffe66d","#ff6b9d"];
+        const l=[];
+        for(let i=0;i<LIGHT_COUNT;i++){
+            const d=document.createElement('span'); d.className="light";
+            d.style.left=Math.random()*100+"%"; d.style.top=(58+Math.random()*32)+"%";
+            d.style.background=COLS[(Math.random()*COLS.length)|0]; 
+            d.style.color = d.style.background; // Renk için
+            d.style.opacity=(0.3+Math.random()*0.3).toFixed(2);
+            c.appendChild(d); l.push(d);
+        }
+        setInterval(()=>{
+            const n=4+((Math.random()*5)|0);
+            for(let k=0;k<n;k++){
+                const d=l[(Math.random()*l.length)|0]; 
+                d.style.opacity="1"; 
+                d.style.transform="translate(-50%,-50%) scale(1.3)";
+                setTimeout(()=>{ 
+                    d.style.opacity=(0.3+Math.random()*0.4).toFixed(2); 
+                    d.style.transform="translate(-50%,-50%) scale(1)"; 
+                }, 300+(Math.random()*300)|0);
+            }
+        }, TWINKLE_MS);
+    }
+    
+    // ==== NOEL IŞIKLARI ====
+    function initChristmasLights(){
+        const container = document.getElementById('christmasLights');
+        if(!container) return;
+        container.innerHTML = "";
+        
+        // Noel renkleri: kırmızı, yeşil, altın, mavi, pembe
+        const colors = ['#ff3b3b', '#4ecdc4', '#ffd84a', '#58b4ff', '#ff5cf0', '#ff6b6b', '#59ff9a'];
+        const lightCount = 10; // Işık sayısını azalt
+        
+        for(let i = 0; i < lightCount; i++){
+            const light = document.createElement('div');
+            light.className = 'christmas-light';
+            light.style.left = Math.random() * 100 + '%';
+            light.style.top = Math.random() * 100 + '%';
+            light.style.background = colors[Math.floor(Math.random() * colors.length)];
+            light.style.color = light.style.background;
+            light.style.animationDelay = (Math.random() * 3) + 's';
+            container.appendChild(light);
+        }
+    }
+</script>
+  
+</body>
+</html>

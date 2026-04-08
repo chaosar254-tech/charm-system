@@ -1,0 +1,132 @@
+{
+  ".kıyafetler.": [
+    {
+      "id": "outfit1",
+      "name": "Silent Huntress",
+      "glb": {
+        "idle": "model-80.glb",
+        "animation": "model-69.glb"
+      },
+      "usdz": {
+        "idle": "model-80.usdz",
+        "animation": "model-69.usdz"
+      }
+    },
+    {
+      "id": "outfit2",
+      "name": "Blue Bubblegum",
+      "glb": {
+        "idle": "model-81.glb",
+        "animation": "model-71.glb"
+      },
+      "usdz": {
+        "idle": "model-81.usdz",
+        "animation": "model-71.usdz"
+      }
+    },
+    {
+      "id": "outfit3",
+      "name": "White Dress",
+      "glb": {
+        "idle": "model-83.glb",
+        "animation": "model-84.glb"
+      },
+      "usdz": {
+        "idle": "model-83.usdz",
+        "animation": "model-84.usdz"
+      }
+    },
+    {
+      "id": "outfit4",
+      "name": "Velvet Darkness",
+      "glb": {
+        "idle": "model-82.glb",
+        "animation": "model-73.glb"
+      },
+      "usdz": {
+        "idle": "model-82.usdz",
+        "animation": "model-73.usdz"
+      }
+    },
+    {
+      "id": "outfit5",
+      "name": "Merry Christmas",
+      "glb": {
+        "idle": "model-77.glb",
+        "animation": "model-78.glb"
+      },
+      "usdz": {
+        "idle": "model-77.usdz",
+        "animation": "model-79.usdz"
+      }
+    },
+    {
+      "id": "outfit6",
+      "name": "Midnight Elegance",
+      "glb": {
+        "idle": "model-85.glb",
+        "animation": "model-86.glb"
+      },
+      "usdz": {
+        "idle": "model-85.usdz",
+        "animation": "model-86.usdz"
+      }
+    },
+    {
+      "id": "outfit7",
+      "name": "Sunset Glow",
+      "glb": {
+        "idle": "model-87.glb",
+        "animation": "model-93.glb"
+      },
+      "usdz": {
+        "idle": "model-87.usdz",
+        "animation": "model-93.usdz"
+      }
+    },
+    {
+      "id": "outfit8",
+      "name": "Ocean Breeze",
+      "glb": {
+        "idle": "model-90.glb",
+        "animation": "model-91.glb"
+      },
+      "usdz": {
+        "idle": "model-91.usdz",
+        "animation": "model-92.usdz"
+      }
+    },
+    {
+      "id": "outfit9",
+      "name": "Royal Purple",
+      "glb": {
+        "idle": "model-94.glb",
+        "animation": "model-95.glb"
+      },
+      "usdz": {
+        "idle": "model-94.usdz",
+        "animation": "model-95.usdz"
+      }
+    },
+    {
+      "id": "outfit10",
+      "name": "Golden Star",
+      "glb": {
+        "idle": "model-97.glb",
+        "animation": "model-96.glb"
+      },
+      "usdz": {
+        "idle": "model-97.usdz",
+        "animation": "model-98.usdz"
+      }
+    }
+  ],
+  ".animasyonlar.": [
+    {
+      "id": "anim1",
+      "name": "Animasyon 1",
+      "animationName": "idle",
+      "usdzKey": "idle"
+    }
+  ]
+}

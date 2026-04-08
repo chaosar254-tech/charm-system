@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>WebAR Video Memory Experience</title>
+  
+  <!-- A-Frame -->
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  
+  <!-- AR.js for Image Tracking (Alternative to MindAR) -->
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/build/aframe-ar-nft.js"></script>
+  
+  <!-- Check if libraries loaded -->
+  <script>
+    window.addEventListener('load', () => {
+      if (typeof AFRAME === 'undefined') {
+        console.error('❌ A-Frame not loaded');
+      } else {
+        console.log('✅ A-Frame loaded');
+      }
+      
+      if (typeof ARjs === 'undefined' && typeof window.ARjs === 'undefined') {
+        console.error('❌ AR.js not loaded');
+      } else {
+        console.log('✅ AR.js loaded');
+      }
+    });
+  </script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      overflow: hidden;
+      background: #000;
+    }
+    
+    /* Start Experience Overlay */
+    #startOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      text-align: center;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    
+    #startOverlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    
+    #startOverlay h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    #startOverlay p {
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+      max-width: 80%;
+    }
+    
+    #startButton {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      color: white;
+      padding: 18px 40px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    
+    #startButton:hover {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.8);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    }
+    
+    #startButton:active {
+      transform: translateY(0);
+    }
+    
+    /* Loading indicator */
+    #loadingIndicator {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-size: 0.9rem;
+      z-index: 9999;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 10px 20px;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      display: none;
+    }
+    
+    #loadingIndicator.show {
+      display: block;
+    }
+    
+    /* Target Detection Status */
+    #targetStatus {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9998;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 15px 30px;
+      border-radius: 25px;
+      color: white;
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 600;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      transition: all 0.3s ease;
+    }
+    
+    #targetStatus.show {
+      display: block;
+    }
+    
+    #targetStatus.found {
+      background: rgba(0, 200, 0, 0.7);
+      border-color: rgba(0, 255, 0, 0.5);
+    }
+    
+    #targetStatus.lost {
+      background: rgba(200, 0, 0, 0.7);
+      border-color: rgba(255, 0, 0, 0.5);
+    }
+    
+    #targetStatusText {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    #targetStatusText::before {
+      content: '📷';
+      font-size: 1.2rem;
+    }
+    
+    #targetStatus.found #targetStatusText::before {
+      content: '✅';
+    }
+    
+    #targetStatus.lost #targetStatusText::before {
+      content: '❌';
+    }
+    
+    /* A-Frame Scene */
+    a-scene {
+      width: 100%;
+      height: 100vh;
+    }
+    
+    /* Video styling - will be adjusted via A-Frame */
+    .video-overlay {
+      width: 1;
+      height: 1;
+    }
+  </style>
+</head>
+<body>
+  <!-- Start Experience Overlay -->
+  <div id="startOverlay">
+    <h1>🎬 Video Memory</h1>
+    <p>Hedef görseli kameraya gösterin ve videoyu izleyin</p>
+    <p style="font-size: 0.9rem; opacity: 0.7; margin-top: -1rem;">Butona tıkladığınızda kamera izni istenecek</p>
+    <div id="httpsWarning" style="display: none; font-size: 0.85rem; opacity: 0.8; margin-top: 0.5rem; padding: 10px; background: rgba(255, 193, 7, 0.2); border-radius: 10px; border: 1px solid rgba(255, 193, 7, 0.5);">
+      ⚠️ HTTPS veya localhost gerekli. WebAR için güvenli bağlantı şarttır.
+    </div>
+    <button id="startButton" onclick="startExperience()">Deneyimi Başlat</button>
+  </div>
+  
+  <!-- Loading Indicator -->
+  <div id="loadingIndicator">
+    <span id="loadingText">Yükleniyor...</span>
+  </div>
+  
+  <!-- Target Detection Status -->
+  <div id="targetStatus" style="display: none;">
+    <div id="targetStatusText">Fotoğrafı kameraya gösterin...</div>
+  </div>
+  
+  <!-- A-Frame Scene with AR.js -->
+  <a-scene 
+    embedded
+    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono; maxDetectionRate: 60; canvasWidth: 640; canvasHeight: 480;"
+    vr-mode-ui="enabled: false"
+    renderer="logarithmicDepthBuffer: true; colorManagement: true; physicallyCorrectLights: true">
+    
+    <!-- AR.js Camera -->
+    <a-marker 
+      type="pattern" 
+      preset="custom"
+      url="video1/targets-2.patt"
+      raycaster="objects: .clickable"
+      emitevents="true"
+      cursor="fuse: false; rayOrigin: mouse;">
+      
+      <!-- Video Overlay - positioned exactly on the target image -->
+      <a-video 
+        id="arVideo"
+        src="video1/video.mp4"
+        width="1"
+        height="1"
+        position="0 0 0.01"
+        rotation="0 0 0"
+        autoplay="false"
+        loop="true"
+        playsinline="true"
+        webkit-playsinline="true"
+        crossorigin="anonymous"
+        preload="auto"
+        material="side: double; transparent: false; shader: flat; depthTest: true; depthWrite: true"
+        class="video-overlay clickable">
+      </a-video>
+    </a-marker>
+    
+    <!-- AR.js Camera Entity -->
+    <a-entity camera></a-entity>
+    
+    <!-- Lighting -->
+    <a-light type="ambient" color="#ffffff" intensity="0.6"></a-light>
+    <a-light type="directional" position="0 1 0" color="#ffffff" intensity="0.4"></a-light>
+  </a-scene>
+  
+  <script>
+    let videoElement = null;
+    let scene = null;
+    let isExperienceStarted = false;
+    
+    // Global error handler
+    window.addEventListener('error', (event) => {
+      console.error('❌ Global error:', event.error);
+      console.error('Error message:', event.message);
+      console.error('Error filename:', event.filename);
+      console.error('Error lineno:', event.lineno);
+      
+      // Don't show error overlay for resource loading errors (they're handled separately)
+      if (event.message && event.message.includes('Loading')) {
+        return;
+      }
+    });
+    
+    // Unhandled promise rejection handler
+    window.addEventListener('unhandledrejection', (event) => {
+      console.error('❌ Unhandled promise rejection:', event.reason);
+      event.preventDefault(); // Prevent default browser error handling
+    });
+    
+    // Check video file exists
+    function checkVideoFile() {
+      fetch('video1/video.mp4', { method: 'HEAD' })
+        .then(response => {
+          if (response.ok) {
+            console.log('✅ Video file found: video1/video.mp4');
+          } else {
+            console.error('❌ Video file not found (status:', response.status, ')');
+            console.error('💡 Video dosyası yolu: video1/video.mp4');
+            showError('Video dosyası bulunamadı! video1/video.mp4 dosyasının var olduğundan emin olun.');
+          }
+        })
+        .catch(error => {
+          console.error('❌ Error checking video file:', error);
+          console.error('💡 Video dosyası yolu: video1/video.mp4');
+        });
+    }
+    
+    // Check if HTTPS or localhost
+    function checkHTTPS() {
+      const isHTTPS = window.location.protocol === 'https:';
+      const isLocalhost = window.location.hostname === 'localhost' || 
+                         window.location.hostname === '127.0.0.1' ||
+                         window.location.hostname === '[::1]';
+      
+      if (!isHTTPS && !isLocalhost) {
+        const warning = document.getElementById('httpsWarning');
+        if (warning) {
+          warning.style.display = 'block';
+          console.warn('⚠️ HTTPS veya localhost gerekli. Mevcut protokol:', window.location.protocol);
+        }
+      } else {
+        console.log('✅ HTTPS veya localhost kullanılıyor');
+      }
+    }
+    
+    // Wait for A-Frame and MindAR to be ready
+    window.addEventListener('load', () => {
+      // Check HTTPS/localhost
+      checkHTTPS();
+      
+      // Check video file on load
+      checkVideoFile();
+      
+      scene = document.querySelector('a-scene');
+      
+      if (!scene) {
+        console.error('❌ Scene element not found');
+        showError('A-Frame scene bulunamadı. Sayfayı yenileyin.');
+        return;
+      }
+      
+      // Wait for scene to be ready
+      scene.addEventListener('loaded', () => {
+        console.log('✅ A-Frame scene loaded');
+        setupVideo();
+      });
+      
+      // Handle scene errors
+      scene.addEventListener('error', (event) => {
+        console.error('❌ Scene error:', event.detail);
+      });
+      
+      // AR.js tracking events
+      scene.addEventListener('arjs-video-loaded', () => {
+        console.log('✅ AR.js video loaded');
+        hideLoading();
+      });
+      
+      scene.addEventListener('arjs-nft-loaded', () => {
+        console.log('✅ AR.js NFT marker loaded');
+        console.log('📁 Target file: video1/targets-2.patt');
+        hideLoading();
+      });
+      
+      // Get marker element
+      const marker = document.querySelector('a-marker');
+      
+      if (marker) {
+        // Marker found event
+        marker.addEventListener('markerFound', (event) => {
+          console.log('🎯 Marker found!', event.detail);
+          showTargetStatus('Target bulundu! Video oynatılıyor...', 'found');
+          
+          if (isExperienceStarted) {
+            console.log('🎬 Marker found - attempting to play video...');
+            
+            // Get video element directly
+            const mesh = videoElement?.getObject3D('mesh');
+            const material = mesh?.material;
+            const video = material?.map?.image;
+            
+            if (video) {
+              console.log('📊 Video readyState when marker found:', video.readyState);
+              console.log('📊 Video paused:', video.paused);
+              
+              // If video is ready, play immediately
+              if (video.readyState >= 2) {
+                console.log('✅ Video is ready, playing immediately...');
+                playVideo();
+              } else {
+                console.log('⏳ Video not ready yet, waiting...');
+                // Wait for video to be ready
+                const onReady = () => {
+                  console.log('✅ Video ready, playing now...');
+                  video.removeEventListener('canplay', onReady);
+                  video.removeEventListener('loadeddata', onReady);
+                  playVideo();
+                };
+                
+                video.addEventListener('canplay', onReady, { once: true });
+                video.addEventListener('loadeddata', onReady, { once: true });
+                
+                // Force load if not loading
+                if (video.readyState === 0) {
+                  console.log('🔄 Forcing video load...');
+                  video.load();
+                }
+              }
+            } else {
+              console.warn('⚠️ Video not found, retrying...');
+              setTimeout(() => {
+                playVideo();
+              }, 300);
+            }
+          }
+        });
+        
+        // Marker lost event
+        marker.addEventListener('markerLost', (event) => {
+          console.log('❌ Marker lost', event.detail);
+          showTargetStatus('Fotoğrafı kameraya gösterin...', 'lost');
+        });
+      }
+      
+      // Check if targets-2.patt file exists in video1 folder on page load
+      fetch('video1/targets-2.patt', { method: 'HEAD' })
+        .then(response => {
+          if (response.ok) {
+            console.log('✅ targets-2.patt file found at video1/targets-2.patt');
+          } else {
+            console.error('❌ targets-2.patt file not found at video1/targets-2.patt (status:', response.status, ')');
+            console.log('💡 İpucu: targets-2.patt dosyası video1 klasöründe olmalı');
+            console.log('💡 AR.js için .patt dosyası gerekiyor (MindAR .mind dosyası değil)');
+          }
+        })
+        .catch(error => {
+          console.error('❌ Error checking targets-2.patt:', error);
+          console.log('💡 İpucu: targets-2.patt dosyası video1 klasöründe olmalı (video1/targets-2.patt)');
+        });
+    });
+    
+    // Setup video element
+    function setupVideo() {
+      videoElement = document.querySelector('#arVideo');
+      
+      if (!videoElement) {
+        console.error('❌ Video element not found');
+        return;
+      }
+      
+      // Wait for video element to be ready
+      videoElement.addEventListener('loaded', () => {
+        console.log('✅ Video element loaded in A-Frame');
+        fixVideoVisibility();
+      });
+      
+      // Get the actual video element (A-Frame wraps it)
+      const video = videoElement.getObject3D('mesh')?.material?.map?.image;
+      
+      if (!video) {
+        console.warn('⚠️ Video object not found yet, will retry...');
+        // Retry after a delay
+        setTimeout(() => {
+          setupVideo();
+        }, 500);
+        return;
+      }
+      
+      console.log('✅ Video DOM element found:', video);
+      
+      // CRITICAL: Preload video immediately
+      console.log('🔄 Preloading video...');
+      video.preload = 'auto';
+      video.load(); // Force video to start loading
+      
+      // Video event listeners
+      video.addEventListener('loadstart', () => {
+        console.log('🔄 Video loading started');
+      });
+      
+      video.addEventListener('loadeddata', () => {
+        console.log('✅ Video loaded');
+        console.log('📊 Video dimensions:', video.videoWidth, 'x', video.videoHeight);
+        console.log('📊 Video readyState:', video.readyState);
+        fixVideoVisibility();
+        adjustVideoSize();
+      });
+      
+      video.addEventListener('loadedmetadata', () => {
+        console.log('✅ Video metadata loaded');
+        console.log('📊 Video metadata - width:', video.videoWidth, 'height:', video.videoHeight);
+        fixVideoVisibility();
+      });
+      
+      video.addEventListener('canplay', () => {
+        console.log('✅ Video can play');
+        fixVideoVisibility();
+      });
+      
+      video.addEventListener('canplaythrough', () => {
+        console.log('✅ Video can play through');
+        fixVideoVisibility();
+      });
+      
+      video.addEventListener('play', () => {
+        console.log('▶️ Video playing');
+        fixVideoVisibility();
+      });
+      
+      video.addEventListener('playing', () => {
+        console.log('▶️ Video is playing');
+        fixVideoVisibility();
+      });
+      
+      video.addEventListener('pause', () => {
+        console.log('⏸️ Video paused');
+      });
+      
+      video.addEventListener('ended', () => {
+        console.log('⏹️ Video ended');
+      });
+      
+      video.addEventListener('waiting', () => {
+        console.log('⏳ Video waiting for data');
+      });
+      
+      video.addEventListener('stalled', () => {
+        console.warn('⚠️ Video stalled');
+      });
+      
+      video.addEventListener('error', (e) => {
+        console.error('❌ Video error:', e);
+        console.error('Video error code:', video.error?.code);
+        console.error('Video error message:', video.error?.message);
+        console.error('Video src:', video.src);
+        
+        let errorMessage = 'Video yüklenemedi. ';
+        if (video.error) {
+          switch(video.error.code) {
+            case 1: // MEDIA_ERR_ABORTED
+              errorMessage += 'Video yükleme iptal edildi.';
+              break;
+            case 2: // MEDIA_ERR_NETWORK
+              errorMessage += 'Ağ hatası. Video dosyasına erişilemiyor.';
+              break;
+            case 3: // MEDIA_ERR_DECODE
+              errorMessage += 'Video decode hatası. Dosya formatı desteklenmiyor olabilir.';
+              break;
+            case 4: // MEDIA_ERR_SRC_NOT_SUPPORTED
+              errorMessage += 'Video formatı desteklenmiyor. MP4 (H.264) formatında olduğundan emin olun.';
+              break;
+            default:
+              errorMessage += 'Bilinmeyen hata.';
+          }
+        }
+        
+        console.error('❌ Video error details:', {
+          code: video.error?.code,
+          message: video.error?.message,
+          src: video.src,
+          readyState: video.readyState
+        });
+      });
+      
+      // Set video attributes for mobile
+      video.setAttribute('playsinline', 'true');
+      video.setAttribute('webkit-playsinline', 'true');
+      video.setAttribute('muted', 'false'); // We'll handle autoplay with user interaction
+      
+      // Ensure video is visible
+      fixVideoVisibility();
+      
+      console.log('✅ Video setup complete');
+    }
+    
+    // Fix video visibility issues
+    function fixVideoVisibility() {
+      if (!videoElement) return;
+      
+      const mesh = videoElement.getObject3D('mesh');
+      if (!mesh) {
+        console.warn('⚠️ Video mesh not found');
+        return;
+      }
+      
+      const material = mesh.material;
+      if (!material) {
+        console.warn('⚠️ Video material not found');
+        return;
+      }
+      
+      // CRITICAL: Ensure material is visible and properly configured
+      material.visible = true;
+      material.transparent = false;
+      material.side = THREE.DoubleSide; // Show both sides to ensure visibility
+      material.depthWrite = true;
+      material.depthTest = true;
+      material.opacity = 1.0;
+      
+      // Force material update
+      material.needsUpdate = true;
+      
+      // Ensure mesh is visible and properly positioned
+      mesh.visible = true;
+      mesh.renderOrder = 9999; // Render on top
+      mesh.frustumCulled = false; // Don't cull the mesh
+      
+      // Ensure mesh position is correct
+      mesh.position.set(0, 0, 0);
+      mesh.scale.set(1, 1, 1);
+      
+      // Get video texture
+      const video = material.map?.image;
+      if (video) {
+        console.log('✅ Video texture found, dimensions:', video.videoWidth, 'x', video.videoHeight);
+        console.log('📊 Video readyState:', video.readyState);
+        console.log('📊 Video paused:', video.paused);
+        console.log('📊 Video currentTime:', video.currentTime);
+        console.log('📊 Video src:', video.src);
+        
+        // CRITICAL: Force video texture update with aggressive settings
+        if (material.map) {
+          // Ensure texture is properly configured
+          material.map.flipY = false; // Don't flip Y axis
+          material.map.format = THREE.RGBAFormat;
+          material.map.minFilter = THREE.LinearFilter;
+          material.map.magFilter = THREE.LinearFilter;
+          material.map.generateMipmaps = false; // Disable mipmaps for video
+          material.map.anisotropy = 1; // No anisotropy for video
+          
+          // CRITICAL: Force texture update
+          material.map.needsUpdate = true;
+          
+          // Update texture immediately
+          if (typeof material.map.update === 'function') {
+            material.map.update();
+          }
+          
+          // Force texture to update from video
+          if (video.readyState >= 2 && video.videoWidth > 0 && video.videoHeight > 0) {
+            material.map.needsUpdate = true;
+            
+            // CRITICAL: Ensure texture image matches video
+            if (material.map.image !== video) {
+              console.warn('⚠️ Texture image mismatch, reassigning...');
+              material.map.image = video;
+              material.map.needsUpdate = true;
+            }
+            
+            // Force update by accessing video properties
+            const width = video.videoWidth;
+            const height = video.videoHeight;
+            
+            // Ensure texture dimensions are correct
+            if (width > 0 && height > 0) {
+              material.map.image.width = width;
+              material.map.image.height = height;
+            }
+          }
+        }
+        
+        // Force material update
+        material.needsUpdate = true;
+        
+        // Log material properties for debugging
+        console.log('🔍 Material properties:', {
+          visible: material.visible,
+          transparent: material.transparent,
+          side: material.side,
+          opacity: material.opacity,
+          map: material.map ? 'exists' : 'missing',
+          needsUpdate: material.needsUpdate,
+          videoWidth: video.videoWidth,
+          videoHeight: video.videoHeight,
+          textureImage: material.map?.image === video ? 'match' : 'mismatch'
+        });
+        
+        // Ensure video is playing if it should be
+        if (!video.paused && video.readyState >= 2) {
+          console.log('✅ Video is ready and playing');
+        } else if (video.readyState < 2) {
+          console.warn('⚠️ Video not ready yet, readyState:', video.readyState);
+        }
+      } else {
+        console.error('❌ Video texture not found in material');
+        console.log('🔍 Material map:', material.map);
+        console.log('🔍 Material:', material);
+        console.log('🔍 Material keys:', Object.keys(material));
+      }
+      
+      // Force scene to render
+      if (scene && scene.renderer) {
+        scene.renderer.render(scene.object3D, scene.camera);
+      }
+      
+      console.log('✅ Video visibility fixed');
+    }
+    
+    // Adjust video size to match target image
+    function adjustVideoSize() {
+      if (!videoElement) return;
+      
+      // Get the video element
+      const video = videoElement.getObject3D('mesh')?.material?.map?.image;
+      if (!video) return;
+      
+      // Get video dimensions
+      const videoWidth = video.videoWidth;
+      const videoHeight = video.videoHeight;
+      
+      if (videoWidth === 0 || videoHeight === 0) {
+        console.warn('⚠️ Video dimensions not available yet');
+        return;
+      }
+      
+      // Calculate aspect ratio
+      const aspectRatio = videoWidth / videoHeight;
+      
+      // Set video entity size to match aspect ratio
+      // Assuming target image is square (1x1), adjust if needed
+      // For non-square targets, adjust width or height accordingly
+      if (aspectRatio > 1) {
+        // Landscape video
+        videoElement.setAttribute('width', aspectRatio);
+        videoElement.setAttribute('height', 1);
+      } else {
+        // Portrait or square video
+        videoElement.setAttribute('width', 1);
+        videoElement.setAttribute('height', 1 / aspectRatio);
+      }
+      
+      console.log(`✅ Video size adjusted: ${videoWidth}x${videoHeight} (aspect: ${aspectRatio})`);
+    }
+    
+    // Start Experience - Handle autoplay policy
+    function startExperience() {
+      if (isExperienceStarted) return;
+      
+      console.log('🚀 Starting experience...');
+      showLoading('Kamera başlatılıyor...');
+      
+      // Hide overlay
+      const overlay = document.getElementById('startOverlay');
+      overlay.classList.add('hidden');
+      
+      isExperienceStarted = true;
+      
+      // Check if scene is ready
+      if (!scene) {
+        console.error('❌ Scene not found');
+        showError('AR sahnesi bulunamadı. Sayfayı yenileyin.');
+        hideLoading();
+        return;
+      }
+      
+      // MindAR will handle camera access itself
+      // We just need to start the MindAR system
+      console.log('🚀 Starting AR experience...');
+      console.log('📷 AR.js will request camera access...');
+      
+      // Wait a bit for scene to be fully ready
+      setTimeout(() => {
+        // Start AR.js - it will request camera permission
+        startAR();
+        showTargetStatus('Fotoğrafı kameraya gösterin...', 'searching');
+      }, 300);
+    }
+    
+    // Start AR.js system (AR.js automatically starts when scene loads)
+    function startAR() {
+      if (!scene) {
+        console.error('❌ Scene not ready');
+        showError('Scene hazır değil. Sayfayı yenileyin.');
+        return;
+      }
+      
+      console.log('🚀 AR.js system starting...');
+      console.log('📁 Target file: video1/targets-2.patt');
+      
+      // AR.js automatically starts when scene loads
+      // We just need to wait for it to be ready
+      const marker = document.querySelector('a-marker');
+      
+      if (!marker) {
+        console.error('❌ Marker element not found');
+        showError('AR marker bulunamadı. Sayfayı yenileyin.');
+        hideLoading();
+        return;
+      }
+      
+      console.log('✅ AR.js marker found');
+      hideLoading();
+      
+      // Show success message
+      showLoading('AR hazır! Fotoğrafı kameraya gösterin...');
+      setTimeout(() => {
+        hideLoading();
+      }, 2000);
+    }
+    
+    // Play video (called after user interaction)
+    function playVideo() {
+      console.log('🎬 playVideo() called');
+      
+      if (!videoElement) {
+        console.error('❌ Video element not found');
+        // Try to get video element again
+        videoElement = document.querySelector('#arVideo');
+        if (!videoElement) {
+          console.error('❌ Video element still not found after retry');
+          return;
+        }
+      }
+      
+      const mesh = videoElement.getObject3D('mesh');
+      if (!mesh) {
+        console.error('❌ Video mesh not found, waiting...');
+        // Wait a bit and retry
+        setTimeout(() => {
+          playVideo();
+        }, 300);
+        return;
+      }
+      
+      const material = mesh.material;
+      if (!material) {
+        console.error('❌ Video material not found, waiting...');
+        setTimeout(() => {
+          playVideo();
+        }, 300);
+        return;
+      }
+      
+      const video = material.map?.image;
+      if (!video) {
+        console.error('❌ Video texture not found, waiting...');
+        // Try to get video from A-Frame component
+        const videoComponent = videoElement.components.video;
+        if (videoComponent && videoComponent.video) {
+          console.log('✅ Found video in component');
+          // Force setup again
+          setupVideo();
+          setTimeout(() => {
+            playVideo();
+          }, 500);
+        } else {
+          setTimeout(() => {
+            playVideo();
+          }, 300);
+        }
+        return;
+      }
+      
+      console.log('🎬 Attempting to play video...');
+      console.log('📊 Video state:', {
+        readyState: video.readyState,
+        paused: video.paused,
+        currentTime: video.currentTime,
+        duration: video.duration,
+        videoWidth: video.videoWidth,
+        videoHeight: video.videoHeight
+      });
+      
+      // Fix visibility before playing
+      fixVideoVisibility();
+      
+      // Wait for video to be ready if needed
+      if (video.readyState < 2) {
+        console.log('⏳ Video not ready yet, waiting for loadeddata...');
+        const onLoadedData = () => {
+          console.log('✅ Video loaded, attempting to play...');
+          video.removeEventListener('loadeddata', onLoadedData);
+          playVideo();
+        };
+        video.addEventListener('loadeddata', onLoadedData);
+        
+        // Also try canplay
+        const onCanPlay = () => {
+          console.log('✅ Video can play, attempting to play...');
+          video.removeEventListener('canplay', onCanPlay);
+          if (video.paused) {
+            playVideo();
+          }
+        };
+        video.addEventListener('canplay', onCanPlay);
+        
+        // Force load
+        video.load();
+        return;
+      }
+      
+      // Video is ready, try to play
+      console.log('▶️ Video is ready, calling play()...');
+      const playPromise = video.play();
+      
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            console.log('✅ Video playing successfully');
+            
+              // Force video texture update immediately
+              const videoMesh = videoElement.getObject3D('mesh');
+              if (videoMesh && videoMesh.material && videoMesh.material.map) {
+                // CRITICAL: Force texture update
+                videoMesh.material.map.needsUpdate = true;
+                videoMesh.material.needsUpdate = true;
+                
+                // Update texture immediately
+                if (typeof videoMesh.material.map.update === 'function') {
+                  videoMesh.material.map.update();
+                }
+                
+                // Force texture format
+                videoMesh.material.map.format = THREE.RGBAFormat;
+                videoMesh.material.map.flipY = false;
+              }
+              
+              fixVideoVisibility();
+              
+              // CRITICAL: Aggressively update video texture every frame
+              if (window.videoTextureUpdateId) {
+                cancelAnimationFrame(window.videoTextureUpdateId);
+              }
+              
+              const updateVideoTexture = () => {
+                if (!video || video.paused || video.ended) {
+                  if (window.videoTextureUpdateId) {
+                    cancelAnimationFrame(window.videoTextureUpdateId);
+                    window.videoTextureUpdateId = null;
+                  }
+                  return;
+                }
+                
+                const videoMesh = videoElement?.getObject3D('mesh');
+                if (videoMesh && videoMesh.material && videoMesh.material.map && video.readyState >= 2) {
+                  // CRITICAL: Force texture update EVERY frame
+                  videoMesh.material.map.needsUpdate = true;
+                  videoMesh.material.needsUpdate = true;
+                  
+                  // Update texture function
+                  if (typeof videoMesh.material.map.update === 'function') {
+                    videoMesh.material.map.update();
+                  }
+                  
+                  // CRITICAL: Ensure texture image is correct
+                  if (videoMesh.material.map.image !== video) {
+                    console.warn('⚠️ Texture image mismatch detected, fixing...');
+                    videoMesh.material.map.image = video;
+                    videoMesh.material.map.needsUpdate = true;
+                  }
+                  
+                  // CRITICAL: Ensure video dimensions are set
+                  if (video.videoWidth > 0 && video.videoHeight > 0) {
+                    if (videoMesh.material.map.image) {
+                      videoMesh.material.map.image.width = video.videoWidth;
+                      videoMesh.material.map.image.height = video.videoHeight;
+                    }
+                  }
+                  
+                  // CRITICAL: Ensure mesh is visible
+                  videoMesh.visible = true;
+                  videoMesh.material.visible = true;
+                  
+                  // Force render
+                  if (scene && scene.renderer) {
+                    scene.renderer.render(scene.object3D, scene.camera);
+                  }
+                }
+                
+                // Continue loop
+                window.videoTextureUpdateId = requestAnimationFrame(updateVideoTexture);
+              };
+              
+              // Start continuous update immediately
+              window.videoTextureUpdateId = requestAnimationFrame(updateVideoTexture);
+              
+              // Also force update on video timeupdate (backup)
+              const timeUpdateHandler = () => {
+                const videoMesh = videoElement?.getObject3D('mesh');
+                if (videoMesh && videoMesh.material && videoMesh.material.map) {
+                  videoMesh.material.map.needsUpdate = true;
+                  videoMesh.material.needsUpdate = true;
+                  if (typeof videoMesh.material.map.update === 'function') {
+                    videoMesh.material.map.update();
+                  }
+                }
+              };
+              video.addEventListener('timeupdate', timeUpdateHandler);
+              
+              // Store handler for cleanup
+              video._timeUpdateHandler = timeUpdateHandler;
+            
+            // Double check visibility after play
+            setTimeout(() => {
+              fixVideoVisibility();
+            }, 100);
+          })
+          .catch((error) => {
+            console.error('❌ Video play failed:', error);
+            console.error('Error name:', error.name);
+            console.error('Error message:', error.message);
+            
+            // Try with muted if autoplay fails
+            if (error.name === 'NotAllowedError' || error.name === 'NotSupportedError') {
+              console.log('⚠️ Trying muted playback...');
+              video.muted = true;
+              video.play()
+                .then(() => {
+                  console.log('✅ Video playing (muted)');
+                  fixVideoVisibility();
+                  
+                  // Start texture update
+                  const updateVideoTexture = () => {
+                    if (video && !video.paused) {
+                      const videoMesh = videoElement.getObject3D('mesh');
+                      if (videoMesh && videoMesh.material && videoMesh.material.map) {
+                        videoMesh.material.map.needsUpdate = true;
+                        if (typeof videoMesh.material.map.update === 'function') {
+                          videoMesh.material.map.update();
+                        }
+                      }
+                      window.videoTextureUpdateId = requestAnimationFrame(updateVideoTexture);
+                    }
+                  };
+                  window.videoTextureUpdateId = requestAnimationFrame(updateVideoTexture);
+                  
+                  // Unmute after a short delay
+                  setTimeout(() => {
+                    video.muted = false;
+                    fixVideoVisibility();
+                  }, 500);
+                })
+                .catch((err) => {
+                  console.error('❌ Muted playback also failed:', err);
+                });
+            }
+          });
+      } else {
+        console.warn('⚠️ play() returned undefined');
+      }
+    }
+    
+    // Show loading indicator
+    function showLoading(text = 'Yükleniyor...') {
+      const indicator = document.getElementById('loadingIndicator');
+      const loadingText = document.getElementById('loadingText');
+      if (indicator && loadingText) {
+        loadingText.textContent = text;
+        indicator.classList.add('show');
+      }
+    }
+    
+    // Hide loading indicator
+    function hideLoading() {
+      const indicator = document.getElementById('loadingIndicator');
+      if (indicator) {
+        indicator.classList.remove('show');
+      }
+    }
+    
+    // Initialize on page load with error handling
+    try {
+      // Check if page is being refreshed
+      if (performance.navigation.type === 1) {
+        console.log('🔄 Page was refreshed');
+      }
+    } catch (e) {
+      console.warn('⚠️ Could not check page navigation type:', e);
+    }
+    
+    // Show target detection status
+    function showTargetStatus(message, status = 'searching') {
+      const targetStatus = document.getElementById('targetStatus');
+      const targetStatusText = document.getElementById('targetStatusText');
+      
+      if (targetStatus && targetStatusText) {
+        targetStatusText.textContent = message;
+        targetStatus.className = status;
+        targetStatus.classList.add('show');
+        targetStatus.style.display = 'block';
+      }
+    }
+    
+    // Hide target detection status
+    function hideTargetStatus() {
+      const targetStatus = document.getElementById('targetStatus');
+      if (targetStatus) {
+        targetStatus.style.display = 'none';
+        targetStatus.classList.remove('show');
+      }
+    }
+    
+    // Show error message
+    function showError(message) {
+      const overlay = document.getElementById('startOverlay');
+      const button = document.getElementById('startButton');
+      const title = overlay.querySelector('h1');
+      const description = overlay.querySelector('p');
+      
+      if (title) {
+        title.textContent = '❌ Hata';
+      }
+      
+      if (description) {
+        description.textContent = message;
+        description.style.color = '#ffcccc';
+        description.style.fontSize = '1rem';
+      }
+      
+      if (button) {
+        button.textContent = 'TEKRAR DENE';
+        button.onclick = () => {
+          location.reload();
+        };
+      }
+      
+      overlay.classList.remove('hidden');
+      hideTargetStatus();
+      hideLoading();
+      
+      // Show error in console
+      console.error('❌ Error:', message);
+    }
+    
+    // Handle page visibility (pause video when tab is hidden)
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && videoElement) {
+        const video = videoElement.getObject3D('mesh')?.material?.map?.image;
+        if (video && !video.paused) {
+          video.pause();
+        }
+      }
+    });
+    
+    // Prevent context menu on long press (mobile)
+    document.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+    });
+  </script>
+</body>
+</html>
+

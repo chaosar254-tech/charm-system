@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Sürpriz — Senin İçin</title>
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; overflow: hidden; font-family: system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
+    a-scene { width: 100vw; height: 100vh; display: block; }
+    #intro-overlay {
+      position: fixed; inset: 0; background: #000;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 10000; transition: opacity 0.5s ease;
+    }
+    #intro-overlay.hidden { opacity: 0; pointer-events: none; }
+    #intro-overlay h1 { color: #fff; font-size: 1.4rem; margin-bottom: 2rem; text-align: center; padding: 0 1.5rem; }
+    #start-btn {
+      padding: 16px 40px; font-size: 1.1rem; border: none; border-radius: 12px;
+      background: linear-gradient(135deg, #e91e63, #c2185b); color: #fff;
+      cursor: pointer; font-weight: 600; box-shadow: 0 4px 20px rgba(233,30,99,0.4);
+    }
+    #start-btn:active { transform: scale(0.98); }
+    #instructions {
+      position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%);
+      padding: 10px 20px; background: rgba(0,0,0,0.6); color: #fff;
+      border-radius: 8px; font-size: 0.9rem; text-align: center; z-index: 9998; pointer-events: none;
+    }
+    #btn-left-zone, #btn-right-zone {
+      position: fixed; bottom: 90px;
+      opacity: 0; visibility: hidden; z-index: 2147483647;
+      touch-action: none;
+    }
+    #btn-left-zone { left: 20px; }
+    #btn-right-zone { right: 20px; }
+    #btn-left-zone.visible, #btn-right-zone.visible { opacity: 1; visibility: visible; }
+    .move-btn {
+      width: 56px; height: 56px;
+      border: none; border-radius: 12px;
+      background: rgba(0,0,0,0.6); color: #fff;
+      font-size: 14px; font-weight: bold;
+      touch-action: none; user-select: none;
+    }
+    .move-btn:active { background: rgba(233,30,99,0.8); }
+    #btn-go { width: 64px; height: 64px; font-size: 16px; }
+    #btn-up, #btn-down { display: block; width: 56px; margin: 0 auto 10px; }
+  </style>
+</head>
+<body>
+  <div id="intro-overlay">
+    <h1>Senin için bir sürpriz hazırladım</h1>
+    <button id="start-btn" type="button">SÜRPRİZE BAŞLA</button>
+  </div>
+  <div id="instructions" style="display: none;">Bakmak için fareyi veya parmağı sürükle · İleri ile baktığın yöne git</div>
+  <div id="btn-left-zone">
+    <button type="button" class="move-btn" id="btn-go" aria-label="İleri">İleri</button>
+  </div>
+  <div id="btn-right-zone">
+    <button type="button" class="move-btn" id="btn-up" aria-label="Yukarı">Yukarı</button>
+    <button type="button" class="move-btn" id="btn-down" aria-label="Aşağı">Aşağı</button>
+  </div>
+
+  <a-scene
+    id="main-scene"
+    embedded
+    background="color: #87CEEB"
+    loading-screen="enabled: true; backgroundColor: #87CEEB"
+    renderer="antialias: true; colorManagement: true"
+    vr-mode-ui="enabled: true"
+    device-orientation-permission-ui="enabled: false"
+  >
+
+    <a-assets timeout="25000">
+      <a-asset-item id="dunya-asset" src="final_surpriz.glb"></a-asset-item>
+      <img id="resim-img" src="resim.jpg" alt="">
+    </a-assets>
+
+    <a-entity light="type: ambient; intensity: 1.1; color: #ffffff"></a-entity>
+    <a-entity light="type: directional; intensity: 1; color: #fffaf5; castShadow: true" position="2 10 5" rotation="-50 25 0"></a-entity>
+
+    <!-- Kamera: spawn (-0.27, 2.30, -0.30). Bakış: fareyi sürükle (masaüstü) veya ekrana dokunup sürükle (mobil) -->
+    <a-camera id="player-camera" position="-0.27 2.30 -0.30" look-controls="pointerLockEnabled: true; magicWindowTrackingEnabled: true; touchEnabled: true; reverseMouseDrag: false; reverseTouchDrag: false" wasd-controls="enabled: false" button-move="speed: 0.008">
+      <a-entity cursor="fuse: false; rayOrigin: mouse" raycaster="objects: .clickable; far: 15; rayOrigin: mouse" position="0 0 -1"></a-entity>
+    </a-camera>
+
+    <a-sky color="#87CEEB" radius="100"></a-sky>
+
+    <a-circle position="0 0 0" rotation="-90 0 0" radius="50" material="color: #7cb342; roughness: 1; metalness: 0"></a-circle>
+    <a-entity id="dunya" gltf-model="#dunya-asset" position="0 0 0" scale="0.25 0.25 0.25" rotation="0 0 0"></a-entity>
+
+    <!-- Fotoğraf: resim.jpg — Y ekseninde 90° yan dönük -->
+    <a-plane id="resim-cerceve" src="#resim-img" position="-2.02 2.99 2.41" rotation="0 90 0" width="0.7" height="0.5" material="shader: flat; side: double"></a-plane>
+
+    <!-- Sürpriz kutusu: merkeze yakın görünmez tetikleyici (Blender: -28.74 6.173 -35.24) -->
+    <a-entity id="trigger-box" class="clickable" position="0 1 0" geometry="primitive: box; width: 4; height: 4; depth: 4" material="opacity: 0; transparent: true" surprise-trigger></a-entity>
+
+  </a-scene>
+
+  <audio id="bg-music" loop preload="auto">
+    <source src="muzik.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var overlay = document.getElementById('intro-overlay');
+      var startBtn = document.getElementById('start-btn');
+      var instructions = document.getElementById('instructions');
+      var music = document.getElementById('bg-music');
+
+      function startExperience() {
+        if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+          DeviceOrientationEvent.requestPermission()
+            .then(function (state) {
+              tryStart();
+            })
+            .catch(function () { tryStart(); });
+        } else {
+          tryStart();
+        }
+      }
+
+      function tryStart() {
+        overlay.classList.add('hidden');
+        instructions.style.display = 'block';
+        var bl = document.getElementById('btn-left-zone');
+        var br = document.getElementById('btn-right-zone');
+        if (bl) bl.classList.add('visible');
+        if (br) br.classList.add('visible');
+        if (music) {
+          music.volume = 0.6;
+          music.play().catch(function () {});
+        }
+      }
+
+      if (startBtn) startBtn.addEventListener('click', startExperience);
+
+      window.btnKeys = { go: false, up: false, down: false };
+      function bindBtn(id, key) {
+        var btn = document.getElementById(id);
+        if (!btn) return;
+        function set(v) { window.btnKeys[key] = v; }
+        btn.addEventListener('touchstart', function (e) { e.preventDefault(); set(true); }, { passive: false });
+        btn.addEventListener('touchend', function (e) { e.preventDefault(); set(false); }, { passive: false });
+        btn.addEventListener('touchcancel', function (e) { e.preventDefault(); set(false); }, { passive: false });
+        btn.addEventListener('mousedown', function () { set(true); });
+        btn.addEventListener('mouseup', function () { set(false); });
+        btn.addEventListener('mouseleave', function () { set(false); });
+      }
+      bindBtn('btn-go', 'go');
+      bindBtn('btn-up', 'up');
+      bindBtn('btn-down', 'down');
+
+      AFRAME.registerComponent('button-move', {
+        schema: { speed: { type: 'number', default: 0.008 } },
+        init: function () {
+          this.forward = new THREE.Vector3();
+          this.worldQuat = new THREE.Quaternion();
+        },
+        tick: function () {
+          var k = window.btnKeys;
+          if (!k || (!k.go && !k.up && !k.down)) return;
+          var el = this.el;
+          var pos = el.getAttribute('position');
+          var s = this.data.speed;
+          var newX = pos.x, newY = pos.y, newZ = pos.z;
+          if (k.go) {
+            // Bakış yönü: look-controls kamera entity'sini (this.el.object3D) döndürür
+            el.object3D.getWorldQuaternion(this.worldQuat);
+            this.forward.set(0, 0, -1).applyQuaternion(this.worldQuat).normalize();
+            newX += this.forward.x * s;
+            newY += this.forward.y * s;
+            newZ += this.forward.z * s;
+          }
+          if (k.up) newY += s;
+          if (k.down) newY -= s;
+          el.setAttribute('position', { x: newX, y: newY, z: newZ });
+        }
+      });
+
+      AFRAME.registerComponent('surprise-trigger', {
+        init: function () {
+          var el = this.el;
+          el.addEventListener('click', function () {
+            if (typeof confetti === 'function') {
+              confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 }, colors: ['#ff69b4', '#ff1493', '#ff6b9d', '#fff'] });
+              setTimeout(function () {
+                confetti({ particleCount: 100, angle: 60, spread: 55, origin: { x: 0.2 }, colors: ['#ff69b4', '#ff1493'] });
+                confetti({ particleCount: 100, angle: 120, spread: 55, origin: { x: 0.8 }, colors: ['#ff69b4', '#ff1493'] });
+              }, 200);
+            }
+
+            setTimeout(function () {
+              alert('SENİ ÇOK SEVİYORUM!');
+            }, 500);
+
+            el.setAttribute('visible', false);
+            el.removeAttribute('class');
+          });
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
