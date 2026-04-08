@@ -1,61 +1,998 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sitemiz Bakımda</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .container {
-            text-align: center;
-            padding: 50px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            font-size: 3em;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        p {
-            font-size: 1.2em;
-            color: #666;
-            margin-bottom: 30px;
-        }
-
-        .loader {
-            border: 10px solid #f3f3f3;
-            border-top: 10px solid #3498db;
-            border-radius: 50%;
-            width: 80px;
-            height: 80px;
-            animation: spin 2s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ChaosAR — E-Ticarette AR Dönüşümü</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+  :root {
+    --black: #080808;
+    --white: #f5f3ef;
+    --cream: #ede9e0;
+    --accent: #c8a96e;
+    --accent-light: #e8d5b0;
+    --muted: #6b6560;
+    --border: rgba(200,169,110,0.15);
+    --card-bg: #111010;
+    --serif: 'DM Serif Display', Georgia, serif;
+    --sans: 'DM Sans', system-ui, sans-serif;
+  }
+ 
+  html { scroll-behavior: smooth; }
+ 
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--sans);
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+ 
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 48px;
+    background: rgba(8,8,8,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 0.5px solid var(--border);
+  }
+  .nav-logo {
+    font-family: var(--serif);
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    color: var(--white);
+  }
+  .nav-logo span { color: var(--accent); }
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    align-items: center;
+  }
+  .nav-links a {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--white); }
+  .nav-cta {
+    background: var(--accent) !important;
+    color: var(--black) !important;
+    padding: 10px 22px;
+    border-radius: 6px;
+    font-weight: 500 !important;
+    font-size: 13px !important;
+    letter-spacing: 0.02em !important;
+  }
+ 
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -200px; left: 50%;
+    transform: translateX(-50%);
+    width: 800px; height: 800px;
+    background: radial-gradient(circle, rgba(200,169,110,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 0.5px solid var(--border);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    margin-bottom: 32px;
+    animation: fadeUp 0.8s ease both;
+  }
+  .badge-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: clamp(36px, 6vw, 72px);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    max-width: 800px;
+    margin: 0 auto 24px;
+    animation: fadeUp 0.8s 0.1s ease both;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .hero-sub {
+    font-size: clamp(15px, 2vw, 18px);
+    color: var(--muted);
+    max-width: 520px;
+    margin: 0 auto 48px;
+    font-weight: 300;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+  .hero-cta-group {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 64px;
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--black);
+    border: none;
+    padding: 14px 32px;
+    border-radius: 8px;
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-primary:hover {
+    background: var(--accent-light);
+    transform: translateY(-1px);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--white);
+    border: 0.5px solid rgba(255,255,255,0.2);
+    padding: 14px 32px;
+    border-radius: 8px;
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-ghost:hover {
+    border-color: rgba(255,255,255,0.4);
+    transform: translateY(-1px);
+  }
+ 
+  /* 3D CANVAS */
+  .canvas-wrapper {
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+    position: relative;
+    animation: fadeUp 0.8s 0.4s ease both;
+  }
+  .canvas-frame {
+    background: linear-gradient(145deg, #161412, #0e0d0b);
+    border: 0.5px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    height: 380px;
+  }
+  .canvas-frame canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+  .canvas-hint {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .canvas-tag {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: rgba(200,169,110,0.1);
+    border: 0.5px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+  }
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 48px;
+    margin-top: 48px;
+    flex-wrap: wrap;
+    animation: fadeUp 0.8s 0.5s ease both;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: var(--serif);
+    font-size: 32px;
+    color: var(--accent);
+    display: block;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+ 
+  /* SECTIONS */
+  section {
+    padding: 120px 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .section-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: var(--serif);
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 400;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+  .section-sub {
+    font-size: 16px;
+    color: var(--muted);
+    max-width: 500px;
+    margin-bottom: 64px;
+    line-height: 1.7;
+  }
+ 
+  /* HOW IT WORKS */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2px;
+    background: var(--border);
+    border: 0.5px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .step {
+    background: var(--card-bg);
+    padding: 48px 40px;
+    position: relative;
+  }
+  .step-num {
+    font-family: var(--serif);
+    font-size: 48px;
+    color: rgba(200,169,110,0.12);
+    position: absolute;
+    top: 24px; right: 28px;
+    line-height: 1;
+  }
+  .step-icon {
+    width: 48px; height: 48px;
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 28px;
+  }
+  .step-icon svg { width: 22px; height: 22px; stroke: var(--accent); fill: none; stroke-width: 1.5; stroke-linecap: round; }
+  .step h3 {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 400;
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+  .step p { font-size: 14px; color: var(--muted); line-height: 1.7; }
+  .step-code {
+    margin-top: 20px;
+    background: rgba(200,169,110,0.05);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--accent-light);
+    letter-spacing: 0.02em;
+  }
+ 
+  /* PRICING */
+  .pricing-section {
+    padding: 120px 24px;
+    background: #0a0908;
+    border-top: 0.5px solid var(--border);
+    border-bottom: 0.5px solid var(--border);
+  }
+  .pricing-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .pricing-note {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 48px;
+  }
+  .pricing-note span { color: var(--accent); }
+  .plans {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  .plan {
+    border: 0.5px solid var(--border);
+    border-radius: 16px;
+    padding: 40px 36px;
+    background: var(--card-bg);
+    position: relative;
+    transition: border-color 0.3s;
+  }
+  .plan:hover { border-color: rgba(200,169,110,0.3); }
+  .plan.featured {
+    border-color: var(--accent);
+    background: linear-gradient(145deg, #161310, #0e0c09);
+  }
+  .featured-badge {
+    position: absolute;
+    top: -12px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: var(--black);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 16px;
+    border-radius: 100px;
+    white-space: nowrap;
+    letter-spacing: 0.06em;
+  }
+  .plan-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .plan-desc {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 32px;
+    line-height: 1.6;
+  }
+  .plan-capex {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .plan-capex span {
+    color: var(--white);
+    font-weight: 500;
+  }
+  .plan-opex {
+    font-family: var(--serif);
+    font-size: 40px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+    line-height: 1;
+  }
+  .plan-opex small {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--muted);
+  }
+  .plan-opex.enterprise {
+    font-size: 28px;
+  }
+  .plan-divider {
+    border: none;
+    border-top: 0.5px solid var(--border);
+    margin: 28px 0;
+  }
+  .plan-features {
+    list-style: none;
+    margin-bottom: 32px;
+  }
+  .plan-features li {
+    font-size: 14px;
+    color: var(--muted);
+    padding: 7px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    border-top: 0.5px solid rgba(255,255,255,0.04);
+  }
+  .plan-features li::before {
+    content: '';
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: rgba(200,169,110,0.1);
+    border: 0.5px solid var(--accent);
+    flex-shrink: 0;
+    margin-top: 3px;
+    position: relative;
+  }
+  .plan-features li::before {
+    background-image: url("data:image/svg+xml,%3Csvg width='8' height='8' viewBox='0 0 8 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4l2 2 4-4' stroke='%23c8a96e' stroke-width='1.2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 8px;
+  }
+  .plan-trust {
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+    padding: 12px;
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+  .plan-btn {
+    width: 100%;
+    padding: 13px;
+    border-radius: 8px;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 0.5px solid var(--border);
+    background: transparent;
+    color: var(--white);
+    letter-spacing: 0.02em;
+  }
+  .plan-btn:hover { border-color: rgba(200,169,110,0.4); }
+  .plan-btn.featured-btn {
+    background: var(--accent);
+    color: var(--black);
+    border-color: var(--accent);
+  }
+  .plan-btn.featured-btn:hover { background: var(--accent-light); }
+ 
+  /* SOCIAL PROOF */
+  .proof-section { padding: 120px 24px; max-width: 1100px; margin: 0 auto; }
+  .proof-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    margin-top: 0;
+  }
+  .proof-card {
+    border: 0.5px solid var(--border);
+    border-radius: 16px;
+    padding: 36px;
+    background: var(--card-bg);
+  }
+  .proof-quote {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-style: italic;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    color: var(--cream);
+  }
+  .proof-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .proof-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(200,169,110,0.1);
+    border: 0.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--serif);
+    font-size: 14px;
+    color: var(--accent);
+  }
+  .proof-name { font-size: 13px; font-weight: 500; }
+  .proof-role { font-size: 12px; color: var(--muted); }
+  .proof-stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 48px;
+  }
+  .proof-stat {
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 24px;
+    background: var(--card-bg);
+    text-align: center;
+  }
+  .proof-stat-num {
+    font-family: var(--serif);
+    font-size: 36px;
+    color: var(--accent);
+    display: block;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .proof-stat-label { font-size: 13px; color: var(--muted); line-height: 1.5; }
+ 
+  /* FINAL CTA */
+  .final-cta {
+    padding: 160px 24px;
+    text-align: center;
+    background: linear-gradient(180deg, var(--black) 0%, #0d0b08 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .final-cta::before {
+    content: '';
+    position: absolute;
+    bottom: -100px; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(200,169,110,0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .final-cta h2 {
+    font-family: var(--serif);
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 400;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    max-width: 600px;
+    margin: 0 auto 20px;
+  }
+  .final-cta h2 em { font-style: italic; color: var(--accent); }
+  .final-cta p {
+    font-size: 16px;
+    color: var(--muted);
+    max-width: 400px;
+    margin: 0 auto 40px;
+  }
+ 
+  /* FOOTER */
+  footer {
+    padding: 40px 48px;
+    border-top: 0.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  footer .logo {
+    font-family: var(--serif);
+    font-size: 18px;
+    color: var(--white);
+  }
+  footer .logo span { color: var(--accent); }
+  footer p { font-size: 12px; color: var(--muted); }
+ 
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+ 
+  @media (max-width: 768px) {
+    nav { padding: 16px 20px; }
+    .nav-links { display: none; }
+    section { padding: 80px 20px; }
+    .pricing-section { padding: 80px 20px; }
+    .proof-stat-row { grid-template-columns: 1fr; }
+    footer { padding: 32px 20px; }
+  }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>Sitemiz Bakımda</h1>
-        <p>Üzgünüz, sitemiz şu anda bakım aşamasında. En kısa sürede geri döneceğiz.</p>
-        <div class="loader"></div>
+ 
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Chaos<span>AR</span></div>
+  <div class="nav-links">
+    <a href="#nasil">Nasıl Çalışır</a>
+    <a href="#fiyat">Fiyatlar</a>
+    <a href="#referans">Referanslar</a>
+    <a href="#demo" class="nav-cta">Ücretsiz Demo</a>
+  </div>
+</nav>
+ 
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    Türkiye'nin İlk E-Ticaret AR Altyapısı
+  </div>
+ 
+  <h1>İade oranlarınızı düşürün.<br><em>Satışlarınızı artırın.</em></h1>
+ 
+  <p class="hero-sub">
+    Müşterileriniz ürünü satın almadan önce kendi evlerinde görsün.
+    Tek satır kod. Sıfır teknik bilgi. 48 saat içinde yayında.
+  </p>
+ 
+  <div class="hero-cta-group">
+    <a href="#demo" class="btn-primary">Ücretsiz Demo Talep Et →</a>
+    <a href="#nasil" class="btn-ghost">Nasıl Çalışır?</a>
+  </div>
+ 
+  <div class="canvas-wrapper">
+    <div class="canvas-frame" id="canvas-frame">
+      <canvas id="ar-canvas"></canvas>
+      <div class="canvas-tag">AR DEMO — CANLI</div>
+      <div class="canvas-hint">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+        </svg>
+        Sürükleyerek 360° döndür
+      </div>
     </div>
+  </div>
+ 
+  <div class="stats-row">
+    <div class="stat">
+      <span class="stat-num">%40</span>
+      <span class="stat-label">İade oranı düşüşü</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">%94</span>
+      <span class="stat-label">Dönüşüm artışı</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">48s</span>
+      <span class="stat-label">Yayına giriş süresi</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">1 satır</span>
+      <span class="stat-label">Entegrasyon kodu</span>
+    </div>
+  </div>
+</div>
+ 
+<!-- HOW IT WORKS -->
+<section id="nasil">
+  <div class="section-label">Süreç</div>
+  <div class="section-title">Üç adımda yayında.</div>
+  <div class="section-sub">Kurulum derdi yok, geliştirici gerekmez. Siz sadece ürünlerinizi gönderin.</div>
+ 
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-icon">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+      </div>
+      <h3>Ürünlerinizi gönderin</h3>
+      <p>Mevcut ürün fotoğrafları ya da CAD çizimleriniz yeterli. Fiziksel örnek de gönderebilirsiniz. Gerisini biz hallederiz.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      </div>
+      <h3>Dijital ikizleri yaratıyoruz</h3>
+      <p>Ürünlerinizi fotogerçekçi 3D modellere dönüştürüyoruz. Web için optimize edilmiş, hafif ve her cihazda çalışan formatlar.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-icon">
+        <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      </div>
+      <h3>Kopyalayın, yapıştırın, bitti</h3>
+      <p>Tek satır kod. Ürün sayfanıza yapıştırın. AR butonu anında aktif.</p>
+      <div class="step-code">&lt;script src="chaosar.io/embed.js"&gt;&lt;/script&gt;</div>
+    </div>
+  </div>
+</section>
+ 
+<!-- PRICING -->
+<div class="pricing-section" id="fiyat">
+  <div class="pricing-inner">
+    <div class="section-label">Fiyatlandırma</div>
+    <div class="section-title">Şeffaf. Ölçeklenebilir.</div>
+    <p class="section-sub">Kurulum yatırımı + düşük aylık bakım. Gizli ücret yok.</p>
+    <p class="pricing-note">Tüm paketler: <span>Sınırsız AR gösterimi, güvenli bulut barındırma ve ücretsiz tarayıcı güncellemeleri dahildir.</span></p>
+ 
+    <div class="plans">
+ 
+      <div class="plan">
+        <div class="plan-name">Starter</div>
+        <p class="plan-desc">Sistemi ve dönüşümleri test etmek isteyen butikler için. 10 ürüne kadar.</p>
+        <div class="plan-capex">Kurulum: <span>5.000 ₺</span></div>
+        <div class="plan-opex">990 ₺<small>/ay</small></div>
+        <hr class="plan-divider">
+        <ul class="plan-features">
+          <li>10 ürüne kadar 3D model</li>
+          <li>Web AR entegrasyon kodu</li>
+          <li>QR kod seti</li>
+          <li>48 saat teslimat</li>
+          <li>E-posta destek</li>
+        </ul>
+        <div class="plan-trust">Sınırsız AR gösterimi · Güvenli bulut · Ücretsiz güncellemeler</div>
+        <button class="plan-btn" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">Demo Talep Et →</button>
+      </div>
+ 
+      <div class="plan featured">
+        <div class="featured-badge">EN ÇOK TERCİH EDİLEN · %20 BİRİM AVANTAJI</div>
+        <div class="plan-name">Growth</div>
+        <p class="plan-desc">Tüm koleksiyonunu AR'a taşımak isteyen standart markalar için. 50 ürüne kadar.</p>
+        <div class="plan-capex">Kurulum: <span>20.000 ₺</span></div>
+        <div class="plan-opex">1.490 ₺<small>/ay</small></div>
+        <hr class="plan-divider">
+        <ul class="plan-features">
+          <li>50 ürüne kadar 3D model</li>
+          <li>Web AR + iframe entegrasyonu</li>
+          <li>Öncelikli 24s teslimat</li>
+          <li>Aylık yeni ürün ekleme</li>
+          <li>Performans analitik paneli</li>
+          <li>Öncelikli destek hattı</li>
+        </ul>
+        <div class="plan-trust">Sınırsız AR gösterimi · Güvenli bulut · Ücretsiz güncellemeler</div>
+        <button class="plan-btn featured-btn" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">Hemen Başla →</button>
+      </div>
+ 
+      <div class="plan">
+        <div class="plan-name">Enterprise</div>
+        <p class="plan-desc">Dev markalar ve özel sunucu entegrasyonları gerektiren işletmeler için. 150+ ürün.</p>
+        <div class="plan-capex">Kurulum: <span>Özel</span></div>
+        <div class="plan-opex enterprise">Özel<br><small>Fiyatlandırma</small></div>
+        <hr class="plan-divider">
+        <ul class="plan-features">
+          <li>Sınırsız ürün modeli</li>
+          <li>Özel sunucu entegrasyonu</li>
+          <li>White-label çözüm</li>
+          <li>Dedicated hesap yöneticisi</li>
+          <li>SLA garantisi</li>
+          <li>API erişimi</li>
+        </ul>
+        <div class="plan-trust">Sınırsız AR gösterimi · Güvenli bulut · Ücretsiz güncellemeler</div>
+        <button class="plan-btn" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">Görüşme Ayarla →</button>
+      </div>
+ 
+    </div>
+  </div>
+</div>
+ 
+<!-- SOCIAL PROOF -->
+<div class="proof-section" id="referans">
+  <div class="section-label">Referanslar</div>
+  <div class="section-title">Sahada kanıtlanmış altyapı.</div>
+  <div class="section-sub">Restoran sektöründe geliştirdiğimiz 3D/AR altyapısını şimdi e-ticarete taşıyoruz.</div>
+ 
+  <div class="proof-grid">
+    <div class="proof-card">
+      <p class="proof-quote">"Menümüzü QR ile AR'a taşıdıklarında müşterilerimizin siparişlerdeki kararsızlığı neredeyse sıfırlandı. Teknoloji gerçekten işe yarıyor."</p>
+      <div class="proof-source">
+        <div class="proof-avatar">JG</div>
+        <div>
+          <div class="proof-name">Jaja Girls</div>
+          <div class="proof-role">İstanbul — Restoran & Kafe</div>
+        </div>
+      </div>
+    </div>
+    <div class="proof-card">
+      <p class="proof-quote">"48 saatte teslim dediler, 36 saatte teslim ettiler. Pipeline'ları inanılmaz hızlı. E-ticaret entegrasyonunu bekliyoruz."</p>
+      <div class="proof-source">
+        <div class="proof-avatar">AR</div>
+        <div>
+          <div class="proof-name">Avrupa Yakası Müşterisi</div>
+          <div class="proof-role">İstanbul — F&B Sektörü</div>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+  <div class="proof-stat-row">
+    <div class="proof-stat">
+      <span class="proof-stat-num">100+</span>
+      <span class="proof-stat-label">Tamamlanan 3D proje</span>
+    </div>
+    <div class="proof-stat">
+      <span class="proof-stat-num">%61</span>
+      <span class="proof-stat-label">Ortalama sipariş değeri artışı</span>
+    </div>
+    <div class="proof-stat">
+      <span class="proof-stat-num">2 gün</span>
+      <span class="proof-stat-label">Garanti teslimat süresi</span>
+    </div>
+  </div>
+</div>
+ 
+<!-- FINAL CTA -->
+<div class="final-cta" id="demo">
+  <h2>Rakipleriniz AR'ı<br><em>çoktan keşfetti.</em></h2>
+  <p>Ücretsiz demo için bize ulaşın. 15 dakikalık bir görüşmeyle başlayalım.</p>
+  <a href="mailto:hello@chaosar.io" class="btn-primary" style="font-size:16px; padding: 16px 40px;">
+    Toplantı Planla →
+  </a>
+  <p style="margin-top:20px; font-size:12px; color: var(--muted);">Kredi kartı gerekmez · İlk demo ücretsiz · 48 saat içinde dönüş</p>
+</div>
+ 
+<!-- FOOTER -->
+<footer>
+  <div class="logo">Chaos<span>AR</span></div>
+  <p>© 2025 ChaosAR. Tüm hakları saklıdır.</p>
+  <p style="font-size:12px; color: var(--muted);">hello@chaosar.io</p>
+</footer>
+ 
+<script>
+const canvas = document.getElementById('ar-canvas');
+const frame = document.getElementById('canvas-frame');
+canvas.width = frame.offsetWidth;
+canvas.height = frame.offsetHeight;
+ 
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setSize(frame.offsetWidth, frame.offsetHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.shadowMap.enabled = true;
+ 
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, frame.offsetWidth / frame.offsetHeight, 0.1, 100);
+camera.position.set(0, 1.5, 4.5);
+camera.lookAt(0, 0, 0);
+ 
+const ambient = new THREE.AmbientLight(0xffffff, 0.4);
+scene.add(ambient);
+ 
+const keyLight = new THREE.DirectionalLight(0xfff4e0, 1.2);
+keyLight.position.set(3, 5, 3);
+scene.add(keyLight);
+ 
+const fillLight = new THREE.DirectionalLight(0xc8a96e, 0.3);
+fillLight.position.set(-3, 2, -2);
+scene.add(fillLight);
+ 
+const rimLight = new THREE.DirectionalLight(0xffffff, 0.2);
+rimLight.position.set(0, -2, -4);
+scene.add(rimLight);
+ 
+const group = new THREE.Group();
+scene.add(group);
+ 
+const bodyGeo = new THREE.CylinderGeometry(0.55, 0.42, 1.6, 64, 1, true);
+const bodyMat = new THREE.MeshPhysicalMaterial({
+  color: 0xd4c5a9,
+  roughness: 0.15,
+  metalness: 0.0,
+  transmission: 0.6,
+  transparent: true,
+  opacity: 0.85,
+  thickness: 1.2,
+  side: THREE.DoubleSide,
+});
+const body = new THREE.Mesh(bodyGeo, bodyMat);
+group.add(body);
+ 
+const neckGeo = new THREE.CylinderGeometry(0.18, 0.28, 0.5, 48);
+const neck = new THREE.Mesh(neckGeo, bodyMat);
+neck.position.y = 1.05;
+group.add(neck);
+ 
+const lipGeo = new THREE.TorusGeometry(0.19, 0.04, 16, 48);
+const lipMat = new THREE.MeshPhysicalMaterial({ color: 0xb8a88a, roughness: 0.2, metalness: 0.1 });
+const lip = new THREE.Mesh(lipGeo, lipMat);
+lip.position.y = 1.32;
+lip.rotation.x = Math.PI / 2;
+group.add(lip);
+ 
+const bottomGeo = new THREE.CylinderGeometry(0.42, 0.38, 0.08, 48);
+const bottom = new THREE.Mesh(bottomGeo, lipMat);
+bottom.position.y = -0.84;
+group.add(bottom);
+ 
+const ringGeo = new THREE.TorusGeometry(0.58, 0.025, 12, 64);
+const ringMat = new THREE.MeshPhysicalMaterial({ color: 0xc8a96e, roughness: 0.1, metalness: 0.7 });
+const ring1 = new THREE.Mesh(ringGeo, ringMat);
+ring1.position.y = 0.2;
+ring1.rotation.x = Math.PI / 2;
+group.add(ring1);
+ 
+const ring2 = ring1.clone();
+ring2.position.y = -0.2;
+group.add(ring2);
+ 
+const floorGeo = new THREE.CircleGeometry(2, 64);
+const floorMat = new THREE.MeshBasicMaterial({ color: 0x0a0908, transparent: true, opacity: 0 });
+const floor = new THREE.Mesh(floorGeo, floorMat);
+floor.rotation.x = -Math.PI / 2;
+floor.position.y = -1;
+scene.add(floor);
+ 
+const gridHelper = new THREE.GridHelper(4, 8, 0x1a1816, 0x1a1816);
+gridHelper.position.y = -1;
+scene.add(gridHelper);
+ 
+let isDragging = false;
+let prevX = 0, prevY = 0;
+let rotX = 0, rotY = 0;
+let velX = 0, velY = 0;
+ 
+canvas.addEventListener('mousedown', e => { isDragging = true; prevX = e.clientX; prevY = e.clientY; });
+canvas.addEventListener('touchstart', e => { isDragging = true; prevX = e.touches[0].clientX; prevY = e.touches[0].clientY; });
+ 
+window.addEventListener('mouseup', () => isDragging = false);
+window.addEventListener('touchend', () => isDragging = false);
+ 
+window.addEventListener('mousemove', e => {
+  if (!isDragging) return;
+  velX = (e.clientX - prevX) * 0.008;
+  velY = (e.clientY - prevY) * 0.005;
+  prevX = e.clientX; prevY = e.clientY;
+});
+window.addEventListener('touchmove', e => {
+  if (!isDragging) return;
+  velX = (e.touches[0].clientX - prevX) * 0.008;
+  velY = (e.touches[0].clientY - prevY) * 0.005;
+  prevX = e.touches[0].clientX; prevY = e.touches[0].clientY;
+  e.preventDefault();
+}, { passive: false });
+ 
+function animate() {
+  requestAnimationFrame(animate);
+  if (isDragging) {
+    rotY += velX;
+    rotX += velY;
+    rotX = Math.max(-0.6, Math.min(0.6, rotX));
+  } else {
+    velX *= 0.92;
+    velY *= 0.92;
+    rotY += velX;
+    rotX += velY;
+    rotY += 0.004;
+  }
+  group.rotation.y = rotY;
+  group.rotation.x = rotX;
+  group.position.y = Math.sin(Date.now() * 0.001) * 0.06;
+  renderer.render(scene, camera);
+}
+animate();
+ 
+window.addEventListener('resize', () => {
+  const w = frame.offsetWidth;
+  const h = frame.offsetHeight;
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h);
+});
+</script>
 </body>
 </html>
+ 
