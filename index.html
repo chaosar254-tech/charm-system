@@ -653,32 +653,28 @@
     <a href="#demo" class="btn-primary">Ücretsiz Demo Talep Et →</a>
     <a href="#nasil" class="btn-ghost">Nasıl Çalışır?</a>
   </div>
-  <model-viewer
-  src="https://models.chaosarmenu.com/chaosar-models/chaosar-shop/Nike.glb"
-  ios-src="https://models.chaosarmenu.com/chaosar-models/chaosar-shop/Nike.usdz" 
-  alt="Nike 3D AR Model"
-  auto-rotate
-  camera-controls
-  ar
-  style="width: 100%; height: 500px; background-color: transparent;">
-</model-viewer>
  
-  <div class="canvas-wrapper">
+<div class="canvas-wrapper">
     <div class="canvas-frame" id="canvas-frame">
-      <canvas id="ar-canvas"></canvas>
-      <div class="canvas-tag">AR DEMO — CANLI</div>
-      <div class="canvas-hint">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
-        </svg>
-        Sürükleyerek 360° döndür
-      </div>
+        <model-viewer
+            src="https://models.chaosarmenu.com/chaosar-models/chaosar-shop/Nike.glb"
+            ios-src="https://models.chaosarmenu.com/chaosar-models/chaosar-shop/Nike.usdz"
+            alt="Nike 3D AR Model"
+            auto-rotate
+            camera-controls
+            ar
+            style="width: 100%; height: 100%; background-color: transparent; outline: none;">
+        </model-viewer>
+        <div class="canvas-tag">AR DEMO — CANLI</div>
+        <div class="canvas-hint">
+            <svg ...> </svg>
+            Sürükleyerek 360° döndür
+        </div>
     </div>
-  </div>
- 
+</div> 
   <div class="stats-row">
     <div class="stat">
-      <span class="stat-num">%40</span>
+      <span class="stat-num">%70</span>
       <span class="stat-label">İade oranı düşüşü</span>
     </div>
     <div class="stat">
