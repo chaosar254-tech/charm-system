@@ -4,8 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ChaosAR — E-Ticarette AR Dönüşümü</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://models.chaosarmenu.com/chaosar-models/chaosar-shop/Nike.glb"></script>
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
  
@@ -654,6 +653,15 @@
     <a href="#demo" class="btn-primary">Ücretsiz Demo Talep Et →</a>
     <a href="#nasil" class="btn-ghost">Nasıl Çalışır?</a>
   </div>
+  <model-viewer
+  src="https://models.chaosarmenu.com/chaosar-models/chaosar-shop/Nike.glb"
+  ios-src="https://models.chaosarmenu.com/chaosar-models/chaosar-shop/Nike.usdz" 
+  alt="Nike 3D AR Model"
+  auto-rotate
+  camera-controls
+  ar
+  style="width: 100%; height: 500px; background-color: transparent;">
+</model-viewer>
  
   <div class="canvas-wrapper">
     <div class="canvas-frame" id="canvas-frame">
@@ -805,12 +813,12 @@
         <div class="proof-avatar">JG</div>
         <div>
           <div class="proof-name">Jaja Girls</div>
-          <div class="proof-role">İstanbul — Restoran & Kafe</div>
+          <div class="proof-role">İstanbul — Restoran & Steakhouse</div>
         </div>
       </div>
     </div>
     <div class="proof-card">
-      <p class="proof-quote">"48 saatte teslim dediler, 36 saatte teslim ettiler. Pipeline'ları inanılmaz hızlı. E-ticaret entegrasyonunu bekliyoruz."</p>
+      <p class="proof-quote">"48 saatte teslim dediler, 24 saatte teslim ettiler. Pipeline'ları inanılmaz hızlı. E-ticaret entegrasyonunu bekliyoruz."</p>
       <div class="proof-source">
         <div class="proof-avatar">AR</div>
         <div>
@@ -841,17 +849,17 @@
 <div class="final-cta" id="demo">
   <h2>Rakipleriniz AR'ı<br><em>çoktan keşfetti.</em></h2>
   <p>Ücretsiz demo için bize ulaşın. 15 dakikalık bir görüşmeyle başlayalım.</p>
-  <a href="mailto:@info@cha0sar.com" class="btn-primary" style="font-size:16px; padding: 16px 40px;">
+  <a href="mailto:info@cha0sar.com" class="btn-primary" style="font-size:16px; padding: 16px 40px;">
     Toplantı Planla →
   </a>
-  <p style="margin-top:20px; font-size:12px; color: var(--muted);">Kredi kartı gerekmez · İlk demo ücretsiz · 48 saat içinde dönüş</p>
+  <p style="margin-top:20px; font-size:12px; color: var(--muted);">Kredi kartı gerekmez · İlk demo ücretsiz (kendi ürününüz) · 12 saat içinde dönüş</p>
 </div>
  
 <!-- FOOTER -->
 <footer>
   <div class="logo">Chaos<span>AR</span></div>
   <p>© 2025 ChaosAR. Tüm hakları saklıdır.</p>
-  <p style="font-size:12px; color: var(--muted);">hello@chaosar.io</p>
+  <p style="font-size:12px; color: var(--muted);">info@cha0sar.com</p>
 </footer>
  
 <script>
