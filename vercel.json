@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/butik", "destination": "/pages/butik/index.html" },
+    { "source": "/vr", "destination": "/pages/vr/index.html" },
+    { "source": "/video", "destination": "/pages/video/index.html" }
+  ]
+}
