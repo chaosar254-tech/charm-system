@@ -933,35 +933,35 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   .hstat-num { font-size: 1.5rem; }
   .hstat-sep { display: none; }
 }
-/* Modelin Ekran Köşesinde Sabit Kalması ve Gezinmesi İçin */
-.custom-floating-viewer {
-  position: fixed; /* Ekranın Sabit Bir Yerinde Kalmasını Sağlar */
-  bottom: 30px; /* Alttan Boşluk */
-  right: 30px; /* Sağdan Boşluk */
-  width: 400px; /* Modelin Kaplayacağı Alanın Genişliği */
-  height: 400px; /* Modelin Kaplayacağı Alanın Yüksekliği */
-  z-index: 1000; /* Sitenin Diğer İçeriklerinin Üzerinde Kalmasını Sağlar */
-  pointer-events: none; /* Model Üzerinden Mouse ile Sayfayı Kaydırabilmek İçin */
+/* Ejderhanın Süzülme Animasyonu */
+@keyframes floatAnimation {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); } /* 15 piksel yukarı süzülür */
+  100% { transform: translateY(0px); }
 }
 
-/* Model Viewer'ın Kendi İçindeki Alanını ve Şeffaflığını Ayarlar */
-.custom-floating-viewer model-viewer {
-  width: 100%;
-  height: 100%;
-  --progress-mask: transparent; /* Yükleme Maskesini Şeffaf Yapar */
-  --poster-color: transparent; /* Yükleme Posterini Şeffaf Yapar */
-  background-color: transparent !important; /* Arka Planı Zorla Şeffaf Yapar */
+/* Modelin Ekran Köşesinde Sabit Kalması ve Gezinmesi İçin */
+.custom-floating-viewer {
+  position: fixed; /* Ekranın Sabit Bir Yerinde Kalmasını Sağlar (Gezinir) */
+  bottom: 25px; /* Alttan Boşluk */
+  right: 25px; /* Sağdan Boşluk */
+  width: 380px; /* Modelin Kaplayacağı Alanın Genişliği (Çok Büyükse Küçült) */
+  height: 380px; /* Modelin Kaplayacağı Alanın Yüksekliği */
+  z-index: 9999; /* Sitenin Diğer İçeriklerinin Üzerinde Kalmasını Sağlar */
+  pointer-events: auto; /* Model Üzerinden Mouse ile Çevirebilmek İçin */
+  
+  /* İşte o "Base Bros" süzülme efektini veren satır: */
+  animation: floatAnimation 3s ease-in-out infinite; 
 }
 
 /* Cep Telefonları İçin Boyutunu Küçültelim */
 @media (max-width: 768px) {
   .custom-floating-viewer {
-    width: 250px;
-    height: 250px;
-    bottom: 20px;
-    right: 20px;
+    width: 260px;
+    height: 260px;
+    bottom: 15px;
+    right: 15px;
   }
-}
 </style>
 </head>
 <body>
@@ -1041,16 +1041,17 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   </div>
 
 <div class="custom-floating-viewer">
-<div class="custom-floating-viewer">
+
   <model-viewer 
-    src="./assets/achates.glb" 
-    autoplay 
-    animation-name="*" 
-    auto-rotate 
+    src="./assets/achates.glb"  autoplay 
+    animation-name="*"  auto-rotate 
     camera-controls 
-    style="width: 100%; height: 100%; background-color: transparent;">
+    ar 
+    style="width: 100%; height: 100%; background-color: transparent; outline: none;" 
+    environment-image="neutral"  exposure="1" 
+    interaction-prompt="none"  >
   </model-viewer>
-</div>
+
 </div>
 
 </div>        <span class="live-dot"></span>
