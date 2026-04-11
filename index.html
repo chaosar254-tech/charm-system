@@ -58,6 +58,15 @@ body {
   color: var(--ink-muted);
   writing-mode: vertical-rl;
 }
+.si-discover {
+  font-family: var(--font-serif);
+  font-size: 0.48rem !important;
+  letter-spacing: 0.14em !important;
+  color: var(--gold) !important;
+  opacity: 0.7;
+  margin-bottom: 6px;
+  font-style: italic;
+}
 .si-line {
   width: 1px;
   height: 56px;
@@ -334,79 +343,81 @@ nav {
 .color-swatches {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 20px;
-  padding: 10px 18px;
-  background: rgba(255,255,255,0.72);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(0,0,0,0.07);
-  border-radius: 100px;
+  gap: 4px;
+  margin-top: 24px;
+  padding: 8px;
+  background: rgba(10,10,10,0.80);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 18px;
   width: fit-content;
   margin-inline: auto;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.05);
 }
-.swatch-item {
+.color-chip {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 5px;
-}
-.color-swatch {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  border: 2px solid rgba(255,255,255,0.9);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.22);
+  gap: 8px;
+  padding: 8px 13px 8px 9px;
+  border-radius: 11px;
+  border: 1px solid transparent;
+  background: transparent;
   cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
   outline: none;
-  flex-shrink: 0;
-  position: relative;
-}
-.color-swatch:hover {
-  transform: scale(1.25);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.28);
-}
-.color-swatch.active {
-  transform: scale(1.18);
-  border-color: var(--ink);
-  box-shadow: 0 0 0 2.5px var(--ink), 0 4px 14px rgba(0,0,0,0.22);
-}
-.swatch-label {
-  font-family: var(--font-sans);
-  font-size: 0.42rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
   white-space: nowrap;
+  text-decoration: none;
 }
-/* Separator between palette and reset */
-.swatch-sep {
+.color-chip:hover {
+  background: rgba(255,255,255,0.07);
+  transform: translateY(-2px);
+}
+.color-chip.active {
+  background: rgba(255,255,255,0.11);
+  border-color: rgba(255,255,255,0.16);
+}
+.chip-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.35);
+  transition: box-shadow 0.2s ease;
+}
+.color-chip.active .chip-dot {
+  box-shadow: 0 0 14px 3px var(--chip-glow, rgba(255,255,255,0.4)), 0 2px 8px rgba(0,0,0,0.4);
+}
+.chip-name {
+  font-family: var(--font-sans);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  transition: color 0.18s ease;
+}
+.color-chip:hover .chip-name,
+.color-chip.active .chip-name { color: rgba(255,255,255,0.92); }
+/* Separator */
+.chip-sep {
   width: 1px;
-  height: 28px;
-  background: rgba(0,0,0,0.1);
-  margin: 0 4px;
+  height: 22px;
+  background: rgba(255,255,255,0.08);
+  margin: 0 3px;
   flex-shrink: 0;
 }
-/* Reset / Orijinal butonu */
-.color-swatch--reset {
-  background: var(--cream) !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--ink);
-  border-color: rgba(0,0,0,0.12) !important;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
-}
-.color-swatch--reset svg {
-  width: 13px;
-  height: 13px;
-  stroke: var(--ink);
+/* Orijinal reset chip */
+.color-chip--reset { gap: 7px; }
+.color-chip--reset svg {
+  width: 14px;
+  height: 14px;
+  stroke: rgba(255,255,255,0.45);
   flex-shrink: 0;
+  transition: stroke 0.18s ease;
 }
+.color-chip--reset:hover svg,
+.color-chip--reset.active svg { stroke: rgba(255,255,255,0.92); }
 .custom-floating-viewer model-viewer {
   width: 100%;
   height: 100%;
@@ -1027,6 +1038,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
 
 <!-- SCROLL INDICATOR -->
 <div class="scroll-indicator" aria-hidden="true">
+  <span class="si-discover">Geleceği Keşfet</span>
   <span>Scroll</span>
   <div class="si-line"></div>
 </div>
@@ -1048,8 +1060,8 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
 
   <div class="hero-left">
     <div class="hero-label">3D · AR · Commerce</div>
-    <h1 class="hero-h1">Ürününü<br><em>gerçek</em> yap<br>satışa geçmeden.</h1>
-    <p class="hero-sub">Müşterileriniz ürünü satın almadan önce kendi evlerinde görsün. Tek satır kod, sıfır teknik bilgi.</p>
+    <h1 class="hero-h1">Satıştan Önce<br><em>Denet,</em><br>İadeyi Bitir.</h1>
+    <p class="hero-sub">Müşterileriniz ürünlerinizi satın almadan önce kendi salonlarına yerleştirsin. Uygulama indirme zorunluluğu yok. Sadece tek tıkla kusursuz WebAR deneyimi.</p>
 
     <div class="ar-btn-group">
       <button class="ar-btn" id="arBtn" onclick="var mv=document.getElementById('dragonHero');if(mv&&mv.canActivateAR)mv.activateAR();else document.getElementById('demo').scrollIntoView({behavior:'smooth'})">
@@ -1062,11 +1074,11 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
           <span class="ar-vf br"></span>
         </span>
         <span class="ar-dot"></span>
-        <span class="ar-btn-label">Odanda Dene</span>
+        <span class="ar-btn-label">Evinde Gör</span>
       </button>
       <div>
-        <div class="ar-copy-title">Mekânına Taşı</div>
-        <div class="ar-copy-desc">Kameranı aç, ürünü odana yerleştir.</div>
+        <div class="ar-copy-title">AR'da Görüntüle</div>
+        <div class="ar-copy-desc">Sadece bakmakla yetinme. Kameranı aç ve ürünün senin dünyanda nasıl durduğunu saniyeler içinde gör.</div>
       </div>
     </div>
 
@@ -1133,38 +1145,36 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
       </div>
     </div>
 
-    <!-- Color swatches -->
+    <!-- Color palette -->
     <div class="color-swatches" id="colorSwatches">
-      <div class="swatch-item">
-        <button class="color-swatch" data-color="#FF2D55" style="background:linear-gradient(135deg,#FF6B8A,#FF2D55);" aria-label="Ateş"></button>
-        <span class="swatch-label">Ateş</span>
-      </div>
-      <div class="swatch-item">
-        <button class="color-swatch" data-color="#00C8FF" style="background:linear-gradient(135deg,#70E8FF,#00C8FF);" aria-label="Safir"></button>
-        <span class="swatch-label">Safir</span>
-      </div>
-      <div class="swatch-item">
-        <button class="color-swatch" data-color="#FFD700" style="background:linear-gradient(135deg,#FFE97A,#FFD700);" aria-label="Altın"></button>
-        <span class="swatch-label">Altın</span>
-      </div>
-      <div class="swatch-item">
-        <button class="color-swatch" data-color="#00FF88" style="background:linear-gradient(135deg,#7AFFC4,#00FF88);" aria-label="Zümrüt"></button>
-        <span class="swatch-label">Zümrüt</span>
-      </div>
-      <div class="swatch-item">
-        <button class="color-swatch" data-color="#C77DFF" style="background:linear-gradient(135deg,#E0AAFF,#C77DFF);" aria-label="Lavanta"></button>
-        <span class="swatch-label">Lavanta</span>
-      </div>
-      <div class="swatch-sep"></div>
-      <div class="swatch-item">
-        <button class="color-swatch color-swatch--reset" id="resetSwatch" aria-label="Orijinal">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-            <path d="M3 3v5h5"/>
-          </svg>
-        </button>
-        <span class="swatch-label">Orijinal</span>
-      </div>
+      <button class="color-chip" data-color="#FF0033" style="--chip-glow:rgba(255,0,51,0.55);" aria-label="Ateş">
+        <span class="chip-dot" style="background:linear-gradient(135deg,#FF4466,#FF0033);"></span>
+        <span class="chip-name">Ateş</span>
+      </button>
+      <button class="color-chip" data-color="#0066FF" style="--chip-glow:rgba(0,102,255,0.55);" aria-label="Safir">
+        <span class="chip-dot" style="background:linear-gradient(135deg,#4D99FF,#0066FF);"></span>
+        <span class="chip-name">Safir</span>
+      </button>
+      <button class="color-chip" data-color="#FFD700" style="--chip-glow:rgba(255,215,0,0.55);" aria-label="Altın">
+        <span class="chip-dot" style="background:linear-gradient(135deg,#FFE84D,#FFD700);"></span>
+        <span class="chip-name">Altın</span>
+      </button>
+      <button class="color-chip" data-color="#00FF66" style="--chip-glow:rgba(0,255,102,0.55);" aria-label="Zümrüt">
+        <span class="chip-dot" style="background:linear-gradient(135deg,#4DFFAA,#00FF66);"></span>
+        <span class="chip-name">Zümrüt</span>
+      </button>
+      <button class="color-chip" data-color="#9900FF" style="--chip-glow:rgba(153,0,255,0.55);" aria-label="Lavanta">
+        <span class="chip-dot" style="background:linear-gradient(135deg,#CC4DFF,#9900FF);"></span>
+        <span class="chip-name">Lavanta</span>
+      </button>
+      <div class="chip-sep"></div>
+      <button class="color-chip color-chip--reset" id="resetSwatch" aria-label="Orijinal">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+          <path d="M3 3v5h5"/>
+        </svg>
+        <span class="chip-name">Orijinal</span>
+      </button>
     </div>
   </div>
 
@@ -1193,7 +1203,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
         <div class="step-num">03</div>
         <div class="step-icon"><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
         <h3>Kopyalayın, yapıştırın, bitti</h3>
-        <p>Tek satır kod. Ürün sayfanıza yapıştırın. AR butonu anında aktif.</p>
+        <p>Size vereceğimiz kodu sitenize yapıştırın ve müşterilerinizin ürünlerinizle bağ kurmasını izleyin.</p>
         <div class="step-code">&lt;script src="chaosar.io/embed.js"&gt;&lt;/script&gt;</div>
       </div>
     </div>
@@ -1554,10 +1564,10 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     });
   }
 
-  const swatches = document.querySelectorAll('#colorSwatches .color-swatch:not(.color-swatch--reset)');
+  const chips = document.querySelectorAll('#colorSwatches .color-chip:not(.color-chip--reset)');
   const resetBtn = document.getElementById('resetSwatch');
 
-  swatches.forEach(btn => {
+  chips.forEach(btn => {
     btn.addEventListener('click', () => {
       const hex = btn.dataset.color;
       activeSwatchColor = hex;
@@ -1566,7 +1576,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
       } else {
         mv.addEventListener('load', () => applyColor(hex), { once: true });
       }
-      document.querySelectorAll('#colorSwatches .color-swatch').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('#colorSwatches .color-chip').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
     });
   });
@@ -1575,7 +1585,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     resetBtn.addEventListener('click', () => {
       activeSwatchColor = null;
       resetColors();
-      document.querySelectorAll('#colorSwatches .color-swatch').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('#colorSwatches .color-chip').forEach(b => b.classList.remove('active'));
     });
   }
 })();
