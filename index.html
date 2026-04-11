@@ -904,34 +904,169 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ── MOBİL HAMBURGER ──────────────────────────────────────────── */
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  z-index: 200;
+}
+.nav-hamburger span {
+  display: block;
+  width: 22px;
+  height: 1.5px;
+  background: var(--ink);
+  border-radius: 2px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  transform-origin: center;
+}
+.nav-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.nav-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+.nav-drawer {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--cream);
+  z-index: 150;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 36px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.nav-drawer.open {
+  opacity: 1;
+  pointer-events: all;
+}
+.nav-drawer a {
+  font-family: var(--font-serif);
+  font-size: 2.2rem;
+  font-weight: 300;
+  color: var(--ink);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+  transition: color 0.2s;
+}
+.nav-drawer a:hover { color: var(--gold); }
+.nav-drawer .drawer-cta {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  background: var(--ink);
+  color: var(--white);
+  padding: 14px 36px;
+  border-radius: 100px;
+  margin-top: 8px;
+}
+
 /* ── RESPONSIVE ───────────────────────────────────────────────── */
 @media (max-width: 960px) {
+  /* NAV */
   nav { padding: 16px 20px; }
   .nav-links { display: none; }
-  .hero-grid { grid-template-columns: 1fr; padding: 90px 20px 48px; gap: 48px; min-height: auto; }
+  .nav-hamburger { display: flex; }
+  .nav-drawer { display: flex; }
+
+  /* HERO */
+  .hero-grid {
+    grid-template-columns: 1fr;
+    padding: 90px 20px 48px;
+    gap: 40px;
+    min-height: auto;
+  }
   .hero-viewer { order: -1; }
-  .viewer-frame { height: 380px; }
-  .section-wrap { padding: 80px 20px; }
-  .proof-section { padding: 80px 20px; }
-  .final-cta { padding: 100px 20px; }
-  footer { padding: 28px 20px; }
-  .scroll-indicator { display: none; }
-  .vitrin-section { padding: 80px 0; }
-  .vitrin-header { padding: 0 20px; flex-direction: column; align-items: flex-start; gap: 10px; }
+  .viewer-frame { height: 320px; border-radius: 1.2rem; }
+  .viewer-float-tl { display: none; }
+  .viewer-anno { display: none; }
+  .ar-btn-group { gap: 20px; }
+  .ar-copy-title { font-size: 1.1rem; }
+  .ar-copy-desc { font-size: 0.76rem; }
+  .hero-stats { gap: 16px; flex-wrap: wrap; }
+
+  /* SECTIONS */
+  .section-wrap { padding: 72px 20px; }
+  .pricing-section .section-wrap { padding-top: 72px; padding-bottom: 72px; }
+  .proof-section { padding: 72px 20px; }
+  .how-section .section-wrap { padding: 72px 20px; }
+
+  /* HOW */
+  .steps { grid-template-columns: 1fr; gap: 1px; }
+  .step { padding: 36px 28px; }
+
+  /* PLANS */
+  .plans { grid-template-columns: 1fr; }
+  .plan { padding: 32px 24px; }
+
+  /* PROOF */
+  .proof-grid { grid-template-columns: 1fr; }
+  .proof-stat-row { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .proof-card { padding: 28px 24px; }
+
+  /* VİTRİN */
+  .vitrin-section { padding: 72px 0; }
+  .vitrin-header { padding: 0 20px; flex-direction: column; align-items: flex-start; gap: 8px; margin-bottom: 28px; }
   .scroll-track { padding: 8px 20px 28px; gap: 14px; }
-  .product-card { flex: 0 0 280px; width: 280px; }
-  .card-model-area { height: 190px; }
+  .product-card { flex: 0 0 260px; width: 260px; }
+  .card-model-area { height: 180px; }
   .scroll-arrow { display: none; }
-  .proof-stat-row { grid-template-columns: 1fr; }
+
+  /* CTA & FOOTER */
+  .final-cta { padding: 100px 20px; }
+  footer { padding: 28px 20px; flex-direction: column; align-items: flex-start; gap: 8px; }
+
+  /* MISC */
+  .scroll-indicator { display: none; }
 }
-@media (max-width: 480px) {
-  .hero-h1 { font-size: 2.6rem; }
-  .ar-btn { width: 100px; height: 100px; }
-  .ar-ring-1 { width: 136px; height: 136px; }
-  .ar-ring-2 { width: 172px; height: 172px; }
-  .hero-stats { gap: 18px; }
-  .hstat-num { font-size: 1.5rem; }
+
+@media (max-width: 600px) {
+  /* HERO */
+  .hero-h1 { font-size: 2.8rem; }
+  .hero-grid { padding: 80px 16px 40px; }
+  .ar-btn { width: 108px; height: 108px; }
+  .ar-ring-1 { width: 148px; height: 148px; }
+  .ar-ring-2 { width: 188px; height: 188px; }
+  .hero-stats { gap: 12px; }
+  .hstat-num { font-size: 1.6rem; }
   .hstat-sep { display: none; }
+  .viewer-frame { height: 280px; }
+
+  /* SECTIONS */
+  .section-wrap { padding: 60px 16px; }
+  .pricing-section .section-wrap { padding: 60px 16px; }
+  .proof-section { padding: 60px 16px; }
+  .section-title { font-size: 1.9rem; }
+
+  /* PROOF STATS */
+  .proof-stat-row { grid-template-columns: 1fr; }
+
+  /* PLANS */
+  .plan-opex { font-size: 2rem; }
+
+  /* VİTRİN */
+  .product-card { flex: 0 0 240px; width: 240px; }
+  .card-model-area { height: 160px; }
+  .vitrin-section { padding: 60px 0; }
+  .scroll-track { padding: 8px 16px 24px; }
+
+  /* NAV DRAWER */
+  .nav-drawer a { font-size: 1.8rem; }
+  .nav-drawer { gap: 28px; }
+
+  /* FINAL CTA */
+  .final-cta { padding: 80px 16px; }
+  .final-cta h2 { font-size: 2rem; }
+
+  /* FOOTER */
+  footer { padding: 24px 16px; }
 }
 </style>
 </head>
@@ -949,6 +1084,15 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   <div class="si-line"></div>
 </div>
 
+<!-- MOBİL DRAWER -->
+<div class="nav-drawer" id="navDrawer">
+  <a href="#nasil" class="drawer-link">Nasıl Çalışır</a>
+  <a href="#vitrin" class="drawer-link">Vitrin</a>
+  <a href="#fiyat" class="drawer-link">Fiyatlar</a>
+  <a href="#referans" class="drawer-link">Referanslar</a>
+  <a href="#demo" class="drawer-link drawer-cta">Demo Talep Et</a>
+</div>
+
 <!-- NAV -->
 <nav>
   <div class="nav-logo">Chaos<span>AR</span></div>
@@ -959,6 +1103,11 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     <a href="#referans">Referanslar</a>
     <a href="#demo" class="nav-cta">Demo Talep Et</a>
   </div>
+  <button class="nav-hamburger" id="hamburger" aria-label="Menü" aria-expanded="false">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
 </nav>
 
 <!-- HERO -->
@@ -1208,6 +1357,34 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   <p>© 2025 ChaosAR. Tüm hakları saklıdır.</p>
   <p>info@cha0sar.com</p>
 </footer>
+
+<script>
+// ── HAMBURGER MENÜ ────────────────────────────────────────────────────────
+(function () {
+  var btn    = document.getElementById('hamburger');
+  var drawer = document.getElementById('navDrawer');
+  if (!btn || !drawer) return;
+
+  function toggle(open) {
+    btn.classList.toggle('open', open);
+    drawer.classList.toggle('open', open);
+    btn.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+
+  btn.addEventListener('click', function () {
+    toggle(!drawer.classList.contains('open'));
+  });
+
+  drawer.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () { toggle(false); });
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') toggle(false);
+  });
+})();
+</script>
 
 <script>
 // ── VİTRİN ────────────────────────────────────────────────────────────────
