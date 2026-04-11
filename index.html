@@ -2,6 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
+<script>if(location.protocol!=='https:'&&location.hostname!=='localhost'&&location.hostname!=='127.0.0.1'){location.replace('https:'+location.href.substring(location.protocol.length));}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ChaosAR — E-Ticarette AR Dönüşümü</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -311,6 +312,21 @@ nav {
   height: 100%;
   background-color: transparent;
   outline: none;
+}
+.viewer-skeleton {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--cream-dark) 25%, var(--cream) 50%, var(--cream-dark) 75%);
+  background-size: 200% 100%;
+  animation: skelShimmer 1.4s ease infinite;
+  border-radius: inherit;
+  z-index: 1;
+  pointer-events: none;
+}
+.viewer-skeleton.hidden { display: none; }
+@keyframes skelShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 .viewer-live-badge {
   position: absolute;
@@ -983,8 +999,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     gap: 40px;
     min-height: auto;
   }
-  .hero-viewer { order: -1; }
-  .viewer-frame { height: 320px; border-radius: 1.2rem; }
+  .viewer-frame { height: 320px; min-height: unset; border-radius: 1.2rem; }
   .viewer-float-tl { display: none; }
   .viewer-anno { display: none; }
   .ar-btn-group { gap: 20px; }
@@ -1003,8 +1018,9 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   .step { padding: 36px 28px; }
 
   /* PLANS */
-  .plans { grid-template-columns: 1fr; }
+  .plans { grid-template-columns: 1fr; padding-top: 16px; }
   .plan { padding: 32px 24px; }
+  .plan.featured { margin-top: 0; }
 
   /* PROOF */
   .proof-grid { grid-template-columns: 1fr; }
@@ -1029,7 +1045,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
 
 @media (max-width: 600px) {
   /* HERO */
-  .hero-h1 { font-size: 2.8rem; }
+  .hero-h1 { font-size: 2.25rem; }
   .hero-grid { padding: 80px 16px 40px; }
   .ar-btn { width: 108px; height: 108px; }
   .ar-ring-1 { width: 148px; height: 148px; }
@@ -1037,7 +1053,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   .hero-stats { gap: 12px; }
   .hstat-num { font-size: 1.6rem; }
   .hstat-sep { display: none; }
-  .viewer-frame { height: 280px; }
+  .viewer-frame { height: 280px; min-height: unset; }
 
   /* SECTIONS */
   .section-wrap { padding: 60px 16px; }
@@ -1162,6 +1178,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
 
   <div class="hero-viewer">
     <div class="viewer-frame">
+      <div class="viewer-skeleton" id="heroSkeleton"></div>
       <model-viewer
         id="heroMV"
         src="https://models.chaosarmenu.com/chaosar-shop/Nike.glb"
@@ -1455,6 +1472,29 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     e.preventDefault();
     track.scrollBy({ left: e.deltaY * 1.8, behavior: 'auto' });
   }, { passive: false });
+
+  // Touch swipe gesture
+  var touchStartX = 0;
+  var touchStartScrollLeft = 0;
+  track.addEventListener('touchstart', function (e) {
+    touchStartX = e.touches[0].clientX;
+    touchStartScrollLeft = track.scrollLeft;
+  }, { passive: true });
+  track.addEventListener('touchmove', function (e) {
+    var dx = touchStartX - e.touches[0].clientX;
+    track.scrollLeft = touchStartScrollLeft + dx;
+  }, { passive: true });
+  track.addEventListener('touchend', updateArrows);
+})();
+
+// ── SKELETON GİZLE ───────────────────────────────────────────────────────
+(function () {
+  var mv = document.getElementById('heroMV');
+  var sk = document.getElementById('heroSkeleton');
+  if (!mv || !sk) return;
+  mv.addEventListener('load', function () { sk.classList.add('hidden'); });
+  // Fallback: 6 saniye sonra zaten gizle
+  setTimeout(function () { sk.classList.add('hidden'); }, 6000);
 })();
 </script>
 </body>
