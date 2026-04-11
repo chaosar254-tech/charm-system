@@ -1025,7 +1025,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
         ios-src="./assets/achates.usdz"
         alt="ChaosAR 3D Demo Model"
         autoplay
-        animation-name="*"
+        animation-name="idle_normal_1"
         auto-rotate
         camera-controls
         ar
@@ -1399,10 +1399,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
 
   // Force animation to play immediately and loop forever on load
   mv.addEventListener('load', () => {
-    const anim = mv.availableAnimations;
-    if (anim && anim.length > 0) {
-      mv.animationName = anim[0];
-    }
+    mv.animationName = 'idle_normal_1';
     mv.play({ repetitions: Infinity });
   });
 
