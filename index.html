@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preload" href="./assets/achates.glb" as="fetch" crossorigin="anonymous">
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 <style>
 /* ── RESET & ROOT ───────────────────────────────────────────── */
@@ -1025,7 +1026,8 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
         ios-src="./assets/achates.usdz"
         alt="ChaosAR 3D Demo Model"
         autoplay
-        animation-name="idle_normal_1_1"
+        animation-name="*"
+        crossfade="false"
         auto-rotate
         camera-controls
         ar
@@ -1034,6 +1036,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
         exposure="1.1"
         shadow-intensity="0.4"
         interaction-prompt="none"
+        loading="eager"
         style="width:100%;height:100%;background-color:transparent;outline:none;--poster-color:transparent;">
       </model-viewer>
 
@@ -1397,24 +1400,17 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   const mv = document.getElementById('dragonHero');
   if (!mv) return;
 
-  function startAnim() {
-    const anims = mv.availableAnimations;
-    // Pick first idle animation found, fallback to first available
-    const target = (anims && anims.find(n => /idle/i.test(n))) || (anims && anims[0]);
-    if (target) mv.animationName = target;
-    mv.play();
-  }
+  mv.addEventListener('load', function () {
+    const anims = this.availableAnimations;
+    console.log('All available animations:', anims);
 
-  if (mv.loaded) {
-    startAnim();
-  } else {
-    mv.addEventListener('load', startAnim, { once: true });
-  }
-
-  // Fallback: retry after 4 s in case load event was missed
-  setTimeout(() => {
-    if (mv.paused !== false) startAnim();
-  }, 4000);
+    if (anims && anims.length > 0) {
+      this.animationName = anims[0];
+      this.play();
+    } else {
+      console.error('CRITICAL: This GLB file contains ZERO animations. Re-export needed.');
+    }
+  });
 
   // Hex color string (#RRGGBB) → [r, g, b, a] linear factors (0-1)
   function hexToLinear(hex) {
