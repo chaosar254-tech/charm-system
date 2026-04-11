@@ -1715,47 +1715,52 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   var products = [
     {
       id:1, name:'Nike Air Force 1', category:'Ayakkabı',
-      modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Nike.glb', imageUrl:null,
-      badge:'Canlı Demo', badgeType:'live', price:'₺4.299',
+      modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Nike.glb',
+      usdzUrl:'https://models.chaosarmenu.com/chaosar-shop/Nike.usdz',
+      imageUrl:null, badge:'Canlı Demo', badgeType:'live', price:'₺4.299',
       desc:'Nike Air Force 1, ikonik basket siluetini modern AR teknolojisiyle buluşturuyor. Satın almadan önce ayakkabıyı kendi ortamında 1:1 ölçekte gör.',
       features:['AR ile odanda dene','360° döndür & incele','GLB / USDZ destekli','iOS & Android uyumlu'],
       arLink:'#demo'
     },
     {
       id:2, name:'Aksesuar Koleksiyon', category:'Aksesuar',
-      modelUrl:'/cha0sar/somlar.glb', imageUrl:null,
-      badge:'Yeni', badgeType:'new', price:'₺1.850',
+      modelUrl:'/cha0sar/somlar.glb',
+      usdzUrl:'/cha0sar/somlar.usdz',
+      imageUrl:null, badge:'Yeni', badgeType:'new', price:'₺1.850',
       desc:'Özenle tasarlanmış aksesuar koleksiyonu. Her parçanın 3D modeli hazır — müşterileriniz ürünü gerçek boyutlarıyla görebilir.',
       features:['Fotogerçekçi 3D model','Gerçek ölçek AR görünümü','Detaylı malzeme yüzeyi','Web tabanlı, uygulama gerekmez'],
       arLink:'#demo'
     },
     {
       id:3, name:'Giyim Modeli', category:'Giyim',
-      modelUrl:'/cha0sar/model-2.glb', imageUrl:null,
-      badge:null, badgeType:null, price:'₺2.100',
+      modelUrl:'/cha0sar/model-2.glb',
+      usdzUrl:null,
+      imageUrl:null, badge:null, badgeType:null, price:'₺2.100',
       desc:'Giyim kategorisinde AR deneyimi. Müşterileriniz ürünü sanal ortamda inceler, iade oranları dramatik biçimde düşer.',
       features:['Kumaş dokusu detayı','Çoklu renk varyantı desteği','Anlık AR dönüşümü','E-ticaret entegrasyonu'],
       arLink:'#demo'
     },
     {
       id:4, name:'Demo Ürün A', category:'Ayakkabı',
-      modelUrl:'/demo/model-70.glb', imageUrl:null,
-      badge:null, badgeType:null, price:'₺3.499',
+      modelUrl:'/demo/model-70.glb',
+      usdzUrl:'/demo/model-70.usdz',
+      imageUrl:null, badge:null, badgeType:null, price:'₺3.499',
       desc:'Yüksek çözünürlüklü 3D model örneği. ChaosAR altyapısıyla üretilen her model web ve mobil için optimize edilmiştir.',
       features:['Optimize GLB formatı','50KB altı yükleme boyutu','Hızlı render','Tüm tarayıcılarda çalışır'],
       arLink:'#demo'
     },
     {
       id:5, name:'Demo Ürün B', category:'Takı & Aksesuar',
-      modelUrl:'/demo/model-71.glb', imageUrl:null,
-      badge:'Yeni', badgeType:'new', price:'₺950',
+      modelUrl:'/demo/model-71.glb',
+      usdzUrl:'/demo/model-71.usdz',
+      imageUrl:null, badge:'Yeni', badgeType:'new', price:'₺950',
       desc:'Takı ve aksesuar kategorisi için özel optimize edilmiş 3D model. Metal yüzey ve mücevher detayları gerçekçi biçimde aktarılır.',
       features:['Metalik yüzey yansıması','Mücevher PBR materyali','Micro-detay korunur','AR\'da gerçek boyut'],
       arLink:'#demo'
     },
     {
       id:6, name:'Koleksiyonunuz', category:'Markanız',
-      modelUrl:null, imageUrl:null,
+      modelUrl:null, usdzUrl:null, imageUrl:null,
       badge:'3D Yakında', badgeType:'soon', price:null,
       desc:'Ürününüz burada olabilir. ChaosAR ile 48 saat içinde tüm koleksiyonunuzu AR\'a taşıyın. Demo talep edin, ilk modeli ücretsiz hazırlıyoruz.',
       features:['48 saatte teslimat','Sınırsız AR gösterimi','Kendi domain\'inde yayın','Ücretsiz ilk model'],
@@ -1776,7 +1781,8 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
 
     var mediaHtml;
     if (p.modelUrl) {
-      mediaHtml = '<model-viewer src="' + p.modelUrl + '" alt="' + p.name + '" auto-rotate camera-controls style="width:100%;height:100%;background-color:transparent;outline:none;" tabindex="-1"></model-viewer>';
+      var iosSrcAttr = p.usdzUrl ? ' ios-src="' + p.usdzUrl + '"' : '';
+      mediaHtml = '<model-viewer src="' + p.modelUrl + '"' + iosSrcAttr + ' alt="' + p.name + '" auto-rotate camera-controls ar ar-modes="webxr scene-viewer quick-look" style="width:100%;height:100%;background-color:transparent;outline:none;" tabindex="-1"></model-viewer>';
     } else if (p.imageUrl) {
       mediaHtml = '<img src="' + p.imageUrl + '" alt="' + p.name + '" style="width:100%;height:100%;object-fit:cover;">';
     } else {
@@ -1853,10 +1859,12 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     if (p.modelUrl) {
       var mv = document.createElement('model-viewer');
       mv.setAttribute('src', p.modelUrl);
+      if (p.usdzUrl) mv.setAttribute('ios-src', p.usdzUrl);
       mv.setAttribute('alt', p.name);
       mv.setAttribute('auto-rotate', '');
       mv.setAttribute('camera-controls', '');
       mv.setAttribute('ar', '');
+      mv.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
       mv.style.cssText = 'width:100%;height:100%;min-height:380px;background-color:transparent;outline:none;';
       pdViewerMount.appendChild(mv);
       pdLiveBadge.style.display = 'flex';

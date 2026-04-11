@@ -39,12 +39,14 @@
     const user = urlParams.get('user') || urlParams.get('u');
     const srcParam = urlParams.get('src') || urlParams.get('model');
 
-    function setModelSrc(path) {
-      if (path) viewer.src = path;
+    function setModelSrc(glbPath, usdzPath) {
+      if (glbPath) viewer.src = glbPath;
+      if (usdzPath) viewer.setAttribute('ios-src', usdzPath);
     }
 
     if (srcParam) {
-      setModelSrc(srcParam);
+      const usdzParam = urlParams.get('usdz') || urlParams.get('ios');
+      setModelSrc(srcParam, usdzParam || null);
     } else {
       fetch('manifestm2.json?cb=' + Date.now()).catch(() => fetch('manifest.json?cb=' + Date.now()))
         .then(r => r.ok ? r.json() : null)
@@ -55,8 +57,16 @@
           const product = list.find(p => p.id === (data.defaultModel || urlParams.get('outfit') || urlParams.get('o'))) || list[0];
           if (!product || !product.glb) return;
           const glb = typeof product.glb === 'object' ? (product.glb.idle || product.glb.animation || Object.values(product.glb)[0]) : product.glb;
-          const path = (user && !glb.startsWith('http')) ? 'users/' + user + '/' + glb : glb;
-          setModelSrc(path);
+          const glbPath = (user && !glb.startsWith('http')) ? 'users/' + user + '/' + glb : glb;
+          // USDZ: product.usdz varsa kullan, yoksa .glb → .usdz otomatik türet
+          let usdzPath = null;
+          if (product.usdz) {
+            const u = typeof product.usdz === 'object' ? (product.usdz.idle || Object.values(product.usdz)[0]) : product.usdz;
+            usdzPath = (user && !u.startsWith('http')) ? 'users/' + user + '/' + u : u;
+          } else {
+            usdzPath = glbPath.replace(/\.glb$/i, '.usdz');
+          }
+          setModelSrc(glbPath, usdzPath);
         })
         .catch(() => {});
     }
