@@ -127,16 +127,18 @@ nav {
 }
 .nav-cta:hover { opacity: 0.75 !important; }
 
-/* ── HERO ─────────────────────────────────────────────────────── */
+/* ── HERO ───────────────────────────────���─────────────────────── */
 .hero-grid {
+  position: relative;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 44fr 56fr;
   align-items: center;
   min-height: 100vh;
-  padding: 100px 48px 60px;
-  max-width: 1300px;
+  padding: 100px 0 60px 48px;
+  max-width: 1400px;
   margin: 0 auto;
-  gap: 64px;
+  gap: 0;
+  overflow: visible;
 }
 .hero-label {
   display: flex;
@@ -297,15 +299,30 @@ nav {
   align-self: center;
 }
 
-/* Hero right — büyük çerçevesiz viewer */
+/* Hero left — yazı sütunu, modelin önünde */
+.hero-left {
+  position: relative;
+  z-index: 2;
+  padding-right: 32px;
+  align-self: center;
+}
+
+/* Hero right — model sütunu, yazının arkasına taşar */
 .hero-viewer {
   position: relative;
+  z-index: 1;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  margin-left: -80px;  /* yazı sütununa taşar */
+  margin-right: -48px; /* sağ kenara taşar */
   animation: fadeUp 0.7s 0.32s ease both;
 }
 .custom-floating-viewer {
   position: relative;
   width: 100%;
-  height: 754px;
+  flex: 1;
+  min-height: 100vh;
 }
 /* Color swatches row */
 .color-swatches {
@@ -915,9 +932,10 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
 @media (max-width: 960px) {
   nav { padding: 16px 20px; }
   .nav-links { display: none; }
-  .hero-grid { grid-template-columns: 1fr; padding: 90px 20px 48px; gap: 48px; min-height: auto; }
-  .hero-viewer { order: -1; }
-  .custom-floating-viewer { height: 494px; }
+  .hero-grid { grid-template-columns: 1fr; padding: 90px 20px 48px; gap: 0; min-height: auto; }
+  .hero-left { z-index: 2; padding-right: 0; margin-bottom: 0; }
+  .hero-viewer { order: -1; margin-left: 0; margin-right: -20px; align-self: auto; }
+  .custom-floating-viewer { min-height: 480px; flex: none; height: 480px; }
   .section-wrap { padding: 80px 20px; }
   .proof-section { padding: 80px 20px; }
   .final-cta { padding: 100px 20px; }
