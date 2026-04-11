@@ -296,40 +296,75 @@ nav {
   align-self: center;
 }
 
-/* Hero right viewer */
-.hero-viewer { animation: fadeUp 0.7s 0.32s ease both; }
-.viewer-frame {
+/* Hero right — büyük çerçevesiz viewer */
+.hero-viewer {
   position: relative;
-  border-radius: 2rem;
-  overflow: hidden;
-  background: var(--white);
-  height: 520px;
-  box-shadow: 0 2px 48px rgba(12,12,10,0.07), 0 1px 0 var(--border);
+  animation: fadeUp 0.7s 0.32s ease both;
 }
-.viewer-frame model-viewer {
+.custom-floating-viewer {
+  position: relative;
+  width: 100%;
+  height: 580px;
+}
+.custom-floating-viewer model-viewer {
   width: 100%;
   height: 100%;
   background-color: transparent;
   outline: none;
+  --poster-color: transparent;
 }
-.viewer-live-badge {
+/* İnteraktif badge — sağ üst */
+.viewer-interactive-badge {
   position: absolute;
-  top: 16px; left: 16px;
+  top: 24px; right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  pointer-events: none;
+}
+.viewer-interactive-badge .badge-icon {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: rgba(12,12,10,0.08);
+  border: 0.5px solid var(--border);
+  backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+}
+.viewer-interactive-badge .badge-icon svg {
+  width: 18px; height: 18px;
+  stroke: var(--ink-soft);
+}
+.viewer-interactive-badge .badge-label {
+  font-size: 0.52rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  text-align: center;
+  line-height: 1.4;
+}
+/* Sol alt hint */
+.viewer-drag-hint {
+  position: absolute;
+  bottom: 20px; left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 7px;
-  background: rgba(255,255,255,0.8);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 0.5px solid var(--border);
-  border-radius: 100px;
-  padding: 6px 14px;
-  font-size: 0.62rem;
-  font-weight: 600;
+  gap: 6px;
+  font-size: 0.6rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--ink);
+  color: var(--ink-muted);
+  pointer-events: none;
+  white-space: nowrap;
+  background: rgba(244,241,235,0.7);
+  backdrop-filter: blur(8px);
+  padding: 6px 14px;
+  border-radius: 100px;
+  border: 0.5px solid var(--border);
 }
+/* Eski viewer stilleri — kullanılmıyor, kaldırıldı */
 .live-dot {
   width: 6px; height: 6px;
   border-radius: 50%;
@@ -340,66 +375,6 @@ nav {
   0%,100% { opacity: 1; }
   50%      { opacity: 0.25; }
 }
-.viewer-float-tl {
-  position: absolute;
-  top: 58px; left: 16px;
-  background: var(--ink);
-  color: var(--white);
-  border-radius: 8px;
-  padding: 7px 13px;
-  font-family: var(--font-sans);
-  font-size: 0.58rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-.viewer-hint {
-  position: absolute;
-  bottom: 56px; left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.62rem;
-  letter-spacing: 0.08em;
-  color: var(--ink-muted);
-  pointer-events: none;
-  white-space: nowrap;
-}
-.viewer-float-br {
-  position: absolute;
-  bottom: 16px; right: 16px;
-  background: var(--white);
-  border-radius: 12px;
-  padding: 12px 16px;
-  box-shadow: 0 4px 24px rgba(12,12,10,0.12);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.float-name {
-  font-family: var(--font-serif);
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--ink);
-}
-.float-ar-badge {
-  font-size: 0.58rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--gold);
-}
-.viewer-anno {
-  position: absolute;
-  font-size: 0.52rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
-  pointer-events: none;
-}
-.anno-tr { top: 16px; right: 16px; text-align: right; }
-.anno-bl { bottom: 16px; left: 16px; }
 
 /* ── SHARED SECTION ───────────────────────────────────────────── */
 .section-wrap {
@@ -522,11 +497,16 @@ nav {
   gap: 20px;
   padding: 8px 48px 36px;
   overflow-x: auto;
+  overflow-y: hidden;
   scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
+  /* scroll-behavior smooth kaldırıldı — snap ile çatışıyor, JS yönetiyor */
   -ms-overflow-style: none;
   scrollbar-width: none;
+  touch-action: pan-x;        /* tarayıcıya yatay scroll yönünü bildir */
+  will-change: scroll-position;
+  cursor: grab;
 }
+.scroll-track.dragging { cursor: grabbing; }
 .scroll-track::-webkit-scrollbar { display: none; }
 .product-card {
   flex: 0 0 320px;
@@ -910,7 +890,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   .nav-links { display: none; }
   .hero-grid { grid-template-columns: 1fr; padding: 90px 20px 48px; gap: 48px; min-height: auto; }
   .hero-viewer { order: -1; }
-  .viewer-frame { height: 380px; }
+  .custom-floating-viewer { height: 380px; }
   .section-wrap { padding: 80px 20px; }
   .proof-section { padding: 80px 20px; }
   .final-cta { padding: 100px 20px; }
@@ -933,35 +913,6 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   .hstat-num { font-size: 1.5rem; }
   .hstat-sep { display: none; }
 }
-/* Ejderhanın Süzülme Animasyonu */
-@keyframes floatAnimation {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-15px); } /* 15 piksel yukarı süzülür */
-  100% { transform: translateY(0px); }
-}
-
-/* Modelin Ekran Köşesinde Sabit Kalması ve Gezinmesi İçin */
-.custom-floating-viewer {
-  position: fixed; /* Ekranın Sabit Bir Yerinde Kalmasını Sağlar (Gezinir) */
-  bottom: 25px; /* Alttan Boşluk */
-  right: 25px; /* Sağdan Boşluk */
-  width: 380px; /* Modelin Kaplayacağı Alanın Genişliği (Çok Büyükse Küçült) */
-  height: 380px; /* Modelin Kaplayacağı Alanın Yüksekliği */
-  z-index: 9999; /* Sitenin Diğer İçeriklerinin Üzerinde Kalmasını Sağlar */
-  pointer-events: auto; /* Model Üzerinden Mouse ile Çevirebilmek İçin */
-  
-  /* İşte o "Base Bros" süzülme efektini veren satır: */
-  animation: floatAnimation 3s ease-in-out infinite; 
-}
-
-/* Cep Telefonları İçin Boyutunu Küçültelim */
-@media (max-width: 768px) {
-  .custom-floating-viewer {
-    width: 260px;
-    height: 260px;
-    bottom: 15px;
-    right: 15px;
-  }
 </style>
 </head>
 <body>
@@ -1040,34 +991,39 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     </div>
   </div>
 
-<div class="custom-floating-viewer">
+  <div class="hero-viewer">
+    <div class="custom-floating-viewer">
+      <model-viewer
+        id="heroMV"
+        src="./assets/achates.glb"
+        ios-src="./assets/achates.usdz"
+        alt="ChaosAR 3D Demo Model"
+        autoplay
+        animation-name="*"
+        auto-rotate
+        camera-controls
+        ar
+        ar-modes="webxr scene-viewer quick-look"
+        environment-image="neutral"
+        exposure="1.1"
+        shadow-intensity="0.4"
+        interaction-prompt="none"
+        style="width:100%;height:100%;background-color:transparent;outline:none;--poster-color:transparent;">
+      </model-viewer>
 
-  <model-viewer 
-    src="./assets/achates.glb"  autoplay 
-    animation-name="*"  auto-rotate 
-    camera-controls 
-    ar 
-    style="width: 100%; height: 100%; background-color: transparent; outline: none;" 
-    environment-image="neutral"  exposure="1" 
-    interaction-prompt="none"  >
-  </model-viewer>
-
-</div>
-
-</div>        <span class="live-dot"></span>
-        Canlı Görüntü
+      <div class="viewer-interactive-badge">
+        <div class="badge-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          </svg>
+        </div>
+        <div class="badge-label">İnteraktif<br>3D Görüntüleme</div>
       </div>
-      <div class="viewer-float-tl">360° Görüş</div>
-      <div class="viewer-hint">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+
+      <div class="viewer-drag-hint">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
         Sürükle &amp; döndür
       </div>
-      <div class="viewer-float-br">
-        <div class="float-name">Ice Dragon</div>
-        <div class="float-ar-badge">AR Hazır</div>
-      </div>
-      <div class="viewer-anno anno-tr">3D Canlı Görüntü</div>
-      <div class="viewer-anno anno-bl">GLB · GLTF Destekli</div>
     </div>
   </div>
 
@@ -1262,7 +1218,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
 
     var mediaHtml;
     if (p.modelUrl) {
-      mediaHtml = '<model-viewer src="' + p.modelUrl + '" alt="' + p.name + '" auto-rotate camera-controls style="width:100%;height:100%;background-color:transparent;outline:none;"></model-viewer>';
+      mediaHtml = '<model-viewer src="' + p.modelUrl + '" alt="' + p.name + '" auto-rotate camera-controls touch-action="pan-x" style="width:100%;height:100%;background-color:transparent;outline:none;" tabindex="-1"></model-viewer>';
     } else if (p.imageUrl) {
       mediaHtml = '<img src="' + p.imageUrl + '" alt="' + p.name + '" style="width:100%;height:100%;object-fit:cover;">';
     } else {
@@ -1291,23 +1247,112 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
 
   var arrowLeft  = document.getElementById('arrowLeft');
   var arrowRight = document.getElementById('arrowRight');
+  var CARD_W = 320 + 20; // kart genişliği + gap
 
+  // ── Ok butonları durumunu güncelle ──────────────────────────
   function updateArrows() {
     var sl = track.scrollLeft;
-    arrowLeft.disabled  = sl < 10;
-    arrowRight.disabled = sl > track.scrollWidth - track.clientWidth - 10;
+    var maxSl = track.scrollWidth - track.clientWidth;
+    if (arrowLeft)  arrowLeft.disabled  = sl < 4;
+    if (arrowRight) arrowRight.disabled = sl > maxSl - 4;
   }
 
-  arrowLeft.addEventListener('click', function () { track.scrollBy({ left: -340, behavior: 'smooth' }); });
-  arrowRight.addEventListener('click', function () { track.scrollBy({ left: 340, behavior: 'smooth' }); });
-  track.addEventListener('scroll', updateArrows);
+  // ── Smooth scroll yardımcısı (snap ile çatışmayan) ──────────
+  function scrollTo(targetLeft) {
+    var start = track.scrollLeft;
+    var dist  = targetLeft - start;
+    var duration = 320;
+    var startTime = null;
+    function ease(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
+    function step(ts) {
+      if (!startTime) startTime = ts;
+      var t = Math.min((ts - startTime) / duration, 1);
+      track.scrollLeft = start + dist * ease(t);
+      if (t < 1) requestAnimationFrame(step);
+      else updateArrows();
+    }
+    requestAnimationFrame(step);
+  }
+
+  if (arrowLeft)  arrowLeft.addEventListener('click',  function () { scrollTo(track.scrollLeft - CARD_W); });
+  if (arrowRight) arrowRight.addEventListener('click', function () { scrollTo(track.scrollLeft + CARD_W); });
+  track.addEventListener('scroll', updateArrows, { passive: true });
   updateArrows();
 
+  // ── Mouse wheel → yatay scroll ──────────────────────────────
   track.addEventListener('wheel', function (e) {
+    // Yatay wheel zaten browser tarafından handle ediliyor, sadece dikey'e bak
     if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
     e.preventDefault();
-    track.scrollBy({ left: e.deltaY * 1.8, behavior: 'auto' });
+    track.scrollLeft += e.deltaY;
   }, { passive: false });
+
+  // ── Mouse drag-to-scroll (masaüstü) ─────────────────────────
+  var isMouseDown = false;
+  var dragStartX  = 0;
+  var dragScrollLeft = 0;
+  var wasDragging = false;
+
+  track.addEventListener('mousedown', function (e) {
+    if (e.button !== 0) return;
+    isMouseDown    = true;
+    wasDragging    = false;
+    dragStartX     = e.clientX;
+    dragScrollLeft = track.scrollLeft;
+    track.classList.add('dragging');
+  });
+
+  window.addEventListener('mousemove', function (e) {
+    if (!isMouseDown) return;
+    var dx = e.clientX - dragStartX;
+    if (Math.abs(dx) > 5) wasDragging = true;
+    track.scrollLeft = dragScrollLeft - dx;
+  });
+
+  window.addEventListener('mouseup', function () {
+    if (!isMouseDown) return;
+    isMouseDown = false;
+    track.classList.remove('dragging');
+    updateArrows();
+  });
+
+  // Model kartına tıklama — drag ise modalı açma
+  track.addEventListener('click', function (e) {
+    if (wasDragging) { wasDragging = false; e.stopPropagation(); }
+  }, true);
+
+  // ── Touch swipe (mobil) ──────────────────────────────────────
+  var touchStartX = 0;
+  var touchStartY = 0;
+  var touchScrollLeft = 0;
+  var touchIsHoriz = null;
+
+  track.addEventListener('touchstart', function (e) {
+    touchStartX     = e.touches[0].clientX;
+    touchStartY     = e.touches[0].clientY;
+    touchScrollLeft = track.scrollLeft;
+    touchIsHoriz    = null;
+  }, { passive: true });
+
+  track.addEventListener('touchmove', function (e) {
+    var dx = touchStartX - e.touches[0].clientX;
+    var dy = touchStartY - e.touches[0].clientY;
+
+    // İlk harekette yönü belirle
+    if (touchIsHoriz === null) {
+      touchIsHoriz = Math.abs(dx) > Math.abs(dy);
+    }
+
+    if (touchIsHoriz) {
+      e.preventDefault();           // sayfanın dikey scroll'ını engelle
+      track.scrollLeft = touchScrollLeft + dx;
+    }
+  }, { passive: false });
+
+  track.addEventListener('touchend', function () {
+    touchIsHoriz = null;
+    updateArrows();
+  }, { passive: true });
 })();
 </script>
 </body>
