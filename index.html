@@ -1025,7 +1025,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
         ios-src="./assets/achates.usdz"
         alt="ChaosAR 3D Demo Model"
         autoplay
-        animation-name="idle_normal_1"
+        animation-name="idle_normal_1_1"
         auto-rotate
         camera-controls
         ar
@@ -1397,11 +1397,24 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   const mv = document.getElementById('dragonHero');
   if (!mv) return;
 
-  // Force animation to play immediately and loop forever on load
-  mv.addEventListener('load', () => {
-    mv.animationName = 'idle_normal_1';
-    mv.play({ repetitions: Infinity });
-  });
+  function startAnim() {
+    const anims = mv.availableAnimations;
+    // Pick first idle animation found, fallback to first available
+    const target = (anims && anims.find(n => /idle/i.test(n))) || (anims && anims[0]);
+    if (target) mv.animationName = target;
+    mv.play();
+  }
+
+  if (mv.loaded) {
+    startAnim();
+  } else {
+    mv.addEventListener('load', startAnim, { once: true });
+  }
+
+  // Fallback: retry after 4 s in case load event was missed
+  setTimeout(() => {
+    if (mv.paused !== false) startAnim();
+  }, 4000);
 
   // Hex color string (#RRGGBB) → [r, g, b, a] linear factors (0-1)
   function hexToLinear(hex) {
