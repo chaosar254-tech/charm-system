@@ -557,6 +557,8 @@ nav {
   display: flex;
   flex-direction: column;
   box-shadow: 0 1px 12px rgba(12,12,10,0.04);
+  text-decoration: none;
+  color: inherit;
 }
 .product-card:hover {
   transform: scale(1.02);
@@ -624,8 +626,10 @@ nav {
   margin-bottom: 6px;
 }
 .card-price {
-  font-size: 0.76rem;
-  color: var(--ink-muted);
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--ink);
   margin-bottom: 14px;
   min-height: 18px;
   flex: 1;
@@ -1408,12 +1412,16 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
 (function () {
   'use strict';
 
+  // Her ürün için:
+  //   modelUrl : 3D GLB dosya yolu (öncelikli)
+  //   imageUrl : Görsel URL'si (modelUrl yoksa kullanılır) — örn: '/assets/urun.jpg' veya 'https://...'
+  //   arLink   : Karta tıklanınca gidilecek URL
   var products = [
-    { id:1, name:'Nike Air Force 1',    category:'Ayakkabı',        modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Nike.glb', imageUrl:null, badge:'Canlı Demo', badgeType:'live', price:'', arLink:'#demo' },
-    { id:2, name:'Aksesuar Koleksiyon', category:'Aksesuar',        modelUrl:'/cha0sar/somlar.glb',   imageUrl:null, badge:'Yeni',       badgeType:'new',  price:'', arLink:'#demo' },
-    { id:3, name:'Giyim Modeli',        category:'Giyim',           modelUrl:'/cha0sar/model-2.glb', imageUrl:null, badge:null,         badgeType:null,   price:'', arLink:'#demo' },
-    { id:4, name:'Demo Ürün A',         category:'Ayakkabı',        modelUrl:'/demo/model-70.glb',   imageUrl:null, badge:null,         badgeType:null,   price:'', arLink:'#demo' },
-    { id:5, name:'Demo Ürün B',         category:'Takı & Aksesuar', modelUrl:'/demo/model-71.glb',   imageUrl:null, badge:'Yeni',       badgeType:'new',  price:'', arLink:'#demo' },
+    { id:1, name:'Nike Air Force 1',    category:'Ayakkabı',        modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Nike.glb', imageUrl:null, badge:'Canlı Demo', badgeType:'live', price:'₺4.299', arLink:'#demo' },
+    { id:2, name:'Aksesuar Koleksiyon', category:'Aksesuar',        modelUrl:'/cha0sar/somlar.glb',   imageUrl:null, badge:'Yeni',       badgeType:'new',  price:'₺1.850', arLink:'#demo' },
+    { id:3, name:'Giyim Modeli',        category:'Giyim',           modelUrl:'/cha0sar/model-2.glb', imageUrl:null, badge:null,         badgeType:null,   price:'₺2.100', arLink:'#demo' },
+    { id:4, name:'Demo Ürün A',         category:'Ayakkabı',        modelUrl:'/demo/model-70.glb',   imageUrl:null, badge:null,         badgeType:null,   price:'₺3.499', arLink:'#demo' },
+    { id:5, name:'Demo Ürün B',         category:'Takı & Aksesuar', modelUrl:'/demo/model-71.glb',   imageUrl:null, badge:'Yeni',       badgeType:'new',  price:'₺950',   arLink:'#demo' },
     { id:6, name:'Koleksiyonunuz',      category:'Markanız',        modelUrl:null, imageUrl:null, badge:'3D Yakında', badgeType:'soon', price:'Ürününüz burada olabilir', arLink:'#demo' }
   ];
 
@@ -1421,8 +1429,9 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   if (!track) return;
 
   products.forEach(function (p) {
-    var card = document.createElement('div');
+    var card = document.createElement('a');
     card.className = 'product-card';
+    card.href = p.arLink || '#';
 
     var mediaHtml;
     if (p.modelUrl) {
@@ -1438,7 +1447,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
       : '';
 
     var btnHtml = (p.modelUrl || p.imageUrl)
-      ? '<a href="' + p.arLink + '" class="card-ar-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>AR\'da Gör</a>'
+      ? '<span class="card-ar-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Evinde Gör</span>'
       : '<span class="card-ar-btn disabled">Yakında →</span>';
 
     card.innerHTML =
