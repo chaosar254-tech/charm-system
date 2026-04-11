@@ -1104,11 +1104,12 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
         animation-name="*"
         crossfade="false"
         camera-controls
+        camera-orbit="-20deg auto auto"
         disable-zoom
         ar
         ar-modes="webxr scene-viewer quick-look"
         environment-image="neutral"
-        exposure="1.5"
+        exposure="1.4"
         shadow-intensity="1"
         shadow-softness="0.8"
         tone-mapping="commerce"
@@ -1135,23 +1136,23 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     <!-- Color swatches -->
     <div class="color-swatches" id="colorSwatches">
       <div class="swatch-item">
-        <button class="color-swatch" data-color="#FF3B30" style="background:linear-gradient(135deg,#FF6B6B,#FF3B30);" aria-label="Ateş"></button>
+        <button class="color-swatch" data-color="#FF2D55" style="background:linear-gradient(135deg,#FF6B8A,#FF2D55);" aria-label="Ateş"></button>
         <span class="swatch-label">Ateş</span>
       </div>
       <div class="swatch-item">
-        <button class="color-swatch" data-color="#007AFF" style="background:linear-gradient(135deg,#5AC8FA,#007AFF);" aria-label="Safir"></button>
+        <button class="color-swatch" data-color="#00C8FF" style="background:linear-gradient(135deg,#70E8FF,#00C8FF);" aria-label="Safir"></button>
         <span class="swatch-label">Safir</span>
       </div>
       <div class="swatch-item">
-        <button class="color-swatch" data-color="#FFD60A" style="background:linear-gradient(135deg,#FFE066,#FFD60A);" aria-label="Altın"></button>
+        <button class="color-swatch" data-color="#FFD700" style="background:linear-gradient(135deg,#FFE97A,#FFD700);" aria-label="Altın"></button>
         <span class="swatch-label">Altın</span>
       </div>
       <div class="swatch-item">
-        <button class="color-swatch" data-color="#30D158" style="background:linear-gradient(135deg,#5EE67A,#30D158);" aria-label="Zümrüt"></button>
+        <button class="color-swatch" data-color="#00FF88" style="background:linear-gradient(135deg,#7AFFC4,#00FF88);" aria-label="Zümrüt"></button>
         <span class="swatch-label">Zümrüt</span>
       </div>
       <div class="swatch-item">
-        <button class="color-swatch" data-color="#BF5AF2" style="background:linear-gradient(135deg,#DA8FFF,#BF5AF2);" aria-label="Lavanta"></button>
+        <button class="color-swatch" data-color="#C77DFF" style="background:linear-gradient(135deg,#E0AAFF,#C77DFF);" aria-label="Lavanta"></button>
         <span class="swatch-label">Lavanta</span>
       </div>
       <div class="swatch-sep"></div>
@@ -1533,13 +1534,14 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     return [toLinear(r), toLinear(g), toLinear(b), 1.0];
   }
 
-  // Swatch rengi: doğrudan tüm materiallere uygula
+  // Tüm material index'lerini iterate ederek renk uygula
   function applyColor(hex) {
     const model = mv.model;
     if (!model) return;
     const factor = hexToLinear(hex);
-    for (const mat of model.materials) {
-      mat.pbrMetallicRoughness.setBaseColorFactor(factor);
+    const count = model.materials.length;
+    for (let i = 0; i < count; i++) {
+      model.materials[i].pbrMetallicRoughness.setBaseColorFactor(factor);
     }
   }
 
