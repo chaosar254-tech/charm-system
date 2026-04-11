@@ -2,7 +2,6 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<script>if(location.protocol!=='https:'&&location.hostname!=='localhost'&&location.hostname!=='127.0.0.1'){location.replace('https:'+location.href.substring(location.protocol.length));}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ChaosAR — E-Ticarette AR Dönüşümü</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -313,21 +312,6 @@ nav {
   background-color: transparent;
   outline: none;
 }
-.viewer-skeleton {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, var(--cream-dark) 25%, var(--cream) 50%, var(--cream-dark) 75%);
-  background-size: 200% 100%;
-  animation: skelShimmer 1.4s ease infinite;
-  border-radius: inherit;
-  z-index: 1;
-  pointer-events: none;
-}
-.viewer-skeleton.hidden { display: none; }
-@keyframes skelShimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
 .viewer-live-badge {
   position: absolute;
   top: 16px; left: 16px;
@@ -557,8 +541,6 @@ nav {
   display: flex;
   flex-direction: column;
   box-shadow: 0 1px 12px rgba(12,12,10,0.04);
-  text-decoration: none;
-  color: inherit;
 }
 .product-card:hover {
   transform: scale(1.02);
@@ -626,10 +608,8 @@ nav {
   margin-bottom: 6px;
 }
 .card-price {
-  font-family: var(--font-serif);
-  font-size: 1.1rem;
-  font-weight: 400;
-  color: var(--ink);
+  font-size: 0.76rem;
+  color: var(--ink-muted);
   margin-bottom: 14px;
   min-height: 18px;
   flex: 1;
@@ -924,431 +904,34 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── ÜRÜN DETAY MODAL ─────────────────────────────────────────── */
-.pd-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 500;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.32s ease;
-}
-.pd-overlay.open {
-  opacity: 1;
-  pointer-events: all;
-}
-.pd-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(12,12,10,0.52);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  cursor: pointer;
-}
-.pd-sheet {
-  position: relative;
-  z-index: 1;
-  background: var(--white);
-  border-radius: 28px 28px 0 0;
-  width: 100%;
-  max-width: 860px;
-  max-height: 92vh;
-  overflow-y: auto;
-  transform: translateY(48px);
-  transition: transform 0.38s cubic-bezier(0.34,1.38,0.64,1);
-  overscroll-behavior: contain;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-.pd-sheet::-webkit-scrollbar { display: none; }
-.pd-overlay.open .pd-sheet { transform: translateY(0); }
-
-.pd-drag-handle {
-  width: 36px; height: 4px;
-  background: rgba(12,12,10,0.12);
-  border-radius: 2px;
-  margin: 14px auto 0;
-}
-.pd-close {
-  position: absolute;
-  top: 18px; right: 18px;
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  border: 0.5px solid var(--border);
-  background: var(--cream);
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  transition: background 0.2s;
-  padding: 0;
-  color: var(--ink);
-  z-index: 2;
-}
-.pd-close:hover { background: var(--cream-dark); }
-
-.pd-inner {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0;
-}
-.pd-viewer-col {
-  background: var(--cream);
-  border-radius: 0 0 0 0;
-  min-height: 380px;
-  position: relative;
-  overflow: hidden;
-}
-.pd-viewer-col model-viewer {
-  width: 100%;
-  height: 100%;
-  min-height: 380px;
-  background-color: transparent;
-  outline: none;
-}
-.pd-viewer-placeholder {
-  width: 100%;
-  height: 100%;
-  min-height: 380px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--cream-dark);
-}
-.pd-viewer-placeholder svg {
-  width: 64px; height: 64px;
-  stroke: rgba(12,12,10,0.14);
-}
-.pd-viewer-hint {
-  position: absolute;
-  bottom: 14px; left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.58rem;
-  letter-spacing: 0.08em;
-  color: var(--ink-muted);
-  white-space: nowrap;
-  display: flex; align-items: center; gap: 5px;
-  pointer-events: none;
-}
-.pd-ar-live {
-  position: absolute;
-  top: 14px; left: 14px;
-  display: flex; align-items: center; gap: 6px;
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(8px);
-  border-radius: 100px;
-  padding: 5px 12px;
-  font-size: 0.58rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink);
-}
-
-.pd-info-col {
-  padding: 36px 36px 40px;
-  display: flex;
-  flex-direction: column;
-}
-.pd-category {
-  font-size: 0.6rem;
-  font-weight: 600;
-  color: var(--gold);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  margin-bottom: 8px;
-}
-.pd-name {
-  font-family: var(--font-serif);
-  font-size: 2rem;
-  font-weight: 300;
-  line-height: 1.15;
-  color: var(--ink);
-  letter-spacing: -0.02em;
-  margin-bottom: 10px;
-}
-.pd-badge {
-  display: inline-block;
-  font-size: 0.58rem;
-  font-weight: 700;
-  padding: 3px 12px;
-  border-radius: 100px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-bottom: 18px;
-  align-self: flex-start;
-}
-.pd-badge.live { background: var(--ink); color: var(--white); }
-.pd-badge.new  { background: var(--gold); color: var(--white); }
-.pd-badge.soon { background: var(--cream-dark); color: var(--ink-muted); }
-.pd-price {
-  font-family: var(--font-serif);
-  font-size: 1.7rem;
-  font-weight: 400;
-  color: var(--ink);
-  letter-spacing: -0.01em;
-  margin-bottom: 18px;
-}
-.pd-price-note {
-  font-size: 0.7rem;
-  color: var(--ink-muted);
-  margin-bottom: 18px;
-}
-.pd-desc {
-  font-size: 0.84rem;
-  color: var(--ink-soft);
-  line-height: 1.75;
-  margin-bottom: 22px;
-}
-.pd-features {
-  list-style: none;
-  margin-bottom: 28px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.pd-features li {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.8rem;
-  color: var(--ink-muted);
-}
-.pd-features li::before {
-  content: '';
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--gold);
-  flex-shrink: 0;
-}
-.pd-divider {
-  border: none;
-  border-top: 0.5px solid var(--border);
-  margin: 0 0 22px;
-}
-.pd-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: auto;
-}
-.pd-btn-ar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: var(--ink);
-  color: var(--white);
-  border: none;
-  padding: 14px;
-  border-radius: 100px;
-  font-family: var(--font-sans);
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  cursor: pointer;
-  transition: opacity 0.2s;
-  text-decoration: none;
-  width: 100%;
-  text-align: center;
-}
-.pd-btn-ar:hover { opacity: 0.76; }
-.pd-btn-demo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: transparent;
-  color: var(--ink);
-  border: 0.5px solid var(--border);
-  padding: 13px;
-  border-radius: 100px;
-  font-family: var(--font-sans);
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  cursor: pointer;
-  transition: all 0.2s;
-  width: 100%;
-  text-align: center;
-  text-decoration: none;
-}
-.pd-btn-demo:hover { background: var(--cream-dark); }
-
-@media (max-width: 640px) {
-  .pd-inner { grid-template-columns: 1fr; }
-  .pd-viewer-col { min-height: 260px; border-radius: 0; }
-  .pd-viewer-col model-viewer { min-height: 260px; }
-  .pd-viewer-placeholder { min-height: 260px; }
-  .pd-info-col { padding: 24px 20px 32px; }
-  .pd-name { font-size: 1.6rem; }
-  .pd-sheet { border-radius: 20px 20px 0 0; max-height: 96vh; }
-}
-
-/* ── MOBİL HAMBURGER ──────────────────────────────────────────── */
-.nav-hamburger {
-  display: none;
-  flex-direction: column;
-  gap: 5px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  z-index: 200;
-}
-.nav-hamburger span {
-  display: block;
-  width: 22px;
-  height: 1.5px;
-  background: var(--ink);
-  border-radius: 2px;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  transform-origin: center;
-}
-.nav-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
-.nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
-.nav-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
-
-.nav-drawer {
-  display: none;
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: var(--cream);
-  z-index: 150;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 36px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-.nav-drawer.open {
-  opacity: 1;
-  pointer-events: all;
-}
-.nav-drawer a {
-  font-family: var(--font-serif);
-  font-size: 2.2rem;
-  font-weight: 300;
-  color: var(--ink);
-  text-decoration: none;
-  letter-spacing: -0.01em;
-  transition: color 0.2s;
-}
-.nav-drawer a:hover { color: var(--gold); }
-.nav-drawer .drawer-cta {
-  font-family: var(--font-sans);
-  font-size: 0.82rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  background: var(--ink);
-  color: var(--white);
-  padding: 14px 36px;
-  border-radius: 100px;
-  margin-top: 8px;
-}
-
 /* ── RESPONSIVE ───────────────────────────────────────────────── */
 @media (max-width: 960px) {
-  /* NAV */
   nav { padding: 16px 20px; }
   .nav-links { display: none; }
-  .nav-hamburger { display: flex; }
-  .nav-drawer { display: flex; }
-
-  /* HERO */
-  .hero-grid {
-    grid-template-columns: 1fr;
-    padding: 90px 20px 48px;
-    gap: 40px;
-    min-height: auto;
-  }
-  .viewer-frame { height: 320px; min-height: unset; border-radius: 1.2rem; }
-  .viewer-float-tl { display: none; }
-  .viewer-anno { display: none; }
-  .ar-btn-group { gap: 20px; }
-  .ar-copy-title { font-size: 1.1rem; }
-  .ar-copy-desc { font-size: 0.76rem; }
-  .hero-stats { gap: 16px; flex-wrap: wrap; }
-
-  /* SECTIONS */
-  .section-wrap { padding: 72px 20px; }
-  .pricing-section .section-wrap { padding-top: 72px; padding-bottom: 72px; }
-  .proof-section { padding: 72px 20px; }
-  .how-section .section-wrap { padding: 72px 20px; }
-
-  /* HOW */
-  .steps { grid-template-columns: 1fr; gap: 1px; }
-  .step { padding: 36px 28px; }
-
-  /* PLANS */
-  .plans { grid-template-columns: 1fr; padding-top: 16px; }
-  .plan { padding: 32px 24px; }
-  .plan.featured { margin-top: 0; }
-
-  /* PROOF */
-  .proof-grid { grid-template-columns: 1fr; }
-  .proof-stat-row { grid-template-columns: 1fr 1fr; gap: 12px; }
-  .proof-card { padding: 28px 24px; }
-
-  /* VİTRİN */
-  .vitrin-section { padding: 72px 0; }
-  .vitrin-header { padding: 0 20px; flex-direction: column; align-items: flex-start; gap: 8px; margin-bottom: 28px; }
-  .scroll-track { padding: 8px 20px 28px; gap: 14px; }
-  .product-card { flex: 0 0 260px; width: 260px; }
-  .card-model-area { height: 180px; }
-  .scroll-arrow { display: none; }
-
-  /* CTA & FOOTER */
+  .hero-grid { grid-template-columns: 1fr; padding: 90px 20px 48px; gap: 48px; min-height: auto; }
+  .hero-viewer { order: -1; }
+  .viewer-frame { height: 380px; }
+  .section-wrap { padding: 80px 20px; }
+  .proof-section { padding: 80px 20px; }
   .final-cta { padding: 100px 20px; }
-  footer { padding: 28px 20px; flex-direction: column; align-items: flex-start; gap: 8px; }
-
-  /* MISC */
+  footer { padding: 28px 20px; }
   .scroll-indicator { display: none; }
-}
-
-@media (max-width: 600px) {
-  /* HERO */
-  .hero-h1 { font-size: 2.25rem; }
-  .hero-grid { padding: 80px 16px 40px; }
-  .ar-btn { width: 108px; height: 108px; }
-  .ar-ring-1 { width: 148px; height: 148px; }
-  .ar-ring-2 { width: 188px; height: 188px; }
-  .hero-stats { gap: 12px; }
-  .hstat-num { font-size: 1.6rem; }
-  .hstat-sep { display: none; }
-  .viewer-frame { height: 280px; min-height: unset; }
-
-  /* SECTIONS */
-  .section-wrap { padding: 60px 16px; }
-  .pricing-section .section-wrap { padding: 60px 16px; }
-  .proof-section { padding: 60px 16px; }
-  .section-title { font-size: 1.9rem; }
-
-  /* PROOF STATS */
+  .vitrin-section { padding: 80px 0; }
+  .vitrin-header { padding: 0 20px; flex-direction: column; align-items: flex-start; gap: 10px; }
+  .scroll-track { padding: 8px 20px 28px; gap: 14px; }
+  .product-card { flex: 0 0 280px; width: 280px; }
+  .card-model-area { height: 190px; }
+  .scroll-arrow { display: none; }
   .proof-stat-row { grid-template-columns: 1fr; }
-
-  /* PLANS */
-  .plan-opex { font-size: 2rem; }
-
-  /* VİTRİN */
-  .product-card { flex: 0 0 240px; width: 240px; }
-  .card-model-area { height: 160px; }
-  .vitrin-section { padding: 60px 0; }
-  .scroll-track { padding: 8px 16px 24px; }
-
-  /* NAV DRAWER */
-  .nav-drawer a { font-size: 1.8rem; }
-  .nav-drawer { gap: 28px; }
-
-  /* FINAL CTA */
-  .final-cta { padding: 80px 16px; }
-  .final-cta h2 { font-size: 2rem; }
-
-  /* FOOTER */
-  footer { padding: 24px 16px; }
+}
+@media (max-width: 480px) {
+  .hero-h1 { font-size: 2.6rem; }
+  .ar-btn { width: 100px; height: 100px; }
+  .ar-ring-1 { width: 136px; height: 136px; }
+  .ar-ring-2 { width: 172px; height: 172px; }
+  .hero-stats { gap: 18px; }
+  .hstat-num { font-size: 1.5rem; }
+  .hstat-sep { display: none; }
 }
 </style>
 </head>
@@ -1366,15 +949,6 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   <div class="si-line"></div>
 </div>
 
-<!-- MOBİL DRAWER -->
-<div class="nav-drawer" id="navDrawer">
-  <a href="#nasil" class="drawer-link">Nasıl Çalışır</a>
-  <a href="#vitrin" class="drawer-link">Vitrin</a>
-  <a href="#fiyat" class="drawer-link">Fiyatlar</a>
-  <a href="#referans" class="drawer-link">Referanslar</a>
-  <a href="#demo" class="drawer-link drawer-cta">Demo Talep Et</a>
-</div>
-
 <!-- NAV -->
 <nav>
   <div class="nav-logo">Chaos<span>AR</span></div>
@@ -1385,11 +959,6 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     <a href="#referans">Referanslar</a>
     <a href="#demo" class="nav-cta">Demo Talep Et</a>
   </div>
-  <button class="nav-hamburger" id="hamburger" aria-label="Menü" aria-expanded="false">
-    <span></span>
-    <span></span>
-    <span></span>
-  </button>
 </nav>
 
 <!-- HERO -->
@@ -1444,7 +1013,6 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
 
   <div class="hero-viewer">
     <div class="viewer-frame">
-      <div class="viewer-skeleton" id="heroSkeleton"></div>
       <model-viewer
         id="heroMV"
         src="https://models.chaosarmenu.com/chaosar-shop/Nike.glb"
@@ -1459,19 +1027,12 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
         <span class="live-dot"></span>
         Canlı Görüntü
       </div>
-      <div class="viewer-float-tl">360° Görüş</div>
-      <div class="viewer-hint">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
-        Sürükle &amp; döndür
-      </div>
-      <div class="viewer-float-br">
-        <div class="float-name">Nike Air Force 1</div>
-        <div class="float-ar-badge">AR Hazır</div>
-      </div>
-      <div class="viewer-anno anno-tr">3D Canlı Görüntü</div>
-      <div class="viewer-anno anno-bl">GLB · GLTF Destekli</div>
-    </div>
-  </div>
+     <div class="sketchfab-embed-wrapper"> 
+  <iframe title="Ice Dragon" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/4d4b209a7f914057bf0f8c6902aae4b0/embed?animation_speed=0.5&autostart=1"> </iframe> 
+  <p style="font-size: 13px; font-weight: normal; margin: 5px; color: #4A4A4A;"> 
+    <a href="https://sketchfab.com/3d-models/ice-dragon-4d4b209a7f914057bf0f8c6902aae4b0" target="_blank" rel="nofollow" style="font-weight: bold; color: #1CAAD9;"> Ice Dragon </a> by <a href="https://sketchfab.com/Ryuism_" target="_blank" rel="nofollow" style="font-weight: bold; color: #1CAAD9;"> Ryuism </a> on <a href="https://sketchfab.com" target="_blank" rel="nofollow" style="font-weight: bold; color: #1CAAD9;">Sketchfab</a>
+  </p>
+</div>
 
 </div>
 
@@ -1634,40 +1195,6 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   <p style="margin-top:20px;font-size:0.7rem;color:rgba(255,255,255,0.28);">Kredi kartı gerekmez · İlk demo ücretsiz (kendi ürününüz) · 12 saat içinde dönüş</p>
 </div>
 
-<!-- ÜRÜN DETAY MODAL -->
-<div class="pd-overlay" id="pdOverlay" role="dialog" aria-modal="true" aria-label="Ürün Detayı">
-  <div class="pd-backdrop" id="pdBackdrop"></div>
-  <div class="pd-sheet" id="pdSheet">
-    <div class="pd-drag-handle"></div>
-    <button class="pd-close" id="pdClose" aria-label="Kapat">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-    <div class="pd-inner">
-      <div class="pd-viewer-col" id="pdViewerCol">
-        <div class="pd-ar-live" id="pdLiveBadge" style="display:none;">
-          <span class="live-dot"></span>
-          3D Canlı
-        </div>
-        <div id="pdViewerMount"></div>
-        <div class="pd-viewer-hint" id="pdViewerHint" style="display:none;">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
-          Sürükle &amp; döndür
-        </div>
-      </div>
-      <div class="pd-info-col">
-        <div class="pd-category" id="pdCategory"></div>
-        <div class="pd-name" id="pdName"></div>
-        <span class="pd-badge" id="pdBadge" style="display:none;"></span>
-        <div class="pd-price" id="pdPrice" style="display:none;"></div>
-        <div class="pd-desc" id="pdDesc"></div>
-        <ul class="pd-features" id="pdFeatures"></ul>
-        <hr class="pd-divider">
-        <div class="pd-actions" id="pdActions"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- FOOTER -->
 <footer>
   <div class="footer-logo">Chaos<span>AR</span></div>
@@ -1676,96 +1203,17 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
 </footer>
 
 <script>
-// ── HAMBURGER MENÜ ────────────────────────────────────────────────────────
-(function () {
-  var btn    = document.getElementById('hamburger');
-  var drawer = document.getElementById('navDrawer');
-  if (!btn || !drawer) return;
-
-  function toggle(open) {
-    btn.classList.toggle('open', open);
-    drawer.classList.toggle('open', open);
-    btn.setAttribute('aria-expanded', String(open));
-    document.body.style.overflow = open ? 'hidden' : '';
-  }
-
-  btn.addEventListener('click', function () {
-    toggle(!drawer.classList.contains('open'));
-  });
-
-  drawer.querySelectorAll('a').forEach(function (a) {
-    a.addEventListener('click', function () { toggle(false); });
-  });
-
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') toggle(false);
-  });
-})();
-</script>
-
-<script>
 // ── VİTRİN ────────────────────────────────────────────────────────────────
 (function () {
   'use strict';
 
-  // Her ürün için:
-  //   modelUrl : 3D GLB dosya yolu (öncelikli)
-  //   imageUrl : Görsel URL'si (modelUrl yoksa kullanılır) — örn: '/assets/urun.jpg' veya 'https://...'
-  //   arLink   : Karta tıklanınca gidilecek URL
   var products = [
-    {
-      id:1, name:'Nike Air Force 1', category:'Ayakkabı',
-      modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Nike.glb',
-      usdzUrl:'https://models.chaosarmenu.com/chaosar-shop/Nike.usdz',
-      imageUrl:null, badge:'Canlı Demo', badgeType:'live', price:'₺4.299',
-      desc:'Nike Air Force 1, ikonik basket siluetini modern AR teknolojisiyle buluşturuyor. Satın almadan önce ayakkabıyı kendi ortamında 1:1 ölçekte gör.',
-      features:['AR ile odanda dene','360° döndür & incele','GLB / USDZ destekli','iOS & Android uyumlu'],
-      arLink:'#demo'
-    },
-    {
-      id:2, name:'Aksesuar Koleksiyon', category:'Aksesuar',
-      modelUrl:'/cha0sar/somlar.glb',
-      usdzUrl:'/cha0sar/somlar.usdz',
-      imageUrl:null, badge:'Yeni', badgeType:'new', price:'₺1.850',
-      desc:'Özenle tasarlanmış aksesuar koleksiyonu. Her parçanın 3D modeli hazır — müşterileriniz ürünü gerçek boyutlarıyla görebilir.',
-      features:['Fotogerçekçi 3D model','Gerçek ölçek AR görünümü','Detaylı malzeme yüzeyi','Web tabanlı, uygulama gerekmez'],
-      arLink:'#demo'
-    },
-    {
-      id:3, name:'Giyim Modeli', category:'Giyim',
-      modelUrl:'/cha0sar/model-2.glb',
-      usdzUrl:null,
-      imageUrl:null, badge:null, badgeType:null, price:'₺2.100',
-      desc:'Giyim kategorisinde AR deneyimi. Müşterileriniz ürünü sanal ortamda inceler, iade oranları dramatik biçimde düşer.',
-      features:['Kumaş dokusu detayı','Çoklu renk varyantı desteği','Anlık AR dönüşümü','E-ticaret entegrasyonu'],
-      arLink:'#demo'
-    },
-    {
-      id:4, name:'Demo Ürün A', category:'Ayakkabı',
-      modelUrl:'/demo/model-70.glb',
-      usdzUrl:'/demo/model-70.usdz',
-      imageUrl:null, badge:null, badgeType:null, price:'₺3.499',
-      desc:'Yüksek çözünürlüklü 3D model örneği. ChaosAR altyapısıyla üretilen her model web ve mobil için optimize edilmiştir.',
-      features:['Optimize GLB formatı','50KB altı yükleme boyutu','Hızlı render','Tüm tarayıcılarda çalışır'],
-      arLink:'#demo'
-    },
-    {
-      id:5, name:'Demo Ürün B', category:'Takı & Aksesuar',
-      modelUrl:'/demo/model-71.glb',
-      usdzUrl:'/demo/model-71.usdz',
-      imageUrl:null, badge:'Yeni', badgeType:'new', price:'₺950',
-      desc:'Takı ve aksesuar kategorisi için özel optimize edilmiş 3D model. Metal yüzey ve mücevher detayları gerçekçi biçimde aktarılır.',
-      features:['Metalik yüzey yansıması','Mücevher PBR materyali','Micro-detay korunur','AR\'da gerçek boyut'],
-      arLink:'#demo'
-    },
-    {
-      id:6, name:'Koleksiyonunuz', category:'Markanız',
-      modelUrl:null, usdzUrl:null, imageUrl:null,
-      badge:'3D Yakında', badgeType:'soon', price:null,
-      desc:'Ürününüz burada olabilir. ChaosAR ile 48 saat içinde tüm koleksiyonunuzu AR\'a taşıyın. Demo talep edin, ilk modeli ücretsiz hazırlıyoruz.',
-      features:['48 saatte teslimat','Sınırsız AR gösterimi','Kendi domain\'inde yayın','Ücretsiz ilk model'],
-      arLink:'#demo'
-    }
+    { id:1, name:'Nike Air Force 1',    category:'Ayakkabı',        modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Nike.glb', imageUrl:null, badge:'Canlı Demo', badgeType:'live', price:'', arLink:'#demo' },
+    { id:2, name:'Aksesuar Koleksiyon', category:'Aksesuar',        modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Philips.glb',   imageUrl:null, badge:'Yeni',       badgeType:'new',  price:'', arLink:'#demo' },
+    { id:3, name:'Giyim Modeli',        category:'Giyim',           modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Giyim-Modeli.glb', imageUrl:null, badge:null,         badgeType:null,   price:'', arLink:'#demo' },
+    { id:4, name:'Demo Ürün A',         category:'Ayakkabı',        modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Demo-Product-A.glb',   imageUrl:null, badge:null,         badgeType:null,   price:'', arLink:'#demo' },
+    { id:5, name:'Demo Ürün B',         category:'Takı & Aksesuar', modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Demo-Product-B.glb',   imageUrl:null, badge:'Yeni',       badgeType:'new',  price:'', arLink:'#demo' },
+    { id:6, name:'Koleksiyonunuz',      category:'Markanız',        modelUrl:null, imageUrl:null, badge:'3D Yakında', badgeType:'soon', price:'Ürününüz burada olabilir', arLink:'#demo' }
   ];
 
   var track = document.getElementById('scrollTrack');
@@ -1774,15 +1222,10 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   products.forEach(function (p) {
     var card = document.createElement('div');
     card.className = 'product-card';
-    card.setAttribute('data-id', p.id);
-    card.setAttribute('role', 'button');
-    card.setAttribute('tabindex', '0');
-    card.style.cursor = 'pointer';
 
     var mediaHtml;
     if (p.modelUrl) {
-      var iosSrcAttr = p.usdzUrl ? ' ios-src="' + p.usdzUrl + '"' : '';
-      mediaHtml = '<model-viewer src="' + p.modelUrl + '"' + iosSrcAttr + ' alt="' + p.name + '" auto-rotate camera-controls ar ar-modes="webxr scene-viewer quick-look" style="width:100%;height:100%;background-color:transparent;outline:none;" tabindex="-1"></model-viewer>';
+      mediaHtml = '<model-viewer src="' + p.modelUrl + '" alt="' + p.name + '" auto-rotate camera-controls style="width:100%;height:100%;background-color:transparent;outline:none;"></model-viewer>';
     } else if (p.imageUrl) {
       mediaHtml = '<img src="' + p.imageUrl + '" alt="' + p.name + '" style="width:100%;height:100%;object-fit:cover;">';
     } else {
@@ -1794,7 +1237,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
       : '';
 
     var btnHtml = (p.modelUrl || p.imageUrl)
-      ? '<span class="card-ar-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Detay &amp; AR</span>'
+      ? '<a href="' + p.arLink + '" class="card-ar-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>AR\'da Gör</a>'
       : '<span class="card-ar-btn disabled">Yakında →</span>';
 
     card.innerHTML =
@@ -1805,15 +1248,6 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
         '<div class="card-price">' + (p.price || '') + '</div>' +
         btnHtml +
       '</div>';
-
-    // Tıklanınca modal aç — model-viewer iç sürükleme ile çakışmasın
-    card.addEventListener('click', function (e) {
-      if (e.target.closest('model-viewer')) return;
-      openModal(p);
-    });
-    card.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(p); }
-    });
 
     track.appendChild(card);
   });
@@ -1837,136 +1271,6 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     e.preventDefault();
     track.scrollBy({ left: e.deltaY * 1.8, behavior: 'auto' });
   }, { passive: false });
-
-  // ── ÜRÜN DETAY MODAL ──────────────────────────────────────────
-  var overlay  = document.getElementById('pdOverlay');
-  var backdrop = document.getElementById('pdBackdrop');
-  var closeBtn = document.getElementById('pdClose');
-  var pdViewerMount = document.getElementById('pdViewerMount');
-  var pdLiveBadge   = document.getElementById('pdLiveBadge');
-  var pdViewerHint  = document.getElementById('pdViewerHint');
-  var pdCategory    = document.getElementById('pdCategory');
-  var pdName        = document.getElementById('pdName');
-  var pdBadge       = document.getElementById('pdBadge');
-  var pdPrice       = document.getElementById('pdPrice');
-  var pdDesc        = document.getElementById('pdDesc');
-  var pdFeatures    = document.getElementById('pdFeatures');
-  var pdActions     = document.getElementById('pdActions');
-
-  function openModal(p) {
-    // Viewer alanı
-    pdViewerMount.innerHTML = '';
-    if (p.modelUrl) {
-      var mv = document.createElement('model-viewer');
-      mv.setAttribute('src', p.modelUrl);
-      if (p.usdzUrl) mv.setAttribute('ios-src', p.usdzUrl);
-      mv.setAttribute('alt', p.name);
-      mv.setAttribute('auto-rotate', '');
-      mv.setAttribute('camera-controls', '');
-      mv.setAttribute('ar', '');
-      mv.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
-      mv.style.cssText = 'width:100%;height:100%;min-height:380px;background-color:transparent;outline:none;';
-      pdViewerMount.appendChild(mv);
-      pdLiveBadge.style.display = 'flex';
-      pdViewerHint.style.display = 'flex';
-    } else if (p.imageUrl) {
-      pdViewerMount.innerHTML = '<img src="' + p.imageUrl + '" alt="' + p.name + '" style="width:100%;height:100%;object-fit:cover;">';
-      pdLiveBadge.style.display = 'none';
-      pdViewerHint.style.display = 'none';
-    } else {
-      pdViewerMount.innerHTML = '<div class="pd-viewer-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>';
-      pdLiveBadge.style.display = 'none';
-      pdViewerHint.style.display = 'none';
-    }
-
-    // Metin alanları
-    pdCategory.textContent = p.category;
-    pdName.textContent = p.name;
-
-    if (p.badge) {
-      pdBadge.textContent = p.badge;
-      pdBadge.className = 'pd-badge ' + (p.badgeType || '');
-      pdBadge.style.display = 'inline-block';
-    } else {
-      pdBadge.style.display = 'none';
-    }
-
-    if (p.price) {
-      pdPrice.textContent = p.price;
-      pdPrice.style.display = 'block';
-    } else {
-      pdPrice.style.display = 'none';
-    }
-
-    pdDesc.textContent = p.desc || '';
-
-    pdFeatures.innerHTML = '';
-    (p.features || []).forEach(function (f) {
-      var li = document.createElement('li');
-      li.textContent = f;
-      pdFeatures.appendChild(li);
-    });
-
-    // Butonlar
-    pdActions.innerHTML = '';
-    if (p.modelUrl) {
-      var btnAr = document.createElement('button');
-      btnAr.className = 'pd-btn-ar';
-      btnAr.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg> Odanda AR\'da Gör';
-      btnAr.addEventListener('click', function () {
-        var mv = pdViewerMount.querySelector('model-viewer');
-        if (mv && mv.canActivateAR) mv.activateAR();
-        else closeModal();
-      });
-      pdActions.appendChild(btnAr);
-    }
-    var btnDemo = document.createElement('a');
-    btnDemo.className = 'pd-btn-demo';
-    btnDemo.href = '#demo';
-    btnDemo.textContent = 'Demo Talep Et →';
-    btnDemo.addEventListener('click', closeModal);
-    pdActions.appendChild(btnDemo);
-
-    // Aç
-    overlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
-    closeBtn.focus();
-  }
-
-  function closeModal() {
-    overlay.classList.remove('open');
-    document.body.style.overflow = '';
-    setTimeout(function () { pdViewerMount.innerHTML = ''; }, 350);
-  }
-
-  if (backdrop) backdrop.addEventListener('click', closeModal);
-  if (closeBtn) closeBtn.addEventListener('click', closeModal);
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
-  });
-
-  // Touch swipe gesture
-  var touchStartX = 0;
-  var touchStartScrollLeft = 0;
-  track.addEventListener('touchstart', function (e) {
-    touchStartX = e.touches[0].clientX;
-    touchStartScrollLeft = track.scrollLeft;
-  }, { passive: true });
-  track.addEventListener('touchmove', function (e) {
-    var dx = touchStartX - e.touches[0].clientX;
-    track.scrollLeft = touchStartScrollLeft + dx;
-  }, { passive: true });
-  track.addEventListener('touchend', updateArrows);
-})();
-
-// ── SKELETON GİZLE ───────────────────────────────────────────────────────
-(function () {
-  var mv = document.getElementById('heroMV');
-  var sk = document.getElementById('heroSkeleton');
-  if (!mv || !sk) return;
-  mv.addEventListener('load', function () { sk.classList.add('hidden'); });
-  // Fallback: 6 saniye sonra zaten gizle
-  setTimeout(function () { sk.classList.add('hidden'); }, 6000);
 })();
 </script>
 </body>
