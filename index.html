@@ -924,6 +924,268 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ── ÜRÜN DETAY MODAL ─────────────────────────────────────────── */
+.pd-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.32s ease;
+}
+.pd-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+.pd-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(12,12,10,0.52);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  cursor: pointer;
+}
+.pd-sheet {
+  position: relative;
+  z-index: 1;
+  background: var(--white);
+  border-radius: 28px 28px 0 0;
+  width: 100%;
+  max-width: 860px;
+  max-height: 92vh;
+  overflow-y: auto;
+  transform: translateY(48px);
+  transition: transform 0.38s cubic-bezier(0.34,1.38,0.64,1);
+  overscroll-behavior: contain;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.pd-sheet::-webkit-scrollbar { display: none; }
+.pd-overlay.open .pd-sheet { transform: translateY(0); }
+
+.pd-drag-handle {
+  width: 36px; height: 4px;
+  background: rgba(12,12,10,0.12);
+  border-radius: 2px;
+  margin: 14px auto 0;
+}
+.pd-close {
+  position: absolute;
+  top: 18px; right: 18px;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 0.5px solid var(--border);
+  background: var(--cream);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  padding: 0;
+  color: var(--ink);
+  z-index: 2;
+}
+.pd-close:hover { background: var(--cream-dark); }
+
+.pd-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+.pd-viewer-col {
+  background: var(--cream);
+  border-radius: 0 0 0 0;
+  min-height: 380px;
+  position: relative;
+  overflow: hidden;
+}
+.pd-viewer-col model-viewer {
+  width: 100%;
+  height: 100%;
+  min-height: 380px;
+  background-color: transparent;
+  outline: none;
+}
+.pd-viewer-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cream-dark);
+}
+.pd-viewer-placeholder svg {
+  width: 64px; height: 64px;
+  stroke: rgba(12,12,10,0.14);
+}
+.pd-viewer-hint {
+  position: absolute;
+  bottom: 14px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+  white-space: nowrap;
+  display: flex; align-items: center; gap: 5px;
+  pointer-events: none;
+}
+.pd-ar-live {
+  position: absolute;
+  top: 14px; left: 14px;
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(8px);
+  border-radius: 100px;
+  padding: 5px 12px;
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.pd-info-col {
+  padding: 36px 36px 40px;
+  display: flex;
+  flex-direction: column;
+}
+.pd-category {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.pd-name {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 300;
+  line-height: 1.15;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  margin-bottom: 10px;
+}
+.pd-badge {
+  display: inline-block;
+  font-size: 0.58rem;
+  font-weight: 700;
+  padding: 3px 12px;
+  border-radius: 100px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+  align-self: flex-start;
+}
+.pd-badge.live { background: var(--ink); color: var(--white); }
+.pd-badge.new  { background: var(--gold); color: var(--white); }
+.pd-badge.soon { background: var(--cream-dark); color: var(--ink-muted); }
+.pd-price {
+  font-family: var(--font-serif);
+  font-size: 1.7rem;
+  font-weight: 400;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  margin-bottom: 18px;
+}
+.pd-price-note {
+  font-size: 0.7rem;
+  color: var(--ink-muted);
+  margin-bottom: 18px;
+}
+.pd-desc {
+  font-size: 0.84rem;
+  color: var(--ink-soft);
+  line-height: 1.75;
+  margin-bottom: 22px;
+}
+.pd-features {
+  list-style: none;
+  margin-bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pd-features li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+}
+.pd-features li::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  flex-shrink: 0;
+}
+.pd-divider {
+  border: none;
+  border-top: 0.5px solid var(--border);
+  margin: 0 0 22px;
+}
+.pd-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+}
+.pd-btn-ar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--ink);
+  color: var(--white);
+  border: none;
+  padding: 14px;
+  border-radius: 100px;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  text-decoration: none;
+  width: 100%;
+  text-align: center;
+}
+.pd-btn-ar:hover { opacity: 0.76; }
+.pd-btn-demo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--ink);
+  border: 0.5px solid var(--border);
+  padding: 13px;
+  border-radius: 100px;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+}
+.pd-btn-demo:hover { background: var(--cream-dark); }
+
+@media (max-width: 640px) {
+  .pd-inner { grid-template-columns: 1fr; }
+  .pd-viewer-col { min-height: 260px; border-radius: 0; }
+  .pd-viewer-col model-viewer { min-height: 260px; }
+  .pd-viewer-placeholder { min-height: 260px; }
+  .pd-info-col { padding: 24px 20px 32px; }
+  .pd-name { font-size: 1.6rem; }
+  .pd-sheet { border-radius: 20px 20px 0 0; max-height: 96vh; }
+}
+
 /* ── MOBİL HAMBURGER ──────────────────────────────────────────── */
 .nav-hamburger {
   display: none;
@@ -1372,6 +1634,40 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   <p style="margin-top:20px;font-size:0.7rem;color:rgba(255,255,255,0.28);">Kredi kartı gerekmez · İlk demo ücretsiz (kendi ürününüz) · 12 saat içinde dönüş</p>
 </div>
 
+<!-- ÜRÜN DETAY MODAL -->
+<div class="pd-overlay" id="pdOverlay" role="dialog" aria-modal="true" aria-label="Ürün Detayı">
+  <div class="pd-backdrop" id="pdBackdrop"></div>
+  <div class="pd-sheet" id="pdSheet">
+    <div class="pd-drag-handle"></div>
+    <button class="pd-close" id="pdClose" aria-label="Kapat">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="pd-inner">
+      <div class="pd-viewer-col" id="pdViewerCol">
+        <div class="pd-ar-live" id="pdLiveBadge" style="display:none;">
+          <span class="live-dot"></span>
+          3D Canlı
+        </div>
+        <div id="pdViewerMount"></div>
+        <div class="pd-viewer-hint" id="pdViewerHint" style="display:none;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+          Sürükle &amp; döndür
+        </div>
+      </div>
+      <div class="pd-info-col">
+        <div class="pd-category" id="pdCategory"></div>
+        <div class="pd-name" id="pdName"></div>
+        <span class="pd-badge" id="pdBadge" style="display:none;"></span>
+        <div class="pd-price" id="pdPrice" style="display:none;"></div>
+        <div class="pd-desc" id="pdDesc"></div>
+        <ul class="pd-features" id="pdFeatures"></ul>
+        <hr class="pd-divider">
+        <div class="pd-actions" id="pdActions"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- FOOTER -->
 <footer>
   <div class="footer-logo">Chaos<span>AR</span></div>
@@ -1417,25 +1713,70 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   //   imageUrl : Görsel URL'si (modelUrl yoksa kullanılır) — örn: '/assets/urun.jpg' veya 'https://...'
   //   arLink   : Karta tıklanınca gidilecek URL
   var products = [
-    { id:1, name:'Nike Air Force 1',    category:'Ayakkabı',        modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Nike.glb', imageUrl:null, badge:'Canlı Demo', badgeType:'live', price:'₺4.299', arLink:'#demo' },
-    { id:2, name:'Aksesuar Koleksiyon', category:'Aksesuar',        modelUrl:'/cha0sar/somlar.glb',   imageUrl:null, badge:'Yeni',       badgeType:'new',  price:'₺1.850', arLink:'#demo' },
-    { id:3, name:'Giyim Modeli',        category:'Giyim',           modelUrl:'/cha0sar/model-2.glb', imageUrl:null, badge:null,         badgeType:null,   price:'₺2.100', arLink:'#demo' },
-    { id:4, name:'Demo Ürün A',         category:'Ayakkabı',        modelUrl:'/demo/model-70.glb',   imageUrl:null, badge:null,         badgeType:null,   price:'₺3.499', arLink:'#demo' },
-    { id:5, name:'Demo Ürün B',         category:'Takı & Aksesuar', modelUrl:'/demo/model-71.glb',   imageUrl:null, badge:'Yeni',       badgeType:'new',  price:'₺950',   arLink:'#demo' },
-    { id:6, name:'Koleksiyonunuz',      category:'Markanız',        modelUrl:null, imageUrl:null, badge:'3D Yakında', badgeType:'soon', price:'Ürününüz burada olabilir', arLink:'#demo' }
+    {
+      id:1, name:'Nike Air Force 1', category:'Ayakkabı',
+      modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Nike.glb', imageUrl:null,
+      badge:'Canlı Demo', badgeType:'live', price:'₺4.299',
+      desc:'Nike Air Force 1, ikonik basket siluetini modern AR teknolojisiyle buluşturuyor. Satın almadan önce ayakkabıyı kendi ortamında 1:1 ölçekte gör.',
+      features:['AR ile odanda dene','360° döndür & incele','GLB / USDZ destekli','iOS & Android uyumlu'],
+      arLink:'#demo'
+    },
+    {
+      id:2, name:'Aksesuar Koleksiyon', category:'Aksesuar',
+      modelUrl:'/cha0sar/somlar.glb', imageUrl:null,
+      badge:'Yeni', badgeType:'new', price:'₺1.850',
+      desc:'Özenle tasarlanmış aksesuar koleksiyonu. Her parçanın 3D modeli hazır — müşterileriniz ürünü gerçek boyutlarıyla görebilir.',
+      features:['Fotogerçekçi 3D model','Gerçek ölçek AR görünümü','Detaylı malzeme yüzeyi','Web tabanlı, uygulama gerekmez'],
+      arLink:'#demo'
+    },
+    {
+      id:3, name:'Giyim Modeli', category:'Giyim',
+      modelUrl:'/cha0sar/model-2.glb', imageUrl:null,
+      badge:null, badgeType:null, price:'₺2.100',
+      desc:'Giyim kategorisinde AR deneyimi. Müşterileriniz ürünü sanal ortamda inceler, iade oranları dramatik biçimde düşer.',
+      features:['Kumaş dokusu detayı','Çoklu renk varyantı desteği','Anlık AR dönüşümü','E-ticaret entegrasyonu'],
+      arLink:'#demo'
+    },
+    {
+      id:4, name:'Demo Ürün A', category:'Ayakkabı',
+      modelUrl:'/demo/model-70.glb', imageUrl:null,
+      badge:null, badgeType:null, price:'₺3.499',
+      desc:'Yüksek çözünürlüklü 3D model örneği. ChaosAR altyapısıyla üretilen her model web ve mobil için optimize edilmiştir.',
+      features:['Optimize GLB formatı','50KB altı yükleme boyutu','Hızlı render','Tüm tarayıcılarda çalışır'],
+      arLink:'#demo'
+    },
+    {
+      id:5, name:'Demo Ürün B', category:'Takı & Aksesuar',
+      modelUrl:'/demo/model-71.glb', imageUrl:null,
+      badge:'Yeni', badgeType:'new', price:'₺950',
+      desc:'Takı ve aksesuar kategorisi için özel optimize edilmiş 3D model. Metal yüzey ve mücevher detayları gerçekçi biçimde aktarılır.',
+      features:['Metalik yüzey yansıması','Mücevher PBR materyali','Micro-detay korunur','AR\'da gerçek boyut'],
+      arLink:'#demo'
+    },
+    {
+      id:6, name:'Koleksiyonunuz', category:'Markanız',
+      modelUrl:null, imageUrl:null,
+      badge:'3D Yakında', badgeType:'soon', price:null,
+      desc:'Ürününüz burada olabilir. ChaosAR ile 48 saat içinde tüm koleksiyonunuzu AR\'a taşıyın. Demo talep edin, ilk modeli ücretsiz hazırlıyoruz.',
+      features:['48 saatte teslimat','Sınırsız AR gösterimi','Kendi domain\'inde yayın','Ücretsiz ilk model'],
+      arLink:'#demo'
+    }
   ];
 
   var track = document.getElementById('scrollTrack');
   if (!track) return;
 
   products.forEach(function (p) {
-    var card = document.createElement('a');
+    var card = document.createElement('div');
     card.className = 'product-card';
-    card.href = p.arLink || '#';
+    card.setAttribute('data-id', p.id);
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.style.cursor = 'pointer';
 
     var mediaHtml;
     if (p.modelUrl) {
-      mediaHtml = '<model-viewer src="' + p.modelUrl + '" alt="' + p.name + '" auto-rotate camera-controls style="width:100%;height:100%;background-color:transparent;outline:none;"></model-viewer>';
+      mediaHtml = '<model-viewer src="' + p.modelUrl + '" alt="' + p.name + '" auto-rotate camera-controls style="width:100%;height:100%;background-color:transparent;outline:none;" tabindex="-1"></model-viewer>';
     } else if (p.imageUrl) {
       mediaHtml = '<img src="' + p.imageUrl + '" alt="' + p.name + '" style="width:100%;height:100%;object-fit:cover;">';
     } else {
@@ -1447,7 +1788,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
       : '';
 
     var btnHtml = (p.modelUrl || p.imageUrl)
-      ? '<span class="card-ar-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Evinde Gör</span>'
+      ? '<span class="card-ar-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Detay &amp; AR</span>'
       : '<span class="card-ar-btn disabled">Yakında →</span>';
 
     card.innerHTML =
@@ -1458,6 +1799,15 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
         '<div class="card-price">' + (p.price || '') + '</div>' +
         btnHtml +
       '</div>';
+
+    // Tıklanınca modal aç — model-viewer iç sürükleme ile çakışmasın
+    card.addEventListener('click', function (e) {
+      if (e.target.closest('model-viewer')) return;
+      openModal(p);
+    });
+    card.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(p); }
+    });
 
     track.appendChild(card);
   });
@@ -1481,6 +1831,111 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     e.preventDefault();
     track.scrollBy({ left: e.deltaY * 1.8, behavior: 'auto' });
   }, { passive: false });
+
+  // ── ÜRÜN DETAY MODAL ──────────────────────────────────────────
+  var overlay  = document.getElementById('pdOverlay');
+  var backdrop = document.getElementById('pdBackdrop');
+  var closeBtn = document.getElementById('pdClose');
+  var pdViewerMount = document.getElementById('pdViewerMount');
+  var pdLiveBadge   = document.getElementById('pdLiveBadge');
+  var pdViewerHint  = document.getElementById('pdViewerHint');
+  var pdCategory    = document.getElementById('pdCategory');
+  var pdName        = document.getElementById('pdName');
+  var pdBadge       = document.getElementById('pdBadge');
+  var pdPrice       = document.getElementById('pdPrice');
+  var pdDesc        = document.getElementById('pdDesc');
+  var pdFeatures    = document.getElementById('pdFeatures');
+  var pdActions     = document.getElementById('pdActions');
+
+  function openModal(p) {
+    // Viewer alanı
+    pdViewerMount.innerHTML = '';
+    if (p.modelUrl) {
+      var mv = document.createElement('model-viewer');
+      mv.setAttribute('src', p.modelUrl);
+      mv.setAttribute('alt', p.name);
+      mv.setAttribute('auto-rotate', '');
+      mv.setAttribute('camera-controls', '');
+      mv.setAttribute('ar', '');
+      mv.style.cssText = 'width:100%;height:100%;min-height:380px;background-color:transparent;outline:none;';
+      pdViewerMount.appendChild(mv);
+      pdLiveBadge.style.display = 'flex';
+      pdViewerHint.style.display = 'flex';
+    } else if (p.imageUrl) {
+      pdViewerMount.innerHTML = '<img src="' + p.imageUrl + '" alt="' + p.name + '" style="width:100%;height:100%;object-fit:cover;">';
+      pdLiveBadge.style.display = 'none';
+      pdViewerHint.style.display = 'none';
+    } else {
+      pdViewerMount.innerHTML = '<div class="pd-viewer-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>';
+      pdLiveBadge.style.display = 'none';
+      pdViewerHint.style.display = 'none';
+    }
+
+    // Metin alanları
+    pdCategory.textContent = p.category;
+    pdName.textContent = p.name;
+
+    if (p.badge) {
+      pdBadge.textContent = p.badge;
+      pdBadge.className = 'pd-badge ' + (p.badgeType || '');
+      pdBadge.style.display = 'inline-block';
+    } else {
+      pdBadge.style.display = 'none';
+    }
+
+    if (p.price) {
+      pdPrice.textContent = p.price;
+      pdPrice.style.display = 'block';
+    } else {
+      pdPrice.style.display = 'none';
+    }
+
+    pdDesc.textContent = p.desc || '';
+
+    pdFeatures.innerHTML = '';
+    (p.features || []).forEach(function (f) {
+      var li = document.createElement('li');
+      li.textContent = f;
+      pdFeatures.appendChild(li);
+    });
+
+    // Butonlar
+    pdActions.innerHTML = '';
+    if (p.modelUrl) {
+      var btnAr = document.createElement('button');
+      btnAr.className = 'pd-btn-ar';
+      btnAr.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg> Odanda AR\'da Gör';
+      btnAr.addEventListener('click', function () {
+        var mv = pdViewerMount.querySelector('model-viewer');
+        if (mv && mv.canActivateAR) mv.activateAR();
+        else closeModal();
+      });
+      pdActions.appendChild(btnAr);
+    }
+    var btnDemo = document.createElement('a');
+    btnDemo.className = 'pd-btn-demo';
+    btnDemo.href = '#demo';
+    btnDemo.textContent = 'Demo Talep Et →';
+    btnDemo.addEventListener('click', closeModal);
+    pdActions.appendChild(btnDemo);
+
+    // Aç
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    closeBtn.focus();
+  }
+
+  function closeModal() {
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+    setTimeout(function () { pdViewerMount.innerHTML = ''; }, 350);
+  }
+
+  if (backdrop) backdrop.addEventListener('click', closeModal);
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
+  });
 
   // Touch swipe gesture
   var touchStartX = 0;
