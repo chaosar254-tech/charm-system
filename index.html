@@ -581,6 +581,10 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   z-index: 2;
 }
 .sheet-close svg { width: 16px; height: 16px; stroke: var(--ink); stroke-width: 2; fill: none; }
+/* Swiper wrapper for sheet model area */
+.sheet-swiper { position: relative; }
+.sheet-swiper .swiper-slide { width: 100%; }
+
 .sheet-model {
   width: 100%;
   height: 300px;
@@ -592,6 +596,33 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   width: 100%;
   height: 100%;
   background-color: transparent;
+}
+
+/* Gold pagination dots */
+.sheet-swiper-pagination {
+  position: static !important;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 0 6px;
+  bottom: auto !important;
+}
+.sheet-swiper-pagination .swiper-pagination-bullet {
+  width: 6px; height: 6px;
+  background: rgba(196,164,132,0.35);
+  opacity: 1; border-radius: 100px;
+  transition: all 0.3s ease;
+  margin: 0 !important;
+}
+.sheet-swiper-pagination .swiper-pagination-bullet-active {
+  background: #C4A484;
+  width: 20px;
+}
+
+/* AR button wrap — between model and body */
+.sheet-ar-wrap {
+  padding: 12px 24px 0;
 }
 @media (min-width: 600px) {
   .product-sheet {
@@ -637,7 +668,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   font-size: 0.88rem;
   color: var(--ink-muted);
   line-height: 1.75;
-  margin-bottom: 50px;
+  margin-bottom: 0;
 }
 .sheet-ar-btn {
   display: flex;
@@ -660,6 +691,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
 }
 .sheet-ar-btn:hover { background: var(--gold); }
 .sheet-ar-btn svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+#sheetModelViewer::part(ar-button) { display: none !important; }
 .sheet-ar-btn.soon {
   background: var(--cream-dark);
   color: var(--ink-muted);
@@ -1035,6 +1067,17 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
         960: { spaceBetween: 20 }
       }
     });
+
+    new Swiper('.sheet-swiper', {
+      slidesPerView: 1,
+      spaceBetween: 0,
+      simulateTouch: false,
+      allowTouchMove: false,
+      pagination: {
+        el: '.sheet-swiper-pagination',
+        clickable: false
+      }
+    });
   }
 })();
 
@@ -1179,6 +1222,8 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     if (p) openSheet(p);
   });
 })();
+
+
 </script>
 
 <!-- ÜRÜN MODAL -->
@@ -1188,28 +1233,37 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   <button class="sheet-close" id="sheetClose" aria-label="Kapat">
     <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
   </button>
-  <div class="sheet-model">
-    <model-viewer
-      id="sheetModelViewer"
-      src=""
-      alt="Ürün 3D Modeli"
-      ar
-      ar-modes="webxr scene-viewer quick-look"
-      camera-controls
-      auto-rotate
-      shadow-intensity="1"
-      exposure="1.2"
-      environment-image="neutral"
-      tone-mapping="commerce"
-      style="width:100%;height:100%;background-color:transparent;">
-    </model-viewer>
+  <div class="sheet-swiper swiper">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide">
+        <div class="sheet-model">
+          <model-viewer
+            id="sheetModelViewer"
+            src=""
+            alt="Ürün 3D Modeli"
+            ar
+            ar-modes="webxr scene-viewer quick-look"
+            camera-controls
+            auto-rotate
+            shadow-intensity="1"
+            exposure="1.2"
+            environment-image="neutral"
+            tone-mapping="commerce"
+            style="width:100%;height:100%;background-color:transparent;">
+          </model-viewer>
+        </div>
+      </div>
+    </div>
+    <div class="swiper-pagination sheet-swiper-pagination"></div>
+  </div>
+  <div class="sheet-ar-wrap">
+    <button class="sheet-ar-btn" id="sheetArBtn">AR'da Görüntüle</button>
   </div>
   <div class="sheet-body">
     <div class="sheet-category" id="sheetCategory"></div>
     <div class="sheet-name"     id="sheetName"></div>
     <div class="sheet-price"    id="sheetPrice"></div>
     <p   class="sheet-desc"     id="sheetDesc"></p>
-    <button class="sheet-ar-btn" id="sheetArBtn">AR'da Görüntüle</button>
   </div>
 </div>
 
