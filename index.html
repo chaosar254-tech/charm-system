@@ -14,17 +14,17 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --cream:      #FFFFFF;
-  --cream-dark: #F5F5F5;
-  --ink:        #0A0A0A;
-  --ink-soft:   #1A1A1A;
-  --ink-muted:  #6B6B6B;
-  --white:      #FFFFFF;
-  --gold:       #92400E;
-  --gold-light: #B45309;
-  --border:     rgba(0,0,0,0.07);
-  --font-serif: 'Bebas Neue', Impact, sans-serif;
-  --font-sans:  'Inter', system-ui, sans-serif;
+  --cream:       #FBF8FF;
+  --cream-dark:  #F0E9FF;
+  --ink:         #1E1830;
+  --ink-soft:    #4A3F6E;
+  --ink-muted:   #9B93BB;
+  --white:       #FFFFFF;
+  --gold:        #9B6FDE;
+  --gold-light:  #B89EEA;
+  --border:      rgba(155, 111, 222, 0.10);
+  --font-serif:  'Bebas Neue', Impact, sans-serif;
+  --font-sans:   'Inter', system-ui, sans-serif;
 }
 
 html { scroll-behavior: smooth; }
@@ -1099,20 +1099,22 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
         ios-src="./assets/dino.usdz"
         alt="ChaosAR 3D Demo Model"
         autoplay
+        auto-rotate
         animation-name="*"
         crossfade="false"
         camera-controls
+        loading="lazy"
+        reveal="auto" 
         camera-orbit="20deg auto auto"
         disable-zoom
         ar
         ar-modes="webxr scene-viewer quick-look"
         environment-image="neutral"
         exposure="1.4"
-        shadow-intensity="1.5"
+        shadow-intensity="1.0"
         shadow-softness="0.6"
-        tone-mapping="commerce"
+        tone-mapping="neutral"
         interaction-prompt="none"
-        loading="eager"
         style="width:100%;height:100%;background-color:transparent;outline:none;--poster-color:transparent;">
       </model-viewer>
 
