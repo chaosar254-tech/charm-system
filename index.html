@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 <link rel="preload" href="https://models.chaosarmenu.com/chaosar-shop/dino.glb" as="fetch" crossorigin="anonymous">
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 <style>
@@ -263,18 +264,23 @@ nav.nav--scrolled {
 .vitrin-section { padding: 120px 0; overflow: hidden; border-top: 0.5px solid var(--border); }
 .vitrin-header { max-width: 1100px; margin: 0 auto; padding: 0 48px; display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 40px; }
 .vitrin-drag-hint { display: flex; align-items: center; gap: 8px; font-size: 0.7rem; color: var(--ink-muted); letter-spacing: 0.06em; padding-bottom: 6px; }
-.scroll-outer { position: relative; overflow: hidden; touch-action: pan-y; }
-.scroll-track {
-  display: flex; gap: 20px; padding: 8px 48px 36px;
-  overflow-x: auto; overflow-y: visible;
-  scroll-snap-type: x mandatory;
-  -ms-overflow-style: none; scrollbar-width: none;
-  touch-action: pan-x;
-  overscroll-behavior-x: contain;
-  will-change: scroll-position; cursor: grab;
+/* ── SWIPER VİTRİN ── */
+.vitrin-swiper {
+  overflow: hidden;
+  padding: 8px 0 36px !important;
+  --swiper-theme-color: var(--gold);
 }
-.scroll-track.dragging { cursor: grabbing; }
-.scroll-track::-webkit-scrollbar { display: none; }
+.vitrin-swiper .swiper-wrapper {
+  align-items: stretch;
+  padding-left: 48px;
+}
+.vitrin-swiper .swiper-slide {
+  width: 320px;
+  height: auto;
+  flex-shrink: 0;
+}
+/* Son slayttan sonra sağ boşluk */
+.vitrin-swiper .swiper-slide:last-child { margin-right: 48px; }
 .product-card {
   flex: 0 0 320px; width: 320px; scroll-snap-align: start;
   background: var(--white); border: 0.5px solid var(--border); border-radius: 20px;
@@ -298,11 +304,21 @@ nav.nav--scrolled {
 .card-ar-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--ink); color: var(--white); padding: 10px 16px; border-radius: 100px; font-family: var(--font-sans); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; cursor: pointer; transition: opacity 0.2s; text-decoration: none; border: none; width: 100%; }
 .card-ar-btn:hover { opacity: 0.75; }
 .card-ar-btn.disabled { background: var(--cream-dark); color: var(--ink-muted); cursor: default; pointer-events: none; }
-.scroll-arrow { position: absolute; top: 50%; transform: translateY(-60%); z-index: 10; width: 44px; height: 44px; border-radius: 50%; border: 0.5px solid var(--border); background: rgba(244,241,235,0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); color: var(--ink); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; padding: 0; box-shadow: 0 2px 12px rgba(12,12,10,0.08); }
+.scroll-arrow {
+  position: absolute; top: 42%; transform: translateY(-50%);
+  z-index: 10; width: 44px; height: 44px; border-radius: 50%;
+  border: 0.5px solid var(--border);
+  background: rgba(254,254,254,0.92);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  color: var(--ink); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; padding: 0;
+  box-shadow: 0 2px 12px rgba(12,12,10,0.08);
+}
 .scroll-arrow:hover { background: var(--ink); color: var(--white); }
-.scroll-arrow:disabled { opacity: 0.22; cursor: default; pointer-events: none; }
-.arrow-left  { left: 8px; }
-.arrow-right { right: 8px; }
+.scroll-arrow.swiper-button-disabled { opacity: 0.22; cursor: default; pointer-events: none; }
+.arrow-left  { left: 6px; }
+.arrow-right { right: 6px; }
 
 /* ── PRICING ── */
 .pricing-section { background: var(--cream-dark); border-top: 0.5px solid var(--border); border-bottom: 0.5px solid var(--border); }
@@ -455,16 +471,10 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
 
   /* ── VİTRİN ── */
   .vitrin-header { padding: 0 20px; flex-direction: column; align-items: flex-start; gap: 8px; margin-bottom: 24px; }
-  .vitrin-drag-hint { display: none; } /* mobilde swipe yeterli */
-  .scroll-outer { touch-action: pan-y; overflow: hidden; }
-  .scroll-track {
-    padding: 8px 20px 28px !important;
-    gap: 14px !important;
-    touch-action: pan-x !important;
-    overscroll-behavior-x: contain !important;
-    cursor: default !important;
-  }
-  .product-card { flex: 0 0 240px !important; width: 240px !important; }
+  .vitrin-drag-hint { display: none; }
+  .vitrin-swiper .swiper-wrapper { padding-left: 20px; }
+  .vitrin-swiper .swiper-slide { width: 240px; }
+  .vitrin-swiper .swiper-slide:last-child { margin-right: 20px; }
   .card-model-area { height: 180px !important; }
   .scroll-arrow { display: none !important; }
 
@@ -627,7 +637,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   font-size: 0.88rem;
   color: var(--ink-muted);
   line-height: 1.75;
-  margin-bottom: 24px;
+  margin-bottom: 50px;
 }
 .sheet-ar-btn {
   display: flex;
@@ -812,11 +822,11 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </div>
   </div>
-  <div class="scroll-outer">
+  <div class="vitrin-swiper swiper" style="position:relative;">
+    <div class="swiper-wrapper" id="scrollTrack"></div>
     <button class="scroll-arrow arrow-left" id="arrowLeft" aria-label="Önceki">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
     </button>
-    <div class="scroll-track" id="scrollTrack"></div>
     <button class="scroll-arrow arrow-right" id="arrowRight" aria-label="Sonraki">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
     </button>
@@ -931,6 +941,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   <p>info@cha0sar.com</p>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
 // ── HAMBURGER ────────────────────────────────────────────────────────────────
 (function () {
@@ -1001,58 +1012,30 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
         btnHtml +
       '</div>';
 
-    track.appendChild(card);
+    var slide = document.createElement('div');
+    slide.className = 'swiper-slide';
+    slide.appendChild(card);
+    track.appendChild(slide);
   });
 
-  var arrowLeft  = document.getElementById('arrowLeft');
-  var arrowRight = document.getElementById('arrowRight');
-  var CARD_W = 340;
-
-  function updateArrows() {
-    var sl    = track.scrollLeft;
-    var maxSl = track.scrollWidth - track.clientWidth;
-    if (arrowLeft)  arrowLeft.disabled  = sl < 4;
-    if (arrowRight) arrowRight.disabled = sl > maxSl - 4;
+  // ── Swiper init ──────────────────────────────────────────────────────────────
+  if (typeof Swiper !== 'undefined') {
+    var swiper = new Swiper('.vitrin-swiper', {
+      slidesPerView: 'auto',
+      spaceBetween: 20,
+      grabCursor: true,
+      freeMode: { enabled: true, momentumBounce: false },
+      navigation: {
+        nextEl: '#arrowRight',
+        prevEl: '#arrowLeft',
+        disabledClass: 'swiper-button-disabled'
+      },
+      breakpoints: {
+        0:   { spaceBetween: 14 },
+        960: { spaceBetween: 20 }
+      }
+    });
   }
-
-  function smoothScroll(target) {
-    var start = track.scrollLeft, dist = target - start, startTime = null;
-    function ease(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
-    function step(ts) {
-      if (!startTime) startTime = ts;
-      var t = Math.min((ts - startTime) / 320, 1);
-      track.scrollLeft = start + dist * ease(t);
-      if (t < 1) requestAnimationFrame(step); else updateArrows();
-    }
-    requestAnimationFrame(step);
-  }
-
-  if (arrowLeft)  arrowLeft.addEventListener('click',  function () { smoothScroll(track.scrollLeft - CARD_W); });
-  if (arrowRight) arrowRight.addEventListener('click', function () { smoothScroll(track.scrollLeft + CARD_W); });
-  track.addEventListener('scroll', updateArrows, { passive: true });
-  updateArrows();
-
-  // Mouse drag — sadece masaüstü
-  var isDown = false, startX = 0, scrollLeft = 0, wasDragging = false;
-  track.addEventListener('mousedown', function (e) {
-    if (e.button !== 0) return;
-    isDown = true; wasDragging = false;
-    startX = e.clientX; scrollLeft = track.scrollLeft;
-    track.classList.add('dragging');
-  });
-  document.addEventListener('mousemove', function (e) {
-    if (!isDown) return;
-    var dx = e.clientX - startX;
-    if (Math.abs(dx) > 5) wasDragging = true;
-    track.scrollLeft = scrollLeft - dx * 1.2;
-  });
-  document.addEventListener('mouseup', function () {
-    if (!isDown) return;
-    isDown = false; track.classList.remove('dragging');
-    setTimeout(function () { wasDragging = false; }, 50);
-    updateArrows();
-  });
-  track.addEventListener('touchend', function () { updateArrows(); }, { passive: true });
 })();
 
 // ── MODEL VIEWER: animasyon + renk swatches ───────────────────────────────────
