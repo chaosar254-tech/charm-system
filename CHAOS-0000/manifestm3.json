@@ -1,0 +1,16 @@
+{
+  ".kıyafetler.": [
+    {
+      "id": "outfit1",
+      "name": "Love",
+      "glb": {
+        "idle": "model-m3/Cemretumay.glb",
+        "animation": "model-m3/Masalm-1.glb"
+      },
+      "usdz": {
+        "idle": "model-m3/Cemretumay.usdz",
+        "animation": "model-m3/Masalm-1.usdz"
+      } 
+    } 
+  ] 
+} 

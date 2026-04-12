@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>ChaosAR - Model</title>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #111; }
+    model-viewer {
+      width: 100vw;
+      height: 100svh;
+      display: block;
+      background-color: transparent;
+      touch-action: pan-y pinch-zoom;
+      -webkit-tap-highlight-color: transparent;
+    }
+  </style>
+</head>
+<body>
+  <model-viewer
+    id="main-viewer"
+    src=""
+    alt="3D Model"
+    ar
+    ar-modes="webxr scene-viewer quick-look"
+    camera-controls
+    touch-action="pan-y"
+    shadow-intensity="0.8"
+    exposure="1"
+    loading="eager"
+    preload="auto"
+    style="width:100%;height:100%;">
+  </model-viewer>
+
+  <script>
+    const viewer = document.getElementById('main-viewer');
+    const urlParams = new URLSearchParams(window.location.search);
+    const user = urlParams.get('user') || urlParams.get('u');
+    const srcParam = urlParams.get('src') || urlParams.get('model');
+
+    function setModelSrc(glbPath, usdzPath) {
+      if (glbPath) viewer.src = glbPath;
+      if (usdzPath) viewer.setAttribute('ios-src', usdzPath);
+    }
+
+    if (srcParam) {
+      const usdzParam = urlParams.get('usdz') || urlParams.get('ios');
+      setModelSrc(srcParam, usdzParam || null);
+    } else {
+      fetch('manifestm1.json?cb=' + Date.now()).catch(() => fetch('manifest.json?cb=' + Date.now()))
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          if (!data) return;
+          const products = data['.kıyafetler.'] || data.products;
+          const list = Array.isArray(products) ? products : [];
+          const product = list.find(p => p.id === (data.defaultModel || urlParams.get('outfit') || urlParams.get('o'))) || list[0];
+          if (!product || !product.glb) return;
+          const glb = typeof product.glb === 'object' ? (product.glb.idle || product.glb.animation || Object.values(product.glb)[0]) : product.glb;
+          const glbPath = (user && !glb.startsWith('http')) ? 'users/' + user + '/' + glb : glb;
+          // USDZ: product.usdz varsa kullan, yoksa .glb → .usdz otomatik türet
+          let usdzPath = null;
+          if (product.usdz) {
+            const u = typeof product.usdz === 'object' ? (product.usdz.idle || Object.values(product.usdz)[0]) : product.usdz;
+            usdzPath = (user && !u.startsWith('http')) ? 'users/' + user + '/' + u : u;
+          } else {
+            usdzPath = glbPath.replace(/\.glb$/i, '.usdz');
+          }
+          setModelSrc(glbPath, usdzPath);
+        })
+        .catch(() => {});
+    }
+
+    viewer.addEventListener('load', () => {
+      if (viewer.canActivateAR) {
+        viewer.activateAR();
+      }
+    });
+  </script>
+</body>
+</html>
