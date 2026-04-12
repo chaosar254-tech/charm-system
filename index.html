@@ -99,12 +99,18 @@ nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 48px;
-  background: rgba(244,241,235,0.88);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  mix-blend-mode: multiply;
+  padding: 18px 48px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-bottom: 0.5px solid var(--border);
+  transform: translateY(-100%);
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), opacity 0.4s ease;
+}
+nav.nav--visible {
+  transform: translateY(0);
+  opacity: 1;
 }
 .nav-logo {
   font-family: var(--font-serif);
@@ -173,7 +179,7 @@ nav {
 }
 .hero-h1 {
   font-family: var(--font-serif);
-  font-size: clamp(4.5rem, 9vw, 10rem);
+  font-size: clamp(3.6rem, 7vw, 7.8rem);
   font-weight: 400;
   line-height: 0.92;
   letter-spacing: 0.01em;
@@ -1066,7 +1072,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
 
   <div class="hero-left">
     <div class="hero-label">3D · AR · Commerce</div>
-    <h1 class="hero-h1">Satıştan<br>Önce<br><em>Denet.</em></h1>
+    <h1 class="hero-h1">Satıştan<br>Önce<br><em>Deneyim.</em></h1>
     <p class="hero-sub">Müşterileriniz ürünlerinizi satın almadan önce kendi salonlarına yerleştirsin. Uygulama indirme zorunluluğu yok. Sadece tek tıkla kusursuz WebAR deneyimi.</p>
 
     <div class="ar-btn-group">
@@ -1122,7 +1128,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
         animation-name="*"
         crossfade="false"
         camera-controls
-        camera-orbit="-20deg auto auto"
+        camera-orbit="20deg auto auto"
         disable-zoom
         ar
         ar-modes="webxr scene-viewer quick-look"
@@ -1136,16 +1142,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
         style="width:100%;height:100%;background-color:transparent;outline:none;--poster-color:transparent;">
       </model-viewer>
 
-      <div class="viewer-interactive-badge">
-        <div class="badge-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-          </svg>
-        </div>
-        <div class="badge-label">İnteraktif<br>3D Görüntüleme</div>
-      </div>
-
-      <div class="viewer-drag-hint">
+<div class="viewer-drag-hint">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
         Sürükle &amp; döndür
       </div>
@@ -1509,6 +1506,22 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   track.addEventListener('touchend', function () {
     touchIsHoriz = null;
     updateArrows();
+  }, { passive: true });
+})();
+
+/* ── NAV: scroll'da görün ── */
+(function () {
+  var nav = document.querySelector('nav');
+  if (!nav) return;
+  var shown = false;
+  window.addEventListener('scroll', function () {
+    if (window.scrollY > 60 && !shown) {
+      nav.classList.add('nav--visible');
+      shown = true;
+    } else if (window.scrollY <= 60 && shown) {
+      nav.classList.remove('nav--visible');
+      shown = false;
+    }
   }, { passive: true });
 })();
 
