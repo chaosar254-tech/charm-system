@@ -14,17 +14,17 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --cream:       #FBF8FF;
-  --cream-dark:  #F0E9FF;
-  --ink:         #1E1830;
-  --ink-soft:    #4A3F6E;
-  --ink-muted:   #9B93BB;
-  --white:       #FFFFFF;
-  --gold:        #9B6FDE;
-  --gold-light:  #B89EEA;
-  --border:      rgba(155, 111, 222, 0.10);
-  --font-serif:  'Bebas Neue', Impact, sans-serif;
-  --font-sans:   'Inter', system-ui, sans-serif;
+  --cream:         #FEFEFE;
+  --cream-dark:    #FFFBF5;
+  --ink:           #141010;
+  --ink-soft:      #382C20;
+  --ink-muted:     #908070;
+  --white:         #FFFFFF;
+  --gold:          #C4986A;
+  --gold-light:    #D8B080;
+  --border:        rgba(20,16,16,.06);
+  --font-serif:    'Bebas Neue', Impact, sans-serif;
+  --font-sans:     'Inter', system-ui, sans-serif;
 }
 
 html { scroll-behavior: smooth; }
@@ -113,9 +113,9 @@ nav.nav--scrolled {
 }
 .nav-logo {
   font-family: var(--font-serif);
-  font-size: 28px;
+  font-size: 1.6rem;
   font-weight: 400;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink);
   text-decoration: none;
@@ -1099,7 +1099,6 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
         ios-src="./assets/dino.usdz"
         alt="ChaosAR 3D Demo Model"
         autoplay
-        auto-rotate
         animation-name="*"
         crossfade="false"
         camera-controls
