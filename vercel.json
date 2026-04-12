@@ -1,7 +1,9 @@
 {
   "rewrites": [
-    { "source": "/butik", "destination": "/pages/butik/index.html" },
-    { "source": "/vr", "destination": "/pages/vr/index.html" },
-    { "source": "/video", "destination": "/pages/video/index.html" }
+    { "source": "/butik",       "destination": "/pages/butik/index.html" },
+    { "source": "/vr",          "destination": "/pages/vr/index.html" },
+    { "source": "/video",       "destination": "/pages/video/index.html" },
+    { "source": "/urun",        "destination": "/pages/urun/index.html" },
+    { "source": "/urun/:slug",  "destination": "/pages/urun/index.html" }
   ]
 }

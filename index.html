@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="preload" href="./assets/dino.glb" as="fetch" crossorigin="anonymous">
+<link rel="preload" href="https://models.chaosarmenu.com/chaosar-shop/dino.glb" as="fetch" crossorigin="anonymous">
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -963,12 +963,12 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
 (function () {
   'use strict';
   var products = [
-    { id:1, name:'Air Force 1',            category:'Ayakkabı',        modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Nike.glb',            badge:'Canlı Demo', badgeType:'live', price:'Demo Ürün',         desc:'Klasik Nike Air Force 1 silüeti, fotogerçekçi 3D modelleme ile sanal ortama taşındı. Odanıza yerleştirin, her açıdan inceleyin.' },
-    { id:2, name:'Kahve Makinası',         category:'Ev Aletleri',     modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Philips.glb',         badge:'Yeni',       badgeType:'new',  price:'Demo Ürün',        desc:'Küçük ev aletlerinden büyük aksesuvarlara kadar her ürün AR ile hayat buluyor. Boyut, renk ve detay — tam ölçüde.' },
-    { id:3, name:'Koltuk Takımı',          category:'Ev',              modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Koltuk.glb',          badge:null,         badgeType:null,   price:'Demo Ürün',        desc:'Giyim ürünleri için 360° dijital vitrin. Kumaş dokusu, dikiş detayları ve renk seçeneklerini AR\'da keşfedin.' },
-    { id:4, name:'Ev Dekorasyonu',         category:'Ev',              modelUrl:'https://models.chaosarmenu.com/chaosar-shop/dekor.glb',           badge:null,         badgeType:null,   price:'Demo Ürün',        desc:'Ev kategorisinde fotogerçekçi AR deneyimi. Müşteriniz ürünü almadan önce zaten "giymiş" olur.' },
-    { id:5, name:'Ev Dekorasyonu',         category:'Ev',              modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Masa.glb',            badge:'Yeni',       badgeType:'new',  price:'Demo Ürün',        desc:'Takı ve aksesuar kategorisinde AR entegrasyonu. Parlaklık, boyut ve form — gerçeğe en yakın dijital deneyim.' },
-    { id:6, name:'Koleksiyonunuz',         category:'Markanız',        modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Saat.glb',      badge:'3D', badgeType:'soon', price:'Sizin Ürününüz',  desc:'Markanızın ürünleri burada. 48 saat içinde teslim, kurulum derdi yok. Demo için bize ulaşın.' }
+    { id:1, name:'Air Force 1',    slug:'air-force-1',    category:'Ayakkabı',    modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Nike.glb',    badge:'Canlı Demo', badgeType:'live', price:'Demo Ürün',      desc:'Klasik Air Force 1 silüeti, fotogerçekçi 3D modelleme ile sanal ortama taşındı. Odanıza yerleştirin, her açıdan inceleyin.' },
+    { id:2, name:'Kahve Makinası', slug:'kahve-makinasi', category:'Ev Aletleri', modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Philips.glb',  badge:'Yeni',       badgeType:'new',  price:'Demo Ürün',      desc:'Küçük ev aletlerinden büyük aksesuvarlara kadar her ürün AR ile hayat buluyor. Boyut, renk ve detay — tam ölçüde.' },
+    { id:3, name:'Koltuk Takımı',  slug:'koltuk-takimi',  category:'Mobilya',     modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Koltuk.glb',  badge:'3D',         badgeType:null,   price:'Demo Ürün',      desc:'Mobilya sektöründe AR ile müşteri güveni. Müşteriniz satın almadan önce ürünü evinde görsün.' },
+    { id:4, name:'Ev Dekorasyonu', slug:'ev-dekorasyonu',  category:'Dekorasyon',  modelUrl:'https://models.chaosarmenu.com/chaosar-shop/dekor.glb',   badge:'3D',         badgeType:null,   price:'Demo Ürün',      desc:'Ev dekorasyonunda fotogerçekçi AR deneyimi. Müşteriniz ürünü almadan önce zaten "yerleştirmiş" olur.' },
+    { id:5, name:'Masa',           slug:'masa',            category:'Mobilya',     modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Masa.glb',    badge:'Yeni',       badgeType:'new',  price:'Demo Ürün',      desc:'Masa ve oturma gruplarında AR entegrasyonu. Boyut, renk ve form — gerçeğe en yakın dijital deneyim.' },
+    { id:6, name:'Saat Koleksiyonu', slug:'saat-koleksiyonu', category:'Aksesuar', modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Saat.glb',   badge:'3D',         badgeType:'soon', price:'Demo Ürün',      desc:'Saat ve aksesuar kategorisinde AR entegrasyonu. Parlaklık, boyut ve form — gerçeğe en yakın dijital deneyim.' }
   ];
   window.__chaosProducts = products;
 
@@ -988,8 +988,9 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     }
 
     var badgeHtml = p.badge ? '<div class="card-badge-wrap"><span class="card-badge ' + (p.badgeType||'') + '">' + p.badge + '</span></div>' : '';
-    var btnLabel  = p.modelUrl ? 'Detay &amp; AR →' : 'Yakında →';
-    var btnClass  = p.modelUrl ? 'card-ar-btn' : 'card-ar-btn disabled';
+    var btnHtml = (p.modelUrl && p.slug)
+      ? '<a href="/urun/' + p.slug + '" class="card-ar-btn">Detaylar →</a>'
+      : '<button class="card-ar-btn disabled" disabled>Yakında →</button>';
 
     card.innerHTML =
       '<div class="card-model-area">' + mediaHtml + badgeHtml + '</div>' +
@@ -997,7 +998,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
         '<div class="card-category">' + p.category + '</div>' +
         '<div class="card-name">' + p.name + '</div>' +
         '<div class="card-price">' + (p.price || '') + '</div>' +
-        '<button class="' + btnClass + '">' + btnLabel + '</button>' +
+        btnHtml +
       '</div>';
 
     track.appendChild(card);
@@ -1185,8 +1186,9 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   if (closeBtn) closeBtn.addEventListener('click', closeSheet);
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSheet(); });
 
-  // Kartlara tıklama — vitrin JS'de product objesini data attribute'a bağlıyoruz
+  // Kartlara tıklama — "Detaylar →" linki navigate etsin, kart gövdesi sheet açsın
   document.addEventListener('click', function (e) {
+    if (e.target.closest('a.card-ar-btn')) return; // linke izin ver
     var card = e.target.closest('[data-product-id]');
     if (!card) return;
     var id = parseInt(card.dataset.productId, 10);
