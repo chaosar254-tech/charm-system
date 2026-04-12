@@ -48,7 +48,7 @@
       const usdzParam = urlParams.get('usdz') || urlParams.get('ios');
       setModelSrc(srcParam, usdzParam || null);
     } else {
-      fetch('manifestm1.json?cb=' + Date.now()).catch(() => fetch('manifest.json?cb=' + Date.now()))
+      fetch('manifestm3.json?cb=' + Date.now()).catch(() => fetch('manifest.json?cb=' + Date.now()))
         .then(r => r.ok ? r.json() : null)
         .then(data => {
           if (!data) return;
