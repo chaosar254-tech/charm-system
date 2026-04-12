@@ -589,18 +589,22 @@ nav.nav--scrolled {
   letter-spacing: 0.06em;
   padding-bottom: 6px;
 }
-.scroll-outer { position: relative; }
+.scroll-outer {
+  position: relative;
+  overflow: hidden;
+  touch-action: pan-y;   /* dış container dikey scroll yapsın */
+}
 .scroll-track {
   display: flex;
   gap: 20px;
   padding: 8px 48px 36px;
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: visible;
   scroll-snap-type: x mandatory;
-  /* scroll-behavior smooth kaldırıldı — snap ile çatışıyor, JS yönetiyor */
   -ms-overflow-style: none;
   scrollbar-width: none;
-  touch-action: pan-x;        /* tarayıcıya yatay scroll yönünü bildir */
+  touch-action: pan-x;
+  overscroll-behavior-x: contain;
   will-change: scroll-position;
   cursor: grab;
 }
@@ -989,25 +993,42 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   100% { background-position:  200% center; }
 }
 
-@media (max-width: 960px) {
-  /* prevent horizontal overflow */
-  body { overflow-x: hidden; }
+/* ── GLOBAL OVERFLOW FIX ─────────────────────────────────────── */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
 
+@media (max-width: 960px) {
   /* ── NAV ── */
-  nav { padding: 12px 20px; min-height: 52px; }
+  nav {
+    width: 100% !important;
+    padding: 12px 20px !important;
+    min-height: 52px;
+  }
   .nav-links { display: none; }
   .nav-logo { font-size: 1.2rem; }
   .nav-hamburger { min-width: 40px; min-height: 40px; }
 
   /* ── HERO ── */
   .hero-grid {
-    grid-template-columns: 1fr;
-    padding: 72px 20px 40px;
-    gap: 32px;
-    min-height: auto;
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 72px 20px 40px !important;
+    gap: 32px !important;
+    min-height: auto !important;
+    overflow: hidden;
   }
-  .hero-left  { order: 1; z-index: 2; padding-right: 0; }
-  .hero-viewer { order: 2; margin-left: 0; margin-right: 0; align-self: auto; }
+  .hero-left  { order: 1; z-index: 2; padding-right: 0; width: 100%; }
+  .hero-viewer {
+    order: 2;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    align-self: auto;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
   .hero-h1 { font-size: 3rem; }
   .custom-floating-viewer {
     position: relative;
@@ -1029,44 +1050,70 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     z-index: 0;
     pointer-events: none;
   }
+  model-viewer {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 260px !important;
+  }
   .hero-stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
     gap: 12px;
     padding: 16px 0;
   }
   .hstat-sep { display: none; }
 
   /* ── SECTIONS ── */
-  .section-wrap  { padding: 56px 20px; }
-  .proof-section { padding: 56px 20px; }
-  .final-cta     { padding: 56px 20px; }
+  .section-wrap {
+    padding: 56px 20px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .proof-section { padding: 56px 20px !important; max-width: 100% !important; }
+  .final-cta     { padding: 56px 20px !important; }
   .vitrin-section { padding: 56px 0; }
-  .how-section .section-wrap { padding: 56px 20px; }
-  .section-title { font-size: clamp(1.8rem, 7vw, 2.8rem); }
+  .how-section .section-wrap { padding: 56px 20px !important; }
+  .section-title { font-size: clamp(1.8rem, 7vw, 2.8rem) !important; }
   p, .step p, .proof-quote, .plan-desc { font-size: 0.9rem; line-height: 1.7; }
 
   /* ── VITRIN / SCROLL TRACK ── */
   .vitrin-header { padding: 0 20px; flex-direction: column; align-items: flex-start; gap: 10px; }
-  .scroll-outer  { padding: 0 20px; }
-  .scroll-track  { padding: 8px 0 28px; gap: 14px; touch-action: pan-x; }
+  .scroll-outer  { padding: 0; overflow-x: hidden; overflow-y: visible; touch-action: pan-y; }
+  .scroll-track  { padding: 8px 20px 28px; gap: 14px; touch-action: pan-x; overscroll-behavior-x: contain; }
   .product-card  { flex: 0 0 260px; width: 260px; height: 320px; }
   .card-model-area { height: 190px; }
   .scroll-arrow  { display: none; }
 
   /* ── STEPS ── */
-  .steps { grid-template-columns: 1fr; gap: 16px; }
+  .steps {
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+    gap: 16px;
+  }
+  .step { width: 100% !important; }
 
   /* ── PRICING ── */
-  .plans { grid-template-columns: 1fr; gap: 16px; }
+  .plans {
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+    gap: 16px;
+  }
+  .plan { width: 100% !important; }
   .plan.featured { order: -1; }
 
   /* ── REFERANSLAR / PROOF ── */
-  .proof-grid { grid-template-columns: 1fr; }
-  .proof-stat-row { grid-template-columns: 1fr 1fr; }
+  .proof-grid {
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+  }
+  .proof-card { width: 100% !important; }
+  .proof-stat-row { grid-template-columns: 1fr 1fr !important; }
 
   /* ── BUTTONS ── */
   .plan-btn, .btn-primary { min-height: 48px; }
+
+  /* ── FINAL CTA GLOW ── */
+  .final-cta::before { width: 100% !important; }
 
   /* ── MISC ── */
   .scroll-indicator { display: none; }
@@ -1074,15 +1121,16 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
 }
 
 @media (max-width: 600px) {
-  body { overflow-x: hidden; }
-
-  .hero-h1 { font-size: 2.6rem; }
+  .hero-h1 { font-size: 2.4rem !important; }
+  .section-title { font-size: 1.8rem !important; }
+  h2 { font-size: 1.6rem !important; }
+  h3 { font-size: 1.1rem !important; }
   .hstat-num { font-size: 1.5rem; }
 
-  /* buttons full-width on small screens */
+  /* buttons full-width */
   .btn-primary,
   .plan-btn {
-    width: 100%;
+    width: 100% !important;
     text-align: center;
     min-height: 48px;
   }
@@ -1096,7 +1144,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   }
 
   /* proof stats single column */
-  .proof-stat-row { grid-template-columns: 1fr; }
+  .proof-stat-row { grid-template-columns: 1fr !important; }
 
   /* AR rings */
   .ar-btn    { width: 100px; height: 100px; }
@@ -1345,6 +1393,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
         </ul>
         <div class="plan-trust">Sınırsız AR gösterimi · Güvenli bulut · Ücretsiz güncellemeler</div>
         <button class="plan-btn featured-btn" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">Hemen Başla →</button>
+        <p style="margin-top:12px;font-size:0.68rem;color:rgba(255,255,255,0.22);text-align:center;line-height:1.5;">Fiyatlara KDV dahil değildir.</p>
       </div>
       <div class="plan">
         <div class="plan-name">Enterprise</div>
@@ -1500,14 +1549,6 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   track.addEventListener('scroll', updateArrows, { passive: true });
   updateArrows();
 
-  // ── Mouse wheel → yatay scroll ──────────────────────────────
-  track.addEventListener('wheel', function (e) {
-    // Yatay wheel zaten browser tarafından handle ediliyor, sadece dikey'e bak
-    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-    e.preventDefault();
-    track.scrollLeft += e.deltaY;
-  }, { passive: false });
-
   // ── Mouse drag-to-scroll (masaüstü) ─────────────────────────
   var isMouseDown = false;
   var dragStartX  = 0;
@@ -1523,18 +1564,27 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     track.classList.add('dragging');
   });
 
-  window.addEventListener('mousemove', function (e) {
+  document.addEventListener('mousemove', function (e) {
     if (!isMouseDown) return;
+    e.preventDefault();
     var dx = e.clientX - dragStartX;
     if (Math.abs(dx) > 5) wasDragging = true;
-    track.scrollLeft = dragScrollLeft - dx;
+    track.scrollLeft = dragScrollLeft - dx * 1.2;
   });
 
-  window.addEventListener('mouseup', function () {
+  document.addEventListener('mouseup', function () {
     if (!isMouseDown) return;
     isMouseDown = false;
     track.classList.remove('dragging');
+    track.style.cursor = 'grab';
     updateArrows();
+  });
+
+  track.addEventListener('mouseleave', function () {
+    if (!isMouseDown) return;
+    isMouseDown = false;
+    track.classList.remove('dragging');
+    track.style.cursor = 'grab';
   });
 
   // Model kartına tıklama — drag ise modalı açma
@@ -1542,36 +1592,8 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     if (wasDragging) { wasDragging = false; e.stopPropagation(); }
   }, true);
 
-  // ── Touch swipe (mobil) ──────────────────────────────────────
-  var touchStartX = 0;
-  var touchStartY = 0;
-  var touchScrollLeft = 0;
-  var touchIsHoriz = null;
-
-  track.addEventListener('touchstart', function (e) {
-    touchStartX     = e.touches[0].clientX;
-    touchStartY     = e.touches[0].clientY;
-    touchScrollLeft = track.scrollLeft;
-    touchIsHoriz    = null;
-  }, { passive: true });
-
-  track.addEventListener('touchmove', function (e) {
-    var dx = touchStartX - e.touches[0].clientX;
-    var dy = touchStartY - e.touches[0].clientY;
-
-    // İlk harekette yönü belirle
-    if (touchIsHoriz === null) {
-      touchIsHoriz = Math.abs(dx) > Math.abs(dy);
-    }
-
-    if (touchIsHoriz) {
-      e.preventDefault();           // sayfanın dikey scroll'ını engelle
-      track.scrollLeft = touchScrollLeft + dx;
-    }
-  }, { passive: false });
-
+  // Touch: CSS touch-action: pan-x ile tarayıcı native olarak handle eder
   track.addEventListener('touchend', function () {
-    touchIsHoriz = null;
     updateArrows();
   }, { passive: true });
 })();
