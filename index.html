@@ -14,15 +14,15 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --cream:      #F0F4F8;
-  --cream-dark: #E2EAF4;
-  --ink:        #0F172A;
-  --ink-soft:   #1E293B;
-  --ink-muted:  #64748B;
+  --cream:      #F7F3F0;
+  --cream-dark: #EDE7E1;
+  --ink:        #1C1917;
+  --ink-soft:   #292524;
+  --ink-muted:  #78716C;
   --white:      #FFFFFF;
-  --gold:       #3B82F6;
-  --gold-light: #60A5FA;
-  --border:     rgba(15,23,42,0.08);
+  --gold:       #92400E;
+  --gold-light: #B45309;
+  --border:     rgba(28,25,23,0.08);
   --font-serif: 'Instrument Serif', Georgia, serif;
   --font-sans:  'Inter', system-ui, sans-serif;
 }
@@ -153,6 +153,7 @@ nav {
 .hero-label {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 16px;
   font-family: var(--font-sans);
   font-size: 0.7rem;
@@ -162,7 +163,7 @@ nav {
   margin-bottom: 28px;
   animation: fadeUp 0.7s ease both;
 }
-.hero-label::before {
+.hero-label::after {
   content: '';
   display: block;
   width: 28px;
@@ -172,11 +173,12 @@ nav {
 }
 .hero-h1 {
   font-family: var(--font-serif);
-  font-size: clamp(3rem, 5.2vw, 5.4rem);
+  font-size: clamp(3.2rem, 6.5vw, 6.8rem);
   font-weight: 400;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
   color: var(--ink);
+  text-align: right;
   margin-bottom: 20px;
   animation: fadeUp 0.7s 0.08s ease both;
 }
@@ -187,6 +189,8 @@ nav {
   max-width: 38ch;
   margin-bottom: 40px;
   line-height: 1.75;
+  text-align: right;
+  margin-left: auto;
   animation: fadeUp 0.7s 0.14s ease both;
 }
 
@@ -282,6 +286,7 @@ nav {
 .hero-stats {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 28px;
   flex-wrap: wrap;
   animation: fadeUp 0.7s 0.26s ease both;
@@ -1123,8 +1128,8 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
         ar-modes="webxr scene-viewer quick-look"
         environment-image="neutral"
         exposure="1.4"
-        shadow-intensity="1.2"
-        shadow-softness="0.7"
+        shadow-intensity="1.5"
+        shadow-softness="0.6"
         tone-mapping="commerce"
         interaction-prompt="none"
         loading="eager"
