@@ -582,8 +582,11 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
 }
 .sheet-close svg { width: 16px; height: 16px; stroke: var(--ink); stroke-width: 2; fill: none; }
 /* Swiper wrapper for sheet model area */
-.sheet-swiper { position: relative; }
-.sheet-swiper .swiper-slide { width: 100%; }
+.sheet-swiper {
+  position: relative;
+  overflow: hidden;      /* Swiper kendi slice'larını kırpar */
+  touch-action: pan-y;   /* dikey scroll sheet'e, yatay swipe Swiper'a */
+}
 
 .sheet-model {
   width: 100%;
@@ -1084,6 +1087,8 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
       slidesPerView: 1,
       spaceBetween: 0,
       grabCursor: true,
+      touchStartPreventDefault: false,
+      touchMoveStopPropagation: false,
       pagination: {
         el: '.sheet-swiper-pagination',
         clickable: true
