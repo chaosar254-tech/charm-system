@@ -272,15 +272,13 @@ nav.nav--scrolled {
 }
 .vitrin-swiper .swiper-wrapper {
   align-items: stretch;
-  padding-left: 48px;
 }
 .vitrin-swiper .swiper-slide {
   width: 320px;
   height: auto;
   flex-shrink: 0;
 }
-/* Son slayttan sonra sağ boşluk */
-.vitrin-swiper .swiper-slide:last-child { margin-right: 48px; }
+/* Son slayt sağ boşluğu slidesOffsetAfter ile yönetiliyor */
 .product-card {
   flex: 0 0 320px; width: 320px; scroll-snap-align: start;
   background: var(--white); border: 0.5px solid var(--border); border-radius: 20px;
@@ -472,9 +470,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   /* ── VİTRİN ── */
   .vitrin-header { padding: 0 20px; flex-direction: column; align-items: flex-start; gap: 8px; margin-bottom: 24px; }
   .vitrin-drag-hint { display: none; }
-  .vitrin-swiper .swiper-wrapper { padding-left: 20px; }
-  .vitrin-swiper .swiper-slide { width: 240px; }
-  .vitrin-swiper .swiper-slide:last-child { margin-right: 20px; }
+  .vitrin-swiper .swiper-slide { width: 260px; }
   .card-model-area { height: 180px !important; }
   .scroll-arrow { display: none !important; }
 
@@ -1122,8 +1118,10 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   if (typeof Swiper !== 'undefined') {
     var swiper = new Swiper('.vitrin-swiper', {
       slidesPerView: 'auto',
-      spaceBetween: 20,
+      spaceBetween: 24,
       grabCursor: true,
+      slidesOffsetBefore: 48,
+      slidesOffsetAfter: 48,
       freeMode: { enabled: true, momentumBounce: false },
       navigation: {
         nextEl: '#arrowRight',
@@ -1131,8 +1129,8 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
         disabledClass: 'swiper-button-disabled'
       },
       breakpoints: {
-        0:   { spaceBetween: 14 },
-        960: { spaceBetween: 20 }
+        0:   { spaceBetween: 16, slidesOffsetBefore: 20, slidesOffsetAfter: 20 },
+        960: { spaceBetween: 24, slidesOffsetBefore: 48, slidesOffsetAfter: 48 }
       }
     });
 
