@@ -517,6 +517,145 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   .custom-floating-viewer { min-height: 240px !important; height: 240px !important; }
   .custom-floating-viewer model-viewer { height: 240px !important; min-height: 240px !important; }
 }
+
+/* ── ÜRÜN MODAL (BOTTOM SHEET) ─────────────────────────────── */
+.product-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20,16,16,0.55);
+  z-index: 9000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.product-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+.product-sheet {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 9001;
+  background: var(--white);
+  border-radius: 24px 24px 0 0;
+  max-height: 92vh;
+  overflow-y: auto;
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.product-sheet.open {
+  transform: translateY(0);
+}
+.sheet-handle {
+  width: 40px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 12px auto 0;
+}
+.sheet-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--cream-dark);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+.sheet-close svg { width: 16px; height: 16px; stroke: var(--ink); stroke-width: 2; fill: none; }
+.sheet-model {
+  width: 100%;
+  height: 300px;
+  background: var(--cream-dark);
+  position: relative;
+  overflow: hidden;
+}
+.sheet-model model-viewer {
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+}
+@media (min-width: 600px) {
+  .product-sheet {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%) translateY(100%);
+    width: 480px;
+    border-radius: 24px 24px 0 0;
+    bottom: 0;
+  }
+  .product-sheet.open {
+    transform: translateX(-50%) translateY(0);
+  }
+}
+.sheet-body {
+  padding: 20px 24px 40px;
+}
+.sheet-category {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.sheet-name {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+.sheet-price {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+.sheet-desc {
+  font-size: 0.88rem;
+  color: var(--ink-muted);
+  line-height: 1.75;
+  margin-bottom: 24px;
+}
+.sheet-ar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 15px 20px;
+  background: var(--ink);
+  color: var(--white);
+  border: none;
+  border-radius: 14px;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  text-decoration: none;
+}
+.sheet-ar-btn:hover { background: var(--gold); }
+.sheet-ar-btn svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+.sheet-ar-btn.soon {
+  background: var(--cream-dark);
+  color: var(--ink-muted);
+  cursor: default;
+  pointer-events: none;
+}
 </style>
 </head>
 <body>
@@ -824,13 +963,14 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
 (function () {
   'use strict';
   var products = [
-    { id:1, name:'Nike Air Force 1',    category:'Ayakkabı',        modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Nike.glb',           badge:'Canlı Demo', badgeType:'live' },
-    { id:2, name:'Aksesuar Koleksiyon', category:'Aksesuar',        modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Philips.glb',         badge:'Yeni',       badgeType:'new'  },
-    { id:3, name:'Giyim Modeli',        category:'Giyim',           modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Giyim-Modeli.glb',    badge:null,         badgeType:null   },
-    { id:4, name:'Demo Ürün A',         category:'Ayakkabı',        modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Demo-Product-A.glb',  badge:null,         badgeType:null   },
-    { id:5, name:'Demo Ürün B',         category:'Takı & Aksesuar', modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Demo-Product-B.glb',  badge:'Yeni',       badgeType:'new'  },
-    { id:6, name:'Koleksiyonunuz',      category:'Markanız',        modelUrl:null, badge:'3D Yakında', badgeType:'soon', price:'Ürününüz burada olabilir' }
+    { id:1, name:'Nike Air Force 1',    category:'Ayakkabı',        modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Nike.glb',           badge:'Canlı Demo', badgeType:'live', price:'Demo Ürün',        desc:'Klasik Nike Air Force 1 silüeti, fotogerçekçi 3D modelleme ile sanal ortama taşındı. Odanıza yerleştirin, her açıdan inceleyin.' },
+    { id:2, name:'Aksesuar Koleksiyon', category:'Aksesuar',        modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Philips.glb',         badge:'Yeni',       badgeType:'new',  price:'Demo Ürün',        desc:'Küçük ev aletlerinden büyük aksesuvarlara kadar her ürün AR ile hayat buluyor. Boyut, renk ve detay — tam ölçüde.' },
+    { id:3, name:'Giyim Modeli',        category:'Giyim',           modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Giyim-Modeli.glb',    badge:null,         badgeType:null,   price:'Demo Ürün',        desc:'Giyim ürünleri için 360° dijital vitrin. Kumaş dokusu, dikiş detayları ve renk seçeneklerini AR\'da keşfedin.' },
+    { id:4, name:'Demo Ürün A',         category:'Ayakkabı',        modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Demo-Product-A.glb',  badge:null,         badgeType:null,   price:'Demo Ürün',        desc:'Ayakkabı kategorisinde fotogerçekçi AR deneyimi. Müşteriniz ürünü almadan önce zaten "giymiş" olur.' },
+    { id:5, name:'Demo Ürün B',         category:'Takı & Aksesuar', modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Demo-Product-B.glb',  badge:'Yeni',       badgeType:'new',  price:'Demo Ürün',        desc:'Takı ve aksesuar kategorisinde AR entegrasyonu. Parlaklık, boyut ve form — gerçeğe en yakın dijital deneyim.' },
+    { id:6, name:'Koleksiyonunuz',      category:'Markanız',        modelUrl:null,                                                               badge:'3D Yakında', badgeType:'soon', price:'Sizin Ürününüz',   desc:'Markanızın ürünleri burada. 48 saat içinde teslim, kurulum derdi yok. Demo için bize ulaşın.' }
   ];
+  window.__chaosProducts = products;
 
   var track = document.getElementById('scrollTrack');
   if (!track) return;
@@ -838,19 +978,18 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   products.forEach(function (p) {
     var card = document.createElement('div');
     card.className = 'product-card';
+    card.dataset.productId = p.id;
 
     var mediaHtml;
     if (p.modelUrl) {
-      // touch-action="pan-y" — modeller dikey scroll'u engellemesin
-      mediaHtml = '<model-viewer src="' + p.modelUrl + '" alt="' + p.name + '" auto-rotate loading="lazy" touch-action="pan-y" style="width:100%;height:100%;background-color:transparent;outline:none;pointer-events:none;" tabindex="-1"></model-viewer>';
+      mediaHtml = '<model-viewer src="' + p.modelUrl + '" alt="' + p.name + '" auto-rotate loading="lazy" touch-action="none" style="width:100%;height:100%;background-color:transparent;outline:none;pointer-events:none;" tabindex="-1"></model-viewer>';
     } else {
       mediaHtml = '<div class="card-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>';
     }
 
     var badgeHtml = p.badge ? '<div class="card-badge-wrap"><span class="card-badge ' + (p.badgeType||'') + '">' + p.badge + '</span></div>' : '';
-    var btnHtml   = p.modelUrl
-      ? '<a href="#demo" class="card-ar-btn"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>AR\'da Gör</a>'
-      : '<span class="card-ar-btn disabled">Yakında →</span>';
+    var btnLabel  = p.modelUrl ? 'Detay &amp; AR →' : 'Yakında →';
+    var btnClass  = p.modelUrl ? 'card-ar-btn' : 'card-ar-btn disabled';
 
     card.innerHTML =
       '<div class="card-model-area">' + mediaHtml + badgeHtml + '</div>' +
@@ -858,7 +997,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
         '<div class="card-category">' + p.category + '</div>' +
         '<div class="card-name">' + p.name + '</div>' +
         '<div class="card-price">' + (p.price || '') + '</div>' +
-        btnHtml +
+        '<button class="' + btnClass + '">' + btnLabel + '</button>' +
       '</div>';
 
     track.appendChild(card);
@@ -970,6 +1109,124 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     });
   }
 })();
+
+// ── ÜRÜN MODAL ────────────────────────────────────────────────────────────────
+(function () {
+  'use strict';
+
+  var overlay = document.getElementById('productOverlay');
+  var sheet   = document.getElementById('productSheet');
+  var sheetMV = document.getElementById('sheetModelViewer');
+  var sheetCat   = document.getElementById('sheetCategory');
+  var sheetName  = document.getElementById('sheetName');
+  var sheetPrice = document.getElementById('sheetPrice');
+  var sheetDesc  = document.getElementById('sheetDesc');
+  var sheetArBtn = document.getElementById('sheetArBtn');
+  var closeBtn   = document.getElementById('sheetClose');
+  if (!overlay || !sheet) return;
+
+  function openSheet(p) {
+    // Model
+    if (p.modelUrl) {
+      sheetMV.setAttribute('src', p.modelUrl);
+      sheetMV.removeAttribute('ios-src');
+      if (p.usdzUrl) sheetMV.setAttribute('ios-src', p.usdzUrl);
+      sheetMV.parentElement.style.display = 'block';
+    } else {
+      sheetMV.parentElement.style.display = 'none';
+    }
+
+    sheetCat.textContent   = p.category;
+    sheetName.textContent  = p.name;
+    sheetPrice.textContent = p.price || '';
+    sheetDesc.textContent  = p.desc  || '';
+
+    if (p.modelUrl) {
+      sheetArBtn.className = 'sheet-ar-btn';
+      sheetArBtn.textContent = '';
+      // İkon
+      var svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+      svg.setAttribute('viewBox','0 0 24 24');
+      svg.setAttribute('fill','none');
+      svg.setAttribute('stroke','currentColor');
+      svg.setAttribute('stroke-width','2');
+      svg.setAttribute('stroke-linecap','round');
+      svg.setAttribute('stroke-linejoin','round');
+      svg.innerHTML = '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>';
+      svg.style.width = '18px'; svg.style.height = '18px';
+      var txt = document.createTextNode(' AR\'da Görüntüle');
+      sheetArBtn.appendChild(svg);
+      sheetArBtn.appendChild(txt);
+      sheetArBtn.onclick = function () {
+        if (sheetMV && sheetMV.canActivateAR) {
+          sheetMV.activateAR();
+        }
+      };
+    } else {
+      sheetArBtn.className = 'sheet-ar-btn soon';
+      sheetArBtn.textContent = 'Yakında';
+      sheetArBtn.onclick = null;
+    }
+
+    overlay.classList.add('open');
+    sheet.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeSheet() {
+    overlay.classList.remove('open');
+    sheet.classList.remove('open');
+    document.body.style.overflow = '';
+    // Modeli durdur — performans için
+    setTimeout(function () { sheetMV.setAttribute('src', ''); }, 400);
+  }
+
+  overlay.addEventListener('click', closeSheet);
+  if (closeBtn) closeBtn.addEventListener('click', closeSheet);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSheet(); });
+
+  // Kartlara tıklama — vitrin JS'de product objesini data attribute'a bağlıyoruz
+  document.addEventListener('click', function (e) {
+    var card = e.target.closest('[data-product-id]');
+    if (!card) return;
+    var id = parseInt(card.dataset.productId, 10);
+    var p = window.__chaosProducts && window.__chaosProducts.find(function (x) { return x.id === id; });
+    if (p) openSheet(p);
+  });
+})();
 </script>
+
+<!-- ÜRÜN MODAL -->
+<div class="product-overlay" id="productOverlay"></div>
+<div class="product-sheet" id="productSheet" role="dialog" aria-modal="true">
+  <div class="sheet-handle"></div>
+  <button class="sheet-close" id="sheetClose" aria-label="Kapat">
+    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <div class="sheet-model">
+    <model-viewer
+      id="sheetModelViewer"
+      src=""
+      alt="Ürün 3D Modeli"
+      ar
+      ar-modes="webxr scene-viewer quick-look"
+      camera-controls
+      auto-rotate
+      shadow-intensity="1"
+      exposure="1.2"
+      environment-image="neutral"
+      tone-mapping="commerce"
+      style="width:100%;height:100%;background-color:transparent;">
+    </model-viewer>
+  </div>
+  <div class="sheet-body">
+    <div class="sheet-category" id="sheetCategory"></div>
+    <div class="sheet-name"     id="sheetName"></div>
+    <div class="sheet-price"    id="sheetPrice"></div>
+    <p   class="sheet-desc"     id="sheetDesc"></p>
+    <button class="sheet-ar-btn" id="sheetArBtn">AR'da Görüntüle</button>
+  </div>
+</div>
+
 </body>
 </html>
