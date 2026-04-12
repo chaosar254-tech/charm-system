@@ -584,8 +584,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
 /* Swiper wrapper for sheet model area */
 .sheet-swiper {
   position: relative;
-  overflow: hidden;      /* Swiper kendi slice'larını kırpar */
-  touch-action: pan-y;   /* dikey scroll sheet'e, yatay swipe Swiper'a */
+  touch-action: pan-y;
 }
 
 .sheet-model {
@@ -601,22 +600,22 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   background-color: transparent;
 }
 
-/* Gold pagination dots */
+/* Gold pagination dots — swiper dışında, normal akışta */
 .sheet-swiper-pagination {
-  position: static !important;
-  display: flex !important;
+  display: flex;
   justify-content: center;
   align-items: center;
   gap: 6px;
   padding: 10px 0 6px;
-  bottom: auto !important;
 }
 .sheet-swiper-pagination .swiper-pagination-bullet {
+  display: inline-block;
   width: 6px; height: 6px;
   background: rgba(196,164,132,0.35);
   opacity: 1; border-radius: 100px;
   transition: all 0.3s ease;
-  margin: 0 !important;
+  margin: 0;
+  cursor: pointer;
 }
 .sheet-swiper-pagination .swiper-pagination-bullet-active {
   background: #C4A484;
@@ -998,7 +997,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   <div class="sheet-swiper swiper">
     <div class="swiper-wrapper">
       <div class="swiper-slide">
-        <div class="sheet-model">
+        <div class="sheet-model" id="sheetModelWrap">
           <model-viewer
             id="sheetModelViewer"
             src=""
@@ -1028,8 +1027,9 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
         </div>
       </div>
     </div>
-    <div class="swiper-pagination sheet-swiper-pagination"></div>
   </div>
+  <!-- pagination OUTSIDE swiper so overflow:hidden doesn't clip it -->
+  <div class="sheet-swiper-pagination"></div>
   <div class="sheet-ar-wrap">
     <button class="sheet-ar-btn" id="sheetArBtn">AR'da Görüntüle</button>
   </div>
@@ -1210,16 +1210,17 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
 (function () {
   'use strict';
 
-  var overlay = document.getElementById('productOverlay');
-  var sheet   = document.getElementById('productSheet');
-  var sheetMV = document.getElementById('sheetModelViewer');
-  var sheetCat   = document.getElementById('sheetCategory');
-  var sheetName  = document.getElementById('sheetName');
-  var sheetPrice = document.getElementById('sheetPrice');
-  var sheetDesc  = document.getElementById('sheetDesc');
-  var sheetArBtn = document.getElementById('sheetArBtn');
-  var closeBtn   = document.getElementById('sheetClose');
-  if (!overlay || !sheet) return;
+  var overlay      = document.getElementById('productOverlay');
+  var sheet        = document.getElementById('productSheet');
+  var sheetMV      = document.getElementById('sheetModelViewer');
+  var sheetMVWrap  = document.getElementById('sheetModelWrap');
+  var sheetCat     = document.getElementById('sheetCategory');
+  var sheetName    = document.getElementById('sheetName');
+  var sheetPrice   = document.getElementById('sheetPrice');
+  var sheetDesc    = document.getElementById('sheetDesc');
+  var sheetArBtn   = document.getElementById('sheetArBtn');
+  var closeBtn     = document.getElementById('sheetClose');
+  if (!overlay || !sheet || !sheetMV || !sheetArBtn) return;
 
   function openSheet(p) {
     // Model
@@ -1227,9 +1228,9 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
       sheetMV.setAttribute('src', p.modelUrl);
       sheetMV.removeAttribute('ios-src');
       if (p.usdzUrl) sheetMV.setAttribute('ios-src', p.usdzUrl);
-      sheetMV.parentElement.style.display = 'block';
+      sheetMVWrap.style.display = 'block';
     } else {
-      sheetMV.parentElement.style.display = 'none';
+      sheetMVWrap.style.display = 'none';
     }
 
     sheetCat.textContent   = p.category;
