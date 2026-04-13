@@ -1012,10 +1012,10 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
           </model-viewer>
         </div>
       </div>
-      <!-- Slide 2 — placeholder image -->
+      <!-- Slide 2 — product image -->
       <div class="swiper-slide">
         <div class="sheet-img-slide">
-          <img src="" alt="Ürün Görseli 2" class="sheet-slide-img sheet-slide-placeholder">
+          <img id="sheetProductImg" src="" alt="" class="sheet-slide-img sheet-slide-placeholder">
         </div>
       </div>
       <!-- Slide 3 — placeholder image -->
@@ -1139,7 +1139,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
       }
     });
 
-    new Swiper('.sheet-swiper', {
+    var sheetSwiper = new Swiper('.sheet-swiper', {
       slidesPerView: 1,
       spaceBetween: 0,
       grabCursor: true,
@@ -1235,6 +1235,21 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     } else {
       sheetMVWrap.style.display = 'none';
     }
+
+    // Poster + image slide
+    var sheetProductImg = document.getElementById('sheetProductImg');
+    if (p.imageUrl && sheetProductImg) {
+      sheetMV.setAttribute('poster', p.imageUrl);
+      sheetProductImg.src = p.imageUrl;
+      sheetProductImg.alt = p.name;
+      sheetProductImg.classList.remove('sheet-slide-placeholder');
+    } else if (sheetProductImg) {
+      sheetMV.removeAttribute('poster');
+      sheetProductImg.src = '';
+      sheetProductImg.classList.add('sheet-slide-placeholder');
+    }
+    // Swiper'ı slide 1'e sıfırla
+    if (typeof sheetSwiper !== 'undefined') sheetSwiper.slideTo(0, 0);
 
     sheetCat.textContent   = p.category;
     sheetName.textContent  = p.name;

@@ -109,12 +109,19 @@ nav {
   background: var(--cream-dark);
   border-right: 0.5px solid var(--border);
   overflow: hidden;
-  display: grid;
-  grid-template-rows: 1fr auto auto; /* swiper | pagination | AR button */
+  display: flex;
+  flex-direction: column;
 }
-/* Swiper media slider */
-.pd-media-swiper {
+/* Wrapper gives Swiper a definite containing block via position:relative */
+.pd-media-wrapper {
+  flex: 1;
   min-height: 0;
+  position: relative;
+}
+/* Swiper fills the wrapper absolutely — no height:100% chain needed */
+.pd-media-swiper {
+  position: absolute;
+  inset: 0;
   overflow: hidden;
   touch-action: pan-y;
 }
@@ -452,14 +459,8 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     display: flex;
     flex-direction: column;
   }
-  .pd-media-swiper {
+  .pd-media-wrapper {
     flex: none;
-    height: 300px;
-  }
-  .pd-media-swiper .swiper-slide {
-    height: 300px;
-  }
-  .pd-model-container {
     height: 300px;
   }
   .pd-ar-overlay-btn {
@@ -511,36 +512,38 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
 
   <!-- LEFT: Model -->
   <div class="pd-col-model">
-    <div class="pd-media-swiper swiper">
-      <div class="swiper-wrapper">
-        <!-- Slide 1: 3D Model -->
-        <div class="swiper-slide">
-          <div class="pd-model-container">
-            <div class="pd-skeleton" id="pdSkeleton"></div>
+    <div class="pd-media-wrapper">
+      <div class="pd-media-swiper swiper">
+        <div class="swiper-wrapper">
+          <!-- Slide 1: 3D Model -->
+          <div class="swiper-slide">
+            <div class="pd-model-container">
+              <div class="pd-skeleton" id="pdSkeleton"></div>
 
-            <model-viewer
-              id="pdModelViewer"
-              src=""
-              alt="Ürün 3D Modeli"
-              ar
-              ar-modes="webxr scene-viewer quick-look"
-              camera-controls
-              auto-rotate
-              shadow-intensity="1.2"
-              exposure="1.2"
-              environment-image="neutral"
-              tone-mapping="commerce"
-              loading="eager"
-              reveal="auto"
-              style="width:100%;height:100%;background-color:transparent;outline:none;--poster-color:transparent;">
-            </model-viewer>
+              <model-viewer
+                id="pdModelViewer"
+                src=""
+                alt="Ürün 3D Modeli"
+                ar
+                ar-modes="webxr scene-viewer quick-look"
+                camera-controls
+                auto-rotate
+                shadow-intensity="1.2"
+                exposure="1.2"
+                environment-image="neutral"
+                tone-mapping="commerce"
+                loading="eager"
+                reveal="auto"
+                style="width:100%;height:100%;background-color:transparent;outline:none;--poster-color:transparent;">
+              </model-viewer>
 
-            <div class="pd-drag-hint">Sürükle &amp; döndür</div>
+              <div class="pd-drag-hint">Sürükle &amp; döndür</div>
+            </div>
           </div>
-        </div>
-        <!-- Slide 2: Product Image -->
-        <div class="swiper-slide pd-img-slide" id="pdImgSlide">
-          <img id="pdProductImg" src="" alt="">
+          <!-- Slide 2: Product Image -->
+          <div class="swiper-slide pd-img-slide" id="pdImgSlide">
+            <img id="pdProductImg" src="" alt="">
+          </div>
         </div>
       </div>
     </div>
@@ -683,6 +686,8 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     mv.setAttribute('alt', product.name + ' 3D Modeli');
     if (product.imageUrl) {
       mv.setAttribute('poster', product.imageUrl);
+      // Poster handles the loading state — hide skeleton so poster image is visible
+      skeleton.style.display = 'none';
     }
     // On mobile, remove camera-controls so Swiper swipe isn't blocked by model-viewer touch handling.
     // Auto-rotate still works. Desktop keeps full camera interaction.
