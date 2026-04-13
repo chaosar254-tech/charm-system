@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 <style>
 /* ── RESET & ROOT ──────────────────────────────────────────── */
@@ -111,11 +112,19 @@ nav {
   display: flex;
   flex-direction: column;
 }
+/* Swiper media slider */
+.pd-media-swiper {
+  flex: 1;
+  min-height: 0;
+  touch-action: pan-y;
+}
+.pd-media-swiper .swiper-slide {
+  height: 100%;
+}
 .pd-model-container {
   position: relative;
   width: 100%;
-  flex: 1;
-  min-height: 0;
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -126,6 +135,40 @@ nav {
   background-color: transparent;
   outline: none;
   --poster-color: transparent;
+}
+/* Image slide */
+.pd-img-slide {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.pd-img-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+/* Pagination — outside swiper so it's not clipped */
+.pd-media-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 0 8px;
+  flex-shrink: 0;
+}
+.pd-media-pagination .swiper-pagination-bullet {
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: rgba(196,164,132,0.35);
+  opacity: 1; border-radius: 100px;
+  transition: all 0.3s ease;
+  margin: 0;
+  cursor: pointer;
+}
+.pd-media-pagination .swiper-pagination-bullet-active {
+  background: #C4A484;
+  width: 20px;
 }
 
 /* Skeleton shimmer */
@@ -407,8 +450,8 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     border-right: none;
     border-bottom: 0.5px solid var(--border);
   }
-  .pd-model-container {
-    flex: 0 0 300px;
+  .pd-media-swiper {
+    flex: none;
     height: 300px;
   }
   .pd-ar-overlay-btn {
@@ -460,29 +503,42 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
 
   <!-- LEFT: Model -->
   <div class="pd-col-model">
-    <div class="pd-model-container">
-      <div class="pd-skeleton" id="pdSkeleton"></div>
+    <div class="pd-media-swiper swiper">
+      <div class="swiper-wrapper">
+        <!-- Slide 1: 3D Model -->
+        <div class="swiper-slide">
+          <div class="pd-model-container">
+            <div class="pd-skeleton" id="pdSkeleton"></div>
 
-      <model-viewer
-        id="pdModelViewer"
-        src=""
-        alt="Ürün 3D Modeli"
-        ar
-        ar-modes="webxr scene-viewer quick-look"
-        camera-controls
-        auto-rotate
-        shadow-intensity="1.2"
-        exposure="1.2"
-        environment-image="neutral"
-        tone-mapping="commerce"
-        loading="eager"
-        reveal="auto"
-        style="width:100%;height:100%;background-color:transparent;outline:none;--poster-color:transparent;">
-      </model-viewer>
+            <model-viewer
+              id="pdModelViewer"
+              src=""
+              alt="Ürün 3D Modeli"
+              ar
+              ar-modes="webxr scene-viewer quick-look"
+              camera-controls
+              auto-rotate
+              shadow-intensity="1.2"
+              exposure="1.2"
+              environment-image="neutral"
+              tone-mapping="commerce"
+              loading="eager"
+              reveal="auto"
+              style="width:100%;height:100%;background-color:transparent;outline:none;--poster-color:transparent;">
+            </model-viewer>
 
-      <div class="pd-drag-hint">Sürükle &amp; döndür</div>
+            <div class="pd-drag-hint">Sürükle &amp; döndür</div>
+          </div>
+        </div>
+        <!-- Slide 2: Product Image -->
+        <div class="swiper-slide pd-img-slide" id="pdImgSlide">
+          <img id="pdProductImg" src="" alt="">
+        </div>
+      </div>
     </div>
-    <!-- AR butonu model-container DIŞINDA, flex column'da altına oturur -->
+    <!-- Pagination outside swiper so overflow:hidden doesn't clip it -->
+    <div class="pd-media-pagination"></div>
+    <!-- AR butonu swiper DIŞINDA, flex column'da altına oturur -->
     <button class="pd-ar-overlay-btn" id="pdArBtn" aria-label="AR'da Deneyin">
       <span class="pd-ar-ring"></span>
       <span class="pd-ar-ring pd-ar-ring-2"></span>
@@ -553,18 +609,19 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   <p>info@cha0sar.com</p>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
 (function () {
   'use strict';
 
   // ── Ürün verisi ─────────────────────────────────────────────────────────────
   var products = [
-    { id:1, name:'Air Force 1',      slug:'air-force-1',      category:'Ayakkabı',    modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Nike.glb',    badge:'Canlı Demo', badgeType:'live', price:'Demo Ürün', desc:'Klasik Air Force 1 silüeti, fotogerçekçi 3D modelleme ile sanal ortama taşındı. Odanıza yerleştirin, her açıdan inceleyin. AR görünümüyle ürünü satın almadan önce tam ölçüde değerlendirin.' },
-    { id:2, name:'Kahve Makinası',   slug:'kahve-makinasi',   category:'Ev Aletleri', modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Philips.glb',  badge:'Yeni',       badgeType:'new',  price:'Demo Ürün', desc:'Küçük ev aletlerinden büyük aksesuvarlara kadar her ürün AR ile hayat buluyor. Boyut, renk ve detay — tam ölçüde. Mutfağınızda nasıl duracağını görmek için "AR\'da Deneyin" butonuna basın.' },
-    { id:3, name:'Koltuk Takımı',    slug:'koltuk-takimi',    category:'Mobilya',     modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Koltuk.glb',  badge:'3D',         badgeType:'soon',   price:'Demo Ürün', desc:'Mobilya sektöründe AR ile müşteri güveni. Oturma odanıza yerleştirmeden önce koltuk takımının boyutunu ve rengini gerçek ortamda görün.' },
-    { id:4, name:'Ev Dekorasyonu',   slug:'ev-dekorasyonu',   category:'Dekorasyon',  modelUrl:'https://models.chaosarmenu.com/chaosar-shop/dekor.glb',   badge:'3D',         badgeType:'soon',   price:'Demo Ürün', desc:'Ev dekorasyonunda fotogerçekçi AR deneyimi. Dekoratif ürünlerin evinizle uyumunu satın almadan önce test edin.' },
-    { id:5, name:'Masa',             slug:'masa',             category:'Mobilya',     modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Masa.glb',    badge:'Yeni',       badgeType:'new',  price:'Demo Ürün', desc:'Masa ve oturma gruplarında AR entegrasyonu. Boyut, renk ve form — ölçüyü tam olarak görmek için odanıza yerleştirin.' },
-    { id:6, name:'Saat Koleksiyonu', slug:'saat-koleksiyonu', category:'Aksesuar',    modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Saat.glb',    badge:'3D',         badgeType:'soon', price:'Demo Ürün', desc:'Saat ve aksesuar kategorisinde AR entegrasyonu. Parlaklık, boyut ve form — gerçeğe en yakın dijital deneyim.' }
+    { id:1, name:'Air Force 1',      slug:'air-force-1',      category:'Ayakkabı',    imageUrl:'/assets/images/products/air-force1.jpg',         modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Nike.glb',    badge:'Canlı Demo', badgeType:'live', price:'Demo Ürün', desc:'Klasik Air Force 1 silüeti, fotogerçekçi 3D modelleme ile sanal ortama taşındı. Odanıza yerleştirin, her açıdan inceleyin. AR görünümüyle ürünü satın almadan önce tam ölçüde değerlendirin.' },
+    { id:2, name:'Kahve Makinası',   slug:'kahve-makinasi',   category:'Ev Aletleri', imageUrl:'/assets/images/products/kahve-makinasi.jpg',      modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Philips.glb',  badge:'Yeni',       badgeType:'new',  price:'Demo Ürün', desc:'Küçük ev aletlerinden büyük aksesuvarlara kadar her ürün AR ile hayat buluyor. Boyut, renk ve detay — tam ölçüde. Mutfağınızda nasıl duracağını görmek için "AR\'da Deneyin" butonuna basın.' },
+    { id:3, name:'Koltuk Takımı',    slug:'koltuk-takimi',    category:'Mobilya',     imageUrl:'/assets/images/products/koltuk-takimi.jpg',       modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Koltuk.glb',  badge:'3D',         badgeType:'soon',   price:'Demo Ürün', desc:'Mobilya sektöründe AR ile müşteri güveni. Oturma odanıza yerleştirmeden önce koltuk takımının boyutunu ve rengini gerçek ortamda görün.' },
+    { id:4, name:'Ev Dekorasyonu',   slug:'ev-dekorasyonu',   category:'Dekorasyon',  imageUrl:'/assets/images/products/ev-dekorasyonu.jpg',      modelUrl:'https://models.chaosarmenu.com/chaosar-shop/dekor.glb',   badge:'3D',         badgeType:'soon',   price:'Demo Ürün', desc:'Ev dekorasyonunda fotogerçekçi AR deneyimi. Dekoratif ürünlerin evinizle uyumunu satın almadan önce test edin.' },
+    { id:5, name:'Masa',             slug:'masa',             category:'Mobilya',     imageUrl:'/assets/images/products/masa.jpg',                modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Masa.glb',    badge:'Yeni',       badgeType:'new',  price:'Demo Ürün', desc:'Masa ve oturma gruplarında AR entegrasyonu. Boyut, renk ve form — ölçüyü tam olarak görmek için odanıza yerleştirin.' },
+    { id:6, name:'Saat Koleksiyonu', slug:'saat-koleksiyonu', category:'Aksesuar',    imageUrl:'/assets/images/products/saat-koleksiyonu.jpg',    modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Saat.glb',    badge:'3D',         badgeType:'soon', price:'Demo Ürün', desc:'Saat ve aksesuar kategorisinde AR entegrasyonu. Parlaklık, boyut ve form — gerçeğe en yakın dijital deneyim.' }
   ];
 
   // ── Slug çöz ─────────────────────────────────────────────────────────────────
@@ -616,9 +673,36 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   if (product.modelUrl) {
     mv.setAttribute('src', product.modelUrl);
     mv.setAttribute('alt', product.name + ' 3D Modeli');
+    if (product.imageUrl) {
+      mv.setAttribute('poster', product.imageUrl);
+    }
   } else {
     skeleton.style.display = 'none';
     document.getElementById('pdArBtn').style.display = 'none';
+  }
+
+  // ── Görsel slayt ──────────────────────────────────────────────────────────────
+  var imgSlide = document.getElementById('pdImgSlide');
+  var imgEl    = document.getElementById('pdProductImg');
+  if (product.imageUrl && imgEl) {
+    imgEl.src = product.imageUrl;
+    imgEl.alt = product.name;
+  } else if (imgSlide) {
+    imgSlide.style.display = 'none';
+  }
+
+  // ── Swiper ───────────────────────────────────────────────────────────────────
+  if (typeof Swiper !== 'undefined') {
+    new Swiper('.pd-media-swiper', {
+      slidesPerView: 1,
+      spaceBetween: 0,
+      grabCursor: true,
+      touchStartPreventDefault: false,
+      pagination: {
+        el: '.pd-media-pagination',
+        clickable: true
+      }
+    });
   }
 
   // Skeleton gizle model yüklenince
