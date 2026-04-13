@@ -109,13 +109,13 @@ nav {
   background: var(--cream-dark);
   border-right: 0.5px solid var(--border);
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: 1fr auto auto; /* swiper | pagination | AR button */
 }
 /* Swiper media slider */
 .pd-media-swiper {
-  flex: 1;
   min-height: 0;
+  overflow: hidden;
   touch-action: pan-y;
 }
 .pd-media-swiper .swiper-slide {
@@ -449,9 +449,17 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     height: auto;
     border-right: none;
     border-bottom: 0.5px solid var(--border);
+    display: flex;
+    flex-direction: column;
   }
   .pd-media-swiper {
     flex: none;
+    height: 300px;
+  }
+  .pd-media-swiper .swiper-slide {
+    height: 300px;
+  }
+  .pd-model-container {
     height: 300px;
   }
   .pd-ar-overlay-btn {
@@ -675,6 +683,11 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     mv.setAttribute('alt', product.name + ' 3D Modeli');
     if (product.imageUrl) {
       mv.setAttribute('poster', product.imageUrl);
+    }
+    // On mobile, remove camera-controls so Swiper swipe isn't blocked by model-viewer touch handling.
+    // Auto-rotate still works. Desktop keeps full camera interaction.
+    if (window.innerWidth < 960) {
+      mv.removeAttribute('camera-controls');
     }
   } else {
     skeleton.style.display = 'none';
