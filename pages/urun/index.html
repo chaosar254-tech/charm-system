@@ -544,6 +544,10 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
           <div class="swiper-slide pd-img-slide" id="pdImgSlide">
             <img id="pdProductImg" src="" alt="">
           </div>
+          <!-- Slide 3: Second Product Image -->
+          <div class="swiper-slide pd-img-slide" id="pdImgSlide2">
+            <img id="pdProductImg2" src="" alt="">
+          </div>
         </div>
       </div>
     </div>
@@ -600,7 +604,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     </div>
 
     <a href="mailto:info@cha0sar.com" class="pd-cta-btn">Teklif Al →</a>
-    <p class="pd-trust">Kredi kartı gerekmez · İlk demo ücretsiz · 12 saat içinde dönüş</p>
+    <p class="pd-trust">Kredi kartı gerekmez · İlk demo ücretsiz (kendi ürününüz) · 12 saat içinde dönüş</p>
 
   </div>
 </main>
@@ -699,7 +703,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     document.getElementById('pdArBtn').style.display = 'none';
   }
 
-  // ── Görsel slayt ──────────────────────────────────────────────────────────────
+  // ── Görsel slaytlar ──────────────────────────────────────────────────────────
   var imgSlide = document.getElementById('pdImgSlide');
   var imgEl    = document.getElementById('pdProductImg');
   if (product.imageUrl && imgEl) {
@@ -707,6 +711,15 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     imgEl.alt = product.name;
   } else if (imgSlide) {
     imgSlide.style.display = 'none';
+  }
+
+  var imgSlide2 = document.getElementById('pdImgSlide2');
+  var imgEl2    = document.getElementById('pdProductImg2');
+  if (product.imageUrl2 && imgEl2) {
+    imgEl2.src = product.imageUrl2;
+    imgEl2.alt = product.name;
+  } else if (imgSlide2) {
+    imgSlide2.style.display = 'none';
   }
 
   // ── Swiper ───────────────────────────────────────────────────────────────────
