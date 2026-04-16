@@ -750,8 +750,8 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
 <div class="hero-grid">
   <div class="hero-left">
     <div class="hero-label">3D · AR · Commerce</div>
-    <h1 class="hero-h1">Satıştan<br>Önce<br><em>Deneyim.</em></h1>
-    <p class="hero-sub">Müşterileriniz ürünlerinizi satın almadan önce kendi salonlarına yerleştirsin. Uygulama indirme zorunluluğu yok. Sadece tek tıkla kusursuz WebAR deneyimi.</p>
+    <h1 class="hero-h1">Müşteriniz ürünü<br>Satın almıyor<br><em>Çünkü onu hiç görmedi..</em></h1>
+    <p class="hero-sub">Ürünü müşterinin evine koymadan satış bekliyorsan, dönüşüm kaybediyorsun. Sadece tek tıkla kusursuz WebAR deneyimi.</p>
     <div class="ar-btn-group">
       <button class="ar-btn" id="arBtn" onclick="var mv=document.getElementById('dragonHero');if(mv&&mv.canActivateAR)mv.activateAR();else document.getElementById('demo').scrollIntoView({behavior:'smooth'})">
         <span class="ar-ring ar-ring-1"></span>
@@ -1073,7 +1073,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
   'use strict';
   var products = [
     { id:1, name:'Air Force 1',    slug:'air-force-1',    category:'Ayakkabı',    modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Nike.glb',    imageUrl:'/assets/images/products/air-force1.jpg', badge:'Canlı Demo',            badgeType:'live', price:'Demo Ürün',          desc:'Klasik Air Force 1 silüeti, fotogerçekçi 3D modelleme ile sanal ortama taşındı. Odanıza yerleştirin, her açıdan inceleyin.' },
-    { id:2, name:'Kahve Makinası', slug:'kahve-makinasi', category:'Ev Aletleri', modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Philips.glb',  imageUrl:'/assets/images/products/kahve-makinasi.jpg',   badge:'Yeni',                    badgeType:'new',  price:'Demo Ürün',          desc:'Küçük ev aletlerinden büyük aksesuvarlara kadar her ürün AR ile hayat buluyor. Boyut, renk ve detay — tam ölçüde.' },
+    { id:2, name:'Kahve Makinası', slug:'kahve-makinasi', category:'Ev Aletleri', modelUrl:'https://models.chaosarmenu.com/chaosar-shop/kahve-v1.glb',  imageUrl:'/assets/images/products/kahve-makinasi.jpg',   badge:'Yeni',                    badgeType:'new',  price:'Demo Ürün',          desc:'Küçük ev aletlerinden büyük aksesuvarlara kadar her ürün AR ile hayat buluyor. Boyut, renk ve detay — tam ölçüde.' },
     { id:3, name:'Koltuk Takımı',  slug:'koltuk-takimi',  category:'Mobilya',     modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Koltuk.glb',  imageUrl:'/assets/images/products/koltuk-takimi.jpg',      badge:'3D',                  badgeType:null, price:'Demo Ürün',                desc:'Mobilya sektöründe AR ile müşteri güveni. Müşteriniz satın almadan önce ürünü evinde görsün.' },
     { id:4, name:'Ev Dekorasyonu', slug:'ev-dekorasyonu',  category:'Dekorasyon',  modelUrl:'https://models.chaosarmenu.com/chaosar-shop/dekor.glb',   imageUrl:'/assets/images/products/ev-dekorasyonu.jpg',           badge:'3D',                      badgeType:null,   price:'Demo Ürün',         desc:'Ev dekorasyonunda fotogerçekçi AR deneyimi. Müşteriniz ürünü almadan önce zaten "yerleştirmiş" olur.' },
     { id:5, name:'Masa',           slug:'masa',            category:'Mobilya',     modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Masa.glb',    imageUrl:'/assets/images/products/masa.jpg',                     badge:'Yeni',                        badgeType:'new',  price:'Demo Ürün',             desc:'Masa ve oturma gruplarında AR entegrasyonu. Boyut, renk ve form — gerçeğe en yakın dijital deneyim.' },
