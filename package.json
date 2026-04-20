@@ -1,0 +1,16 @@
+{
+  "name": "charm-system",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Vercel deployment config for Charm System static pages and subscribe API.",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "iyzipay": "^2.0.67",
+    "resend": "^4.1.0"
+  }
+}

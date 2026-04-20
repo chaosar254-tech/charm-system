@@ -349,7 +349,7 @@ nav.nav--scrolled {
 .plan-features li { font-size: 0.86rem; color: var(--ink-muted); padding: 7px 0; display: flex; align-items: flex-start; gap: 10px; border-top: 0.5px solid var(--border); }
 .plan-features li::before { content: ''; width: 14px; height: 14px; border-radius: 50%; border: 0.5px solid var(--gold); flex-shrink: 0; margin-top: 3px; background: rgba(184,150,90,0.1) url("data:image/svg+xml,%3Csvg width='8' height='8' viewBox='0 0 8 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4l2 2 4-4' stroke='%23B8965A' stroke-width='1.2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center / 8px; }
 .plan-trust { font-size: 0.7rem; color: var(--ink-muted); text-align: center; padding: 10px; border: 0.5px solid var(--border); border-radius: 8px; margin-bottom: 18px; line-height: 1.65; }
-.plan-btn { width: 100%; padding: 13px; border-radius: 100px; font-family: var(--font-sans); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: 0.5px solid var(--border); background: transparent; color: var(--ink); letter-spacing: 0.04em; }
+.plan-btn { width: 100%; padding: 13px; border-radius: 100px; font-family: var(--font-sans); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: 0.5px solid var(--border); background: transparent; color: var(--ink); letter-spacing: 0.04em; display: block; text-align: center; text-decoration: none; line-height: 1.45; }
 .plan-btn:hover { background: var(--ink); color: var(--white); border-color: var(--ink); }
 .plan-btn.featured-btn { background: var(--gold); color: var(--white); border-color: var(--gold); }
 .plan-btn.featured-btn:hover { background: var(--gold-light); border-color: var(--gold-light); }
@@ -886,7 +886,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
     <p class="pricing-note">Tüm paketler: <span>Sınırsız AR gösterimi, güvenli bulut barındırma ve ücretsiz tarayıcı güncellemeleri dahildir.</span></p>
     <div class="plans">
       <div class="plan">
-        <div class="plan-name">Starter</div>
+        <div class="plan-name">Başlangıç Paketi</div>
         <p class="plan-desc">Sistemi ve dönüşümleri test etmek isteyen butikler için. 10 ürüne kadar.</p>
         <div class="plan-capex">Kurulum: <span>5.000 ₺</span></div>
         <div class="plan-opex">990 ₺<small>/ay</small></div>
@@ -899,11 +899,11 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
           <li>E-posta destek</li>
         </ul>
         <div class="plan-trust">Sınırsız AR gösterimi · Güvenli bulut · Ücretsiz güncellemeler</div>
-        <button class="plan-btn" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">Demo Talep Et →</button>
+        <a href="/api/subscribe?plan=basic" class="plan-btn btn-subscribe">Başlangıç Paketi<br>1.188 TL / ay + KDV</a>
       </div>
       <div class="plan featured">
         <div class="featured-badge">EN ÇOK TERCİH EDİLEN · %20 BİRİM AVANTAJI</div>
-        <div class="plan-name">Growth</div>
+        <div class="plan-name">Pro Paketi</div>
         <p class="plan-desc">Tüm koleksiyonunu AR'a taşımak isteyen standart markalar için. 50 ürüne kadar.</p>
         <div class="plan-capex">Kurulum: <span>20.000 ₺</span></div>
         <div class="plan-capex">Kurulum bedeli ürün sayısına göre değişkenlik gösterebilir.</div>
@@ -918,7 +918,7 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
           <li>Öncelikli destek hattı</li>
         </ul>
         <div class="plan-trust">Sınırsız AR gösterimi · Güvenli bulut · Ücretsiz güncellemeler</div>
-        <button class="plan-btn featured-btn" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">Hemen Başla →</button>
+        <a href="/api/subscribe?plan=pro" class="plan-btn featured-btn btn-subscribe btn-primary">Pro Paketi<br>1.788 TL / ay + KDV</a>
         <p style="margin-top:12px;font-size:0.68rem;color:rgba(255,255,255,0.22);text-align:center;line-height:1.5;">Fiyatlara KDV dahil değildir.</p>
       </div>
       <div class="plan">
