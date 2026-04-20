@@ -20,7 +20,17 @@ const PLANS = {
     name: 'Baslangic',
     price: 1188,
   },
+  starter: {
+    code: '3f9a1ae8-5e8f-4b67-aa53-76c5b944b3e8',
+    name: 'Baslangic',
+    price: 1188,
+  },
   pro: {
+    code: '8f9611a7-0f86-470d-b697-08d13a73d16d',
+    name: 'Pro',
+    price: 1788,
+  },
+  growth: {
     code: '8f9611a7-0f86-470d-b697-08d13a73d16d',
     name: 'Pro',
     price: 1788,
@@ -28,9 +38,11 @@ const PLANS = {
 };
 
 module.exports = async (req, res) => {
+  const requestedPlan = (req.query.planId || req.query.plan || 'starter').toLowerCase();
+
   console.log('Subscribe request received', {
     host: req.headers.host,
-    plan: req.query.plan || 'basic',
+    plan: requestedPlan,
     siteUrl: process.env.SITE_URL || `https://${req.headers.host}`,
     iyzicoUri: iyzicoConfig.uri,
     hasApiKey: Boolean(process.env.IYZICO_API_KEY),
@@ -38,7 +50,7 @@ module.exports = async (req, res) => {
   });
 
   // Plan parametresini al
-  const planKey = (req.query.plan || 'basic').toLowerCase();
+  const planKey = requestedPlan;
   const plan = PLANS[planKey];
 
   if (!plan) {

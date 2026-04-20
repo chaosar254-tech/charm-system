@@ -899,7 +899,10 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
           <li>E-posta destek</li>
         </ul>
         <div class="plan-trust">Sınırsız AR gösterimi · Güvenli bulut · Ücretsiz güncellemeler</div>
-        <a href="/api/subscribe?plan=basic" class="plan-btn btn-subscribe">Başlangıç Paketi<br>1.188 TL / ay + KDV</a>
+        <a
+          href="https://chaosarmenu.com/api/pay?planId=starter"
+          class="plan-btn btn-subscribe"
+          data-pay-url="https://chaosarmenu.com/api/pay?planId=starter">Başlangıç Paketi<br>1.188 TL / ay + KDV</a>
       </div>
       <div class="plan featured">
         <div class="featured-badge">EN ÇOK TERCİH EDİLEN · %20 BİRİM AVANTAJI</div>
@@ -918,7 +921,10 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
           <li>Öncelikli destek hattı</li>
         </ul>
         <div class="plan-trust">Sınırsız AR gösterimi · Güvenli bulut · Ücretsiz güncellemeler</div>
-        <a href="/api/subscribe?plan=pro" class="plan-btn featured-btn btn-subscribe btn-primary">Pro Paketi<br>1.788 TL / ay + KDV</a>
+        <a
+          href="https://chaosarmenu.com/api/pay?planId=growth"
+          class="plan-btn featured-btn btn-subscribe btn-primary"
+          data-pay-url="https://chaosarmenu.com/api/pay?planId=growth">Pro Paketi<br>1.788 TL / ay + KDV</a>
         <p style="margin-top:12px;font-size:0.68rem;color:rgba(255,255,255,0.22);text-align:center;line-height:1.5;">Fiyatlara KDV dahil değildir.</p>
       </div>
       <div class="plan">
@@ -1207,6 +1213,86 @@ footer p { font-size: 0.7rem; color: rgba(255,255,255,0.28); }
       document.querySelectorAll('#colorSwatches .color-chip').forEach(function (b) { b.classList.remove('active'); });
     });
   }
+})();
+
+// ── PAYMENT LINK BINDING ─────────────────────────────────────────────────────
+(function () {
+  function looksLikeEmail(value) {
+    return typeof value === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+  }
+
+  function extractEmail(value) {
+    if (!value) return '';
+    if (looksLikeEmail(value)) return value.trim();
+
+    if (typeof value === 'object') {
+      var directEmail = value.email || value.mail || value.userEmail;
+      if (looksLikeEmail(directEmail)) return directEmail.trim();
+
+      if (value.user && typeof value.user === 'object') {
+        var nestedEmail = value.user.email || value.user.mail || value.user.userEmail;
+        if (looksLikeEmail(nestedEmail)) return nestedEmail.trim();
+      }
+    }
+
+    if (typeof value === 'string') {
+      try {
+        return extractEmail(JSON.parse(value));
+      } catch (error) {
+        return '';
+      }
+    }
+
+    return '';
+  }
+
+  function getStoredEmail() {
+    var globalCandidates = [
+      window.currentUser,
+      window.user,
+      window.__USER__,
+      window.__SESSION__,
+      window.__INITIAL_STATE__
+    ];
+
+    for (var i = 0; i < globalCandidates.length; i++) {
+      var globalEmail = extractEmail(globalCandidates[i]);
+      if (globalEmail) return globalEmail;
+    }
+
+    var storageKeys = [
+      'user',
+      'currentUser',
+      'authUser',
+      'session',
+      'profile',
+      'customer',
+      'email'
+    ];
+
+    for (var j = 0; j < storageKeys.length; j++) {
+      var key = storageKeys[j];
+      var localEmail = extractEmail(window.localStorage && window.localStorage.getItem(key));
+      if (localEmail) return localEmail;
+
+      var sessionEmail = extractEmail(window.sessionStorage && window.sessionStorage.getItem(key));
+      if (sessionEmail) return sessionEmail;
+    }
+
+    return '';
+  }
+
+  var email = getStoredEmail();
+
+  document.querySelectorAll('[data-pay-url]').forEach(function (link) {
+    try {
+      var url = new URL(link.getAttribute('data-pay-url'));
+      if (email) url.searchParams.set('email', email);
+      link.href = url.toString();
+    } catch (error) {
+      // Base URL sabit kaldigi surece sessizce devam et.
+    }
+  });
 })();
 
 // ── ÜRÜN MODAL ────────────────────────────────────────────────────────────────
