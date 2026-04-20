@@ -1,10 +1,16 @@
 const Iyzipay = require('iyzipay');
 const crypto = require('crypto');
 
-const iyzipay = new Iyzipay({
+const iyzicoConfig = {
   apiKey: process.env.IYZICO_API_KEY || 'VKqh5cTmnc5rsZbtieA8CJtM4mYPuFcf',
   secretKey: process.env.IYZICO_SECRET_KEY || '4M9ztXmWFwpCEGBJVPg7tNmfeLwRZfsQ',
   uri: process.env.IYZICO_BASE_URL || 'https://sandbox-api.iyzipay.com',
+};
+
+const iyzipay = new Iyzipay({
+  apiKey: iyzicoConfig.apiKey,
+  secretKey: iyzicoConfig.secretKey,
+  uri: iyzicoConfig.uri,
 });
 
 // Plan kodlari
@@ -22,6 +28,15 @@ const PLANS = {
 };
 
 module.exports = async (req, res) => {
+  console.log('Subscribe request received', {
+    host: req.headers.host,
+    plan: req.query.plan || 'basic',
+    siteUrl: process.env.SITE_URL || `https://${req.headers.host}`,
+    iyzicoUri: iyzicoConfig.uri,
+    hasApiKey: Boolean(process.env.IYZICO_API_KEY),
+    hasSecretKey: Boolean(process.env.IYZICO_SECRET_KEY),
+  });
+
   // Plan parametresini al
   const planKey = (req.query.plan || 'basic').toLowerCase();
   const plan = PLANS[planKey];
@@ -82,6 +97,14 @@ module.exports = async (req, res) => {
       });
     });
 
+    console.log('Iyzico initialize result', {
+      status: result.status,
+      errorCode: result.errorCode,
+      errorMessage: result.errorMessage,
+      conversationId,
+      planKey,
+    });
+
     if (result.status === 'success' && result.payWithIyzicoPageUrl) {
       // Kullaniciyi Iyzico odeme sayfasina yonlendir
       return res.redirect(302, result.payWithIyzicoPageUrl);
@@ -89,9 +112,21 @@ module.exports = async (req, res) => {
 
     return res
       .status(400)
-      .send(`Odeme linki olusturulamadi: ${result.errorMessage || 'Bilinmeyen hata'}`);
+      .send(
+        `Odeme linki olusturulamadi: ${result.errorMessage || 'Bilinmeyen hata'} (code: ${result.errorCode || 'n/a'}, envApiKey: ${process.env.IYZICO_API_KEY ? 'set' : 'fallback'}, envSecret: ${process.env.IYZICO_SECRET_KEY ? 'set' : 'fallback'}, uri: ${iyzicoConfig.uri})`
+      );
   } catch (error) {
-    console.error('Iyzico error:', error);
-    return res.status(500).send('Sunucu hatasi, lutfen tekrar deneyin.');
+    console.error('Iyzico error:', {
+      message: error.message,
+      stack: error.stack,
+      planKey,
+      uri: iyzicoConfig.uri,
+      hasApiKey: Boolean(process.env.IYZICO_API_KEY),
+      hasSecretKey: Boolean(process.env.IYZICO_SECRET_KEY),
+    });
+
+    return res.status(500).send(
+      `Sunucu hatasi, lutfen tekrar deneyin. (uri: ${iyzicoConfig.uri}, envApiKey: ${process.env.IYZICO_API_KEY ? 'set' : 'fallback'}, envSecret: ${process.env.IYZICO_SECRET_KEY ? 'set' : 'fallback'})`
+    );
   }
 };
