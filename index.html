@@ -1428,5 +1428,73 @@ src="https://www.facebook.com/tr?id=980421621608814&ev=PageView&noscript=1"
 
 <script defer src="/_vercel/insights/script.js"></script>
 
+<!-- EMAIL MODAL -->
+<div id="email-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(20,16,16,.55);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:16px;padding:36px 32px;max-width:380px;width:calc(100% - 48px);box-shadow:0 24px 64px rgba(20,16,16,.18);position:relative;">
+    <button id="email-modal-close" style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:1.2rem;cursor:pointer;color:#908070;line-height:1;">✕</button>
+    <div style="font-size:0.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#C4986A;margin-bottom:8px;">Abonelik</div>
+    <div style="font-size:1.05rem;font-weight:700;color:#141010;margin-bottom:6px;">E-posta adresinizi girin</div>
+    <p style="font-size:0.82rem;color:#908070;margin:0 0 20px;">Abonelik ve fatura bilgileri bu adrese gönderilecektir.</p>
+    <input id="email-modal-input" type="email" placeholder="ornek@email.com"
+      style="width:100%;box-sizing:border-box;padding:11px 14px;border-radius:8px;border:0.5px solid rgba(20,16,16,.15);font-size:0.88rem;font-family:inherit;color:#141010;outline:none;margin-bottom:12px;"
+      autocomplete="email" inputmode="email">
+    <div id="email-modal-err" style="font-size:0.78rem;color:#c0392b;margin-bottom:8px;display:none;">Geçerli bir e-posta adresi girin.</div>
+    <button id="email-modal-submit"
+      style="width:100%;padding:13px;border-radius:100px;border:none;background:#C4986A;color:#fff;font-family:inherit;font-size:0.8rem;font-weight:600;letter-spacing:.04em;cursor:pointer;transition:background .2s;">
+      Devam Et →
+    </button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var modal = document.getElementById('email-modal');
+  var input = document.getElementById('email-modal-input');
+  var err   = document.getElementById('email-modal-err');
+  var pendingUrl = '';
+
+  function openModal(url) {
+    pendingUrl = url;
+    input.value = '';
+    err.style.display = 'none';
+    modal.style.display = 'flex';
+    setTimeout(function () { input.focus(); }, 50);
+  }
+
+  function closeModal() {
+    modal.style.display = 'none';
+    pendingUrl = '';
+  }
+
+  document.querySelectorAll('.btn-subscribe').forEach(function (el) {
+    el.addEventListener('click', function (e) {
+      e.preventDefault();
+      openModal(el.getAttribute('data-pay-url') || el.getAttribute('href'));
+    });
+  });
+
+  document.getElementById('email-modal-close').addEventListener('click', closeModal);
+  modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+
+  document.getElementById('email-modal-submit').addEventListener('click', function () {
+    var email = input.value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      err.style.display = 'block';
+      input.focus();
+      return;
+    }
+    err.style.display = 'none';
+    var url = pendingUrl + '&userEmail=' + encodeURIComponent(email);
+    closeModal();
+    window.location.href = url;
+  });
+
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') document.getElementById('email-modal-submit').click();
+  });
+})();
+</script>
+
 </body>
 </html>
