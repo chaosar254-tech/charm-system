@@ -19,7 +19,15 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-<link rel="preload" href="https://models.chaosarmenu.com/chaosar-shop/bike.glb" as="fetch" crossorigin="anonymous">
+<link rel="preconnect" href="https://models.chaosarmenu.com" crossorigin>
+<link rel="dns-prefetch" href="https://models.chaosarmenu.com">
+<link rel="preload" href="https://models.chaosarmenu.com/chaosar-shop/bike.glb" as="fetch" crossorigin="anonymous" fetchpriority="high">
+<link rel="prefetch" href="https://models.chaosarmenu.com/chaosar-shop/Nike.glb" crossorigin="anonymous" fetchpriority="low">
+<link rel="prefetch" href="https://models.chaosarmenu.com/chaosar-shop/kahve-v1.glb" crossorigin="anonymous" fetchpriority="low">
+<link rel="prefetch" href="https://models.chaosarmenu.com/chaosar-shop/Koltuk.glb" crossorigin="anonymous" fetchpriority="low">
+<link rel="prefetch" href="https://models.chaosarmenu.com/chaosar-shop/dekor.glb" crossorigin="anonymous" fetchpriority="low">
+<link rel="prefetch" href="https://models.chaosarmenu.com/chaosar-shop/Masa.glb" crossorigin="anonymous" fetchpriority="low">
+<link rel="prefetch" href="https://models.chaosarmenu.com/chaosar-shop/Canta.glb" crossorigin="anonymous" fetchpriority="low">
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -821,7 +829,7 @@ src="https://www.facebook.com/tr?id=980421621608814&ev=PageView&noscript=1"
         animation-name="*"
         crossfade="false"
         camera-controls
-        loading="lazy"
+        loading="eager"
         reveal="auto"
         camera-orbit="50deg auto auto"
         disable-zoom
@@ -1506,6 +1514,72 @@ src="https://www.facebook.com/tr?id=980421621608814&ev=PageView&noscript=1"
   input.addEventListener('keydown', function (e) {
     if (e.key === 'Enter') document.getElementById('email-modal-submit').click();
   });
+})();
+</script>
+
+
+<script>
+(function () {
+  'use strict';
+
+  var HERO_URL = 'https://models.chaosarmenu.com/chaosar-shop/bike.glb';
+  var SECONDARY_MODELS = [
+    'https://models.chaosarmenu.com/chaosar-shop/Nike.glb',
+    'https://models.chaosarmenu.com/chaosar-shop/kahve-v1.glb',
+    'https://models.chaosarmenu.com/chaosar-shop/Koltuk.glb',
+    'https://models.chaosarmenu.com/chaosar-shop/dekor.glb',
+    'https://models.chaosarmenu.com/chaosar-shop/Masa.glb',
+    'https://models.chaosarmenu.com/chaosar-shop/Canta.glb'
+  ];
+
+  // Service Worker kayıt
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js', { scope: '/' })
+      .then(function (reg) {
+        console.log('[ChaosAR] SW kayıtlı:', reg.scope);
+      })
+      .catch(function (err) {
+        console.warn('[ChaosAR] SW kayıt hatası:', err);
+      });
+  }
+
+  // Hero yükleme süresi ölçümü
+  performance.mark('chaosar-page-start');
+  var hero = document.getElementById('dragonHero');
+  if (hero) {
+    hero.addEventListener('load', function () {
+      performance.mark('chaosar-hero-loaded');
+      performance.measure('hero-load-time', 'chaosar-page-start', 'chaosar-hero-loaded');
+      var m = performance.getEntriesByName('hero-load-time')[0];
+      console.log('[ChaosAR] Hero model yüklendi:', (m.duration / 1000).toFixed(2) + 's');
+    }, { once: true });
+  }
+
+  // İkinci ziyarette SW zaten yakalar; birinci ziyarette bu fetch HTTP cache'i doldurur
+  function backgroundPrefetch() {
+    if (!('fetch' in window)) return;
+    SECONDARY_MODELS.forEach(function (url, i) {
+      var delay = 1500 + i * 700;
+      setTimeout(function () {
+        var schedule = typeof requestIdleCallback === 'function' ? requestIdleCallback : function (cb) { cb(); };
+        schedule(function () {
+          var t0 = performance.now();
+          fetch(url, { mode: 'cors', credentials: 'omit' })
+            .then(function (r) { return r.arrayBuffer(); })
+            .then(function () {
+              console.log('[ChaosAR] Prefetch:', url.split('/').pop(), ((performance.now() - t0) / 1000).toFixed(2) + 's');
+            })
+            .catch(function () {});
+        }, { timeout: 12000 });
+      }, delay);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', backgroundPrefetch);
+  } else {
+    backgroundPrefetch();
+  }
 })();
 </script>
 
