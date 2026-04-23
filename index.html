@@ -1195,6 +1195,17 @@ src="https://www.facebook.com/tr?id=980421621608814&ev=PageView&noscript=1"
         clickable: true
       }
     });
+
+    // Model'e dokunulduğunda Swiper'ı kilitle — fotoğrafa geçmesin
+    var sheetMv = document.getElementById('sheetModelViewer');
+    if (sheetMv) {
+      sheetMv.addEventListener('pointerdown', function () {
+        sheetSwiper.allowTouchMove = false;
+      });
+      var unlockSheet = function () { sheetSwiper.allowTouchMove = true; };
+      document.addEventListener('pointerup',     unlockSheet);
+      document.addEventListener('pointercancel', unlockSheet);
+    }
   }
 })();
 

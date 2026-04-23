@@ -711,13 +711,7 @@ src="https://www.facebook.com/tr?id=980421621608814&ev=PageView&noscript=1"
     mv.setAttribute('alt', product.name + ' 3D Modeli');
     if (product.imageUrl) {
       mv.setAttribute('poster', product.imageUrl);
-      // Poster handles the loading state — hide skeleton so poster image is visible
       skeleton.style.display = 'none';
-    }
-    // On mobile, remove camera-controls so Swiper swipe isn't blocked by model-viewer touch handling.
-    // Auto-rotate still works. Desktop keeps full camera interaction.
-    if (window.innerWidth < 960) {
-      mv.removeAttribute('camera-controls');
     }
   } else {
     skeleton.style.display = 'none';
@@ -745,7 +739,7 @@ src="https://www.facebook.com/tr?id=980421621608814&ev=PageView&noscript=1"
 
   // ── Swiper ───────────────────────────────────────────────────────────────────
   if (typeof Swiper !== 'undefined') {
-    new Swiper('.pd-media-swiper', {
+    var pdSwiper = new Swiper('.pd-media-swiper', {
       slidesPerView: 1,
       spaceBetween: 0,
       grabCursor: true,
@@ -755,6 +749,14 @@ src="https://www.facebook.com/tr?id=980421621608814&ev=PageView&noscript=1"
         clickable: true
       }
     });
+
+    // Model'e dokunulduğunda Swiper'ı kilitle — fotoğrafa geçmesin
+    mv.addEventListener('pointerdown', function () {
+      pdSwiper.allowTouchMove = false;
+    });
+    var unlockPd = function () { pdSwiper.allowTouchMove = true; };
+    document.addEventListener('pointerup',     unlockPd);
+    document.addEventListener('pointercancel', unlockPd);
   }
 
   // Skeleton gizle model yüklenince
