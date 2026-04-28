@@ -744,11 +744,11 @@ n.queue=[];t=b.createElement(e);t.async=!0;
 t.src=v;s=b.getElementsByTagName(e)[0];
 s.parentNode.insertBefore(t,s)}(window, document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '980421621608814');
+fbq('init', '1494403202148805');
 fbq('track', 'PageView');
 </script>
 <noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=980421621608814&ev=PageView&noscript=1"
+src="https://www.facebook.com/tr?id=1494403202148805&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Meta Pixel Code -->
 </head>
@@ -1502,6 +1502,7 @@ src="https://www.facebook.com/tr?id=980421621608814&ev=PageView&noscript=1"
       return;
     }
     err.style.display = 'none';
+    if (typeof fbq === 'function') fbq('track', 'Lead');
     var url = pendingUrl + '&userEmail=' + encodeURIComponent(email);
     closeModal();
     window.location.href = url;
