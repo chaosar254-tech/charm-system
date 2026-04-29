@@ -28,6 +28,7 @@
 <link rel="prefetch" href="https://models.chaosarmenu.com/chaosar-shop/mahzenaltınvazo.glb" crossorigin="anonymous" fetchpriority="low">
 <link rel="prefetch" href="https://models.chaosarmenu.com/chaosar-shop/Masa.glb" crossorigin="anonymous" fetchpriority="low">
 <link rel="prefetch" href="https://models.chaosarmenu.com/chaosar-shop/Canta.glb" crossorigin="anonymous" fetchpriority="low">
+<link rel="prefetch" href="https://models.chaosarmenu.com/chaosar-shop/dekor.glb" crossorigin="anonymous" fetchpriority="low">
 <link rel="stylesheet" href="/assets/css/model-loader.css">
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 <style>
@@ -799,7 +800,7 @@ src="https://www.facebook.com/tr?id=1494403202148805&ev=PageView&noscript=1"
           <span class="ar-vf bl"></span><span class="ar-vf br"></span>
         </span>
         <span class="ar-dot"></span>
-        <span class="ar-btn-label">Evinde Gör</span>
+        <span class="ar-btn-label">Evinde Görüntüle</span>
       </button>
       <div>
         <div class="ar-copy-title">Ücretsiz demo ile test edin</div>
@@ -844,7 +845,7 @@ src="https://www.facebook.com/tr?id=1494403202148805&ev=PageView&noscript=1"
         style="width:100%;height:100%;background-color:transparent;outline:none;--poster-color:transparent;">
       </model-viewer>
       <div class="viewer-drag-hint">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
         Sürükle &amp; döndür
       </div>
     </div>
@@ -1044,8 +1045,7 @@ src="https://www.facebook.com/tr?id=1494403202148805&ev=PageView&noscript=1"
             exposure="1.2"
             environment-image="neutral"
             tone-mapping="commerce"
-            style="width:100%;height:100%;background-color:transparent;">
-          </model-viewer>
+            style="width:100%;height:100%;background-color:transparent;outline:none;pointer-events:none;touch-action:pan-y;" tabindex="-1"></model-viewer>
         </div>
       </div>
       <!-- Slide 2 — product image -->
@@ -1111,7 +1111,7 @@ src="https://www.facebook.com/tr?id=1494403202148805&ev=PageView&noscript=1"
     { id:1, name:'Air Force 1',    slug:'air-force-1',    category:'Ayakkabı',    modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Nike.glb',    imageUrl:'/assets/images/products/air-force1.jpg', badge:'Canlı Demo',            badgeType:'live', price:'Demo Ürün',          desc:'Klasik Air Force 1 silüeti, fotogerçekçi 3D modelleme ile sanal ortama taşındı. Odanıza yerleştirin, her açıdan inceleyin.' },
     { id:2, name:'Kahve Makinası', slug:'kahve-makinasi', category:'Ev Aletleri', modelUrl:'https://models.chaosarmenu.com/chaosar-shop/kahve-v1.glb',  imageUrl:'/assets/images/products/kahve-makinasi.jpg',   badge:'Yeni',                    badgeType:'new',  price:'Demo Ürün',          desc:'Küçük ev aletlerinden büyük aksesuvarlara kadar her ürün AR ile hayat buluyor. Boyut, renk ve detay — tam ölçüde.' },
     { id:3, name:'Koltuk Takımı',  slug:'koltuk-takimi',  category:'Mobilya',     modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Koltuk.glb',  imageUrl:'/assets/images/products/koltuk-takimi.jpg',      badge:'3D',                  badgeType:null, price:'Demo Ürün',                desc:'Mobilya sektöründe AR ile müşteri güveni. Müşteriniz satın almadan önce ürünü evinde görsün.' },
-    { id:4, name:'Ev Dekorasyonu', slug:'ev-dekorasyonu',  category:'Dekorasyon',  modelUrl:'https://models.chaosarmenu.com/chaosar-shop/mahzenaltınvazo.glb',   imageUrl:'/assets/images/products/ev-dekorasyonu.jpg',           badge:'3D',                      badgeType:null,   price:'Demo Ürün',         desc:'Ev dekorasyonunda fotogerçekçi AR deneyimi. Müşteriniz ürünü almadan önce zaten "yerleştirmiş" olur.' },
+    { id:4, name:'Ev Dekorasyonu', slug:'ev-dekorasyonu',  category:'Dekorasyon',  modelUrl:'https://models.chaosarmenu.com/chaosar-shop/dekor.glb',   imageUrl:'/assets/images/products/ev-dekorasyu.jpg',           badge:'3D',                      badgeType:null,   price:'Demo Ürün',         desc:'Ev dekorasyonunda fotogerçekçi AR deneyimi. Müşteriniz ürünü almadan önce zaten "yerleştirmiş" olur.' },
     { id:5, name:'Masa',           slug:'masa',            category:'Mobilya',     modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Masa.glb',    imageUrl:'/assets/images/products/masa.jpg',                     badge:'Yeni',                        badgeType:'new',  price:'Demo Ürün',             desc:'Masa ve oturma gruplarında AR entegrasyonu. Boyut, renk ve form — gerçeğe en yakın dijital deneyim.' },
     { id:6, name:'Çanta Koleksiyonu', slug:'canta-koleksiyonu', category:'Aksesuar',    imageUrl:'/assets/images/products/canta-koleksiyonu.jpg',    modelUrl:'https://models.chaosarmenu.com/chaosar-shop/Canta.glb',    badge:'3D',         badgeType:'soon', price:'Demo Ürün', desc:'Çanta ve aksesuar kategorisinde AR entegrasyonu. Parlaklık, boyut ve form — gerçeğe en yakın dijital deneyim.' }
   ];
